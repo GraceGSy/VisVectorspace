@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "d3": "^5.15.1",
+    "draco-vis": "^0.0.16",
     "sirv-cli": "^0.4.4",
     "vega": "^5.10.1",
     "vega-embed": "^6.5.2",

@@ -5,7 +5,7 @@
 </script>
 
 <div id="attributesBar">
-	<p>Attributes</p>
+	<p><b>ATTRIBUTES</b></p>
 	{#each attributes as a}
 		<button>{a}</button>
 	{/each}

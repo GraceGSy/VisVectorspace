@@ -5,6 +5,7 @@
 	export let dataset = []
 
 	let promise = loadSpecs();
+	let updateCount = 0
 
 	async function loadSpecs() {
 		const specs = await d3.csv(`pca_specs_binary.csv`)
@@ -15,27 +16,35 @@
 			let vegaFilename = s.filename
 			vegaFilename = vegaFilename.replace("./", "")
 			const vegaSpec = await d3.json(vegaFilename)
-			vegaSpecs.push(vegaSpec)
+			vegaSpecs.push({ 'spec':s, 'vega':vegaSpec })
 		}
 
 		return vegaSpecs
 	}
+
+	function update() {
+		updateCount++
+	}
 </script>
 
-{#await promise}
-	<p>...loading</p>
-{:then vegaSpecs}
-	<div id="recommendationsMain">
-		<p>Recommendations</p>
-		<Recommendations {dataset} {vegaSpecs}/>
-	</div>
-{:catch error}
-	<p style="color: red">{error.message}</p>
-{/await}
+<div id="recommendationsMain">
+	{#await promise}
+		<p>...loading</p>
+	{:then vegaSpecs}
+		<div>
+			<p><b>RECOMMENDATIONS</b></p>
+			<button on:click={update}>Update Recommendations</button>
+		</div>
+		<Recommendations {dataset} {vegaSpecs} {updateCount}/>
+	{:catch error}
+		<p style="color: red">{error.message}</p>
+	{/await}
+</div>
 
 <style>
 	#recommendationsMain {
 		display: flex;
 		flex-direction: column;
+		margin-bottom: 150px
 	}
 </style>
