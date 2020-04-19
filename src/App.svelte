@@ -1,6 +1,6 @@
 <script>
 	import * as d3 from 'd3'
-	import Draco from 'draco-vis'
+	// import Draco from 'draco-vis'
 	import AttributesBar from './AttributesBar.svelte'
 	import RecommendationsMain from './RecommendationsMain.svelte'
 

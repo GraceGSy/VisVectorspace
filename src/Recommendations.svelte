@@ -1,6 +1,8 @@
 <script>
 	import * as d3 from 'd3'
 	import Draco from 'draco-vis'
+	import vegaToRanking from './vegaToRanking.js'
+	import dracoConstraintTemplate from './dracoConstraintTemplate.js'
 
 	export let vegaSpecs = []
 	export let dataset = []
@@ -11,22 +13,46 @@
 	let lessLikeThis = []
 	let recommendations = []
 
-	function getDracoConstraints(updateCount) {
+	function getDracoConstraints() {
 		if (moreLikeThis.length == 0 || lessLikeThis.length == 0) {
 			return
 		}
 
-		for (var i = 0; i<attrNo; i++) {
-			x1[attr[i]] = d3.mean(low, function(d) { return d["coord"][aainttr[i]]});
-			x0[attr[i]] = d3.mean(high, function(d) { return d["coord"][attr[i]]});
+		let attrs = []
+
+		let high = []
+		let low = []
+
+		for (let h of moreLikeThis) {
+			let ranking = vegaToRanking(h['vega'])
+			high.push(ranking)
+			attrs = attrs.concat(Object.keys(ranking))
+		}
+
+		for (let l of lessLikeThis) {
+			let ranking = vegaToRanking(l['vega'])
+			low.push(ranking)
+			attrs = attrs.concat(Object.keys(ranking))
+		}
+
+		attrs = new Set(attrs)
+
+		attrs = [...attrs]
+
+		let x1 = {}
+		let x0 = {}
+
+		for (let a of attrs) {
+			x1[a] = d3.mean(low, function(d) { if (d[a]) {return d[a]}; return 0 });
+			x0[a] = d3.mean(high, function(d) { if (d[a]) {return d[a]}; return 0});
 		}
 
 		var hlpair = [];
 		for (var i = 0; i<high.length; i++) {
 			for (var j = 0; j<low.length; j++) {
 				var tmpelt = {};
-				for (var k = 0; k<attrNo; k++) {
-					tmpelt[attr[k]] = high[i]["coord"][attr[k]] - low[j]["coord"][attr[k]];
+				for (let k of attrs) {
+					tmpelt[k] = high[i][k] - low[j][k];
 				}
 				hlpair[hlpair.length] = tmpelt;
 			}
@@ -35,19 +61,23 @@
 		// calculate new attr
 		console.log("Getting new axis vector...")
 		var V = {}, Vchanged = {}, Verror = {}, norm = 0;
-		for (var i = 0; i<attrNo; i++) {
-			V[attr[i]] = 0;
-			Vchanged[attr[i]] = 0;
+		for (let i of attrs) {
+			V[i] = 0;
+			Vchanged[i] = 0;
 		}
-		for (var i = 0; i<attrNo; i++) {
-		 V[attr[i]] = x0[attr[i]]-x1[attr[i]];
-		 norm = norm + (x0[attr[i]]-x1[attr[i]])*(x0[attr[i]]-x1[attr[i]]);
+		for (let i of attrs) {
+		 V[i] = x0[i]-x1[i];
+		 norm = norm + (x0[i]-x1[i])*(x0[i]-x1[i]);
 		}
-		var VV = [];
-		for (var i = 0; i<attrNo; i++) {
-			VV[i] = {"attr":attr[i], "value":V[attr[i]]};
+		let rankedConstraints = [];
+		for (let i of attrs) {
+			rankedConstraints.push({"attr":i, "value":V[i]})
 		}
-		VV.sort(function(a,b) {return Math.abs(b["value"]) - Math.abs(a["value"]);});
+		rankedConstraints = rankedConstraints.sort(function(a,b) {return Math.abs(b["value"]) - Math.abs(a["value"]);})
+
+		rankedConstraints = rankedConstraints.filter(function(a) {return a["value"] != 0})
+
+		return rankedConstraints
 	}
 
 	function solveDraco() {
@@ -55,32 +85,41 @@
 
 		const url = 'https://unpkg.com/wasm-clingo@0.2.2';
 
+		const newConstraints = getDracoConstraints()
+		let constraintsTemplated = dracoConstraintTemplate(newConstraints)
+		console.log(constraintsTemplated)
+
+
 		const draco = new Draco(url)
 		draco.init().then(() => {
 			// Get metadata about dataset
 			draco.prepareData(dataset)
 			const schema = draco.getSchema()
 
+			console.log(schema)
+
 			// Create constraints based on schema
-			const constraints = `
+			const inputConstraints = `
 				data("cereal.csv").
 				num_rows(77).
-
-				fieldtype(mfr,string).
-				cardinality(mfr,7).
 
 				fieldtype(calories,number).
 				cardinality(calories,11).
 
-					% ====== Query constraints ======
-					encoding(e0).
-					:- not field(e0,mfr).
+				fieldtype(protein,number).
+				cardinality(protein,6).
 
-					encoding(e1).
-					:- not field(e1,calories).
+				fieldtype(mfr,string).
+				cardinality(mfr,7).
+
+				fieldtype(shelf,number).
+				cardinality(shelf,3).
+
+				% ====== Query constraints ======
+				${constraintsTemplated}
 			`;
 
-			const solution = draco.solve(constraints, { models: 9 });
+			const solution = draco.solve(inputConstraints, { models: 9 });
 			console.log(solution);
 
 			recs = []
@@ -234,11 +273,11 @@
 	$: if (updateCount > 0) {solveDraco()}
 
 	function updateMore(i) {
-		moreLikeThis.append(recommendations[i])
+		moreLikeThis.push(recommendations[i])
 	}
 
 	function updateLess(i) {
-		lessLikeThis.append(recommendations[i])
+		lessLikeThis.push(recommendations[i])
 	}
 </script>
 
