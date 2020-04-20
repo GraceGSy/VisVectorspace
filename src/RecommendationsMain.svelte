@@ -3,6 +3,7 @@
 	import Recommendations from './Recommendations.svelte'
 
 	export let dataset = []
+	export let selectedAttributes = []
 
 	let promise = loadSpecs();
 	let updateCount = 0
@@ -35,7 +36,11 @@
 			<p><b>RECOMMENDATIONS</b></p>
 			<button on:click={update}>Update Recommendations</button>
 		</div>
-		<Recommendations {dataset} {vegaSpecs} {updateCount}/>
+		<Recommendations
+			{dataset}
+			{vegaSpecs}
+			{selectedAttributes}
+			{updateCount}/>
 	{:catch error}
 		<p style="color: red">{error.message}</p>
 	{/await}

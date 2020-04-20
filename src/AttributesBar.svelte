@@ -1,13 +1,23 @@
 <script>
+	import { createEventDispatcher } from 'svelte'
+
 	export let dataset = []
 
 	let attributes = Object.keys(dataset[0])
+
+	const dispatch = createEventDispatcher()
+
+	function update(a) {
+		dispatch('attributeClicked', {
+			attribute: a
+		});
+	}
 </script>
 
 <div id="attributesBar">
 	<p><b>ATTRIBUTES</b></p>
 	{#each attributes as a}
-		<button>{a}</button>
+		<button on:click={() => update(a)}>{a}</button>
 	{/each}
 </div>
 

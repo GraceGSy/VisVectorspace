@@ -4,6 +4,7 @@
 	import AttributesBar from './AttributesBar.svelte'
 	import RecommendationsMain from './RecommendationsMain.svelte'
 
+	let selectedAttributes = []
 	let promise = loadData();
 
 	async function loadData() {
@@ -12,21 +13,27 @@
 		return dataset
 	}
 
-	// function handleClick() {
-	// 	promise = loadData();
-	// }
+	function updateAttributes(event) {
+		let attribute = event.detail.attribute
+		
+		if (selectedAttributes.includes(attribute)) {}
+		else {
+			selectedAttributes.push(attribute)
+			selectedAttributes = selectedAttributes
+		}
+	}
 </script>
-
-<!-- <button on:click={handleClick}>
-	generate random number
-</button> -->
 
 <div id="main">
 	{#await promise}
 		<p>...loading</p>
 	{:then dataset}
-			<AttributesBar {dataset}/>
-			<RecommendationsMain {dataset}/>
+			<AttributesBar
+				on:attributeClicked={updateAttributes}
+				{dataset}/>
+			<RecommendationsMain
+				{selectedAttributes}
+				{dataset}/>
 	{:catch error}
 		<p style="color: red">{error.message}</p>
 	{/await}

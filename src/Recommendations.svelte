@@ -2,11 +2,13 @@
 	import * as d3 from 'd3'
 	import Draco from 'draco-vis'
 	import vegaToRanking from './vegaToRanking.js'
-	import dracoConstraintTemplate from './dracoConstraintTemplate.js'
-	import dracoMarkConstraint from './dracoMarkConstraint.js'
+	import dracoDataConstraints from './dracoDataConstraints.js'
+	import dracoMarkConstraints from './dracoMarkConstraints.js'
+	import dracoVisConstraints from './dracoVisConstraints.js'
 
 	export let vegaSpecs = []
 	export let dataset = []
+	export let selectedAttributes = []
 	export let recomendationCount = 9
 	export let updateCount = 0
 
@@ -87,14 +89,15 @@
 		const url = 'https://unpkg.com/wasm-clingo@0.2.2';
 
 		const newConstraints = getDracoConstraints()
-		let constraintsTemplated = dracoConstraintTemplate(newConstraints)
-		let markTypeTemplated = dracoMarkConstraint(newConstraints)
+		let markConstraints = dracoMarkConstraints(newConstraints)
+		let visConstraints = dracoVisConstraints(newConstraints)
 
 		const draco = new Draco(url)
 		draco.init().then(() => {
 			// Get metadata about dataset
 			draco.prepareData(dataset)
 			const schema = draco.getSchema()
+			const dataConstraints = dracoDataConstraints(selectedAttributes, schema)
 
 			console.log(schema)
 
@@ -115,10 +118,10 @@
 				fieldtype(shelf,number).
 				cardinality(shelf,3).
 
-				${markTypeTemplated}
+				${markConstraints}
 
 				% ====== Query constraints ======
-				${constraintsTemplated}
+				${visConstraints}
 			`;
 
 			console.log(inputConstraints)
