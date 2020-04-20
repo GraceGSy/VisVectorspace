@@ -3,6 +3,7 @@
 	import Draco from 'draco-vis'
 	import vegaToRanking from './vegaToRanking.js'
 	import dracoConstraintTemplate from './dracoConstraintTemplate.js'
+	import dracoMarkConstraint from './dracoMarkConstraint.js'
 
 	export let vegaSpecs = []
 	export let dataset = []
@@ -87,8 +88,7 @@
 
 		const newConstraints = getDracoConstraints()
 		let constraintsTemplated = dracoConstraintTemplate(newConstraints)
-		console.log(constraintsTemplated)
-
+		let markTypeTemplated = dracoMarkConstraint(newConstraints)
 
 		const draco = new Draco(url)
 		draco.init().then(() => {
@@ -115,9 +115,13 @@
 				fieldtype(shelf,number).
 				cardinality(shelf,3).
 
+				${markTypeTemplated}
+
 				% ====== Query constraints ======
 				${constraintsTemplated}
 			`;
+
+			console.log(inputConstraints)
 
 			const solution = draco.solve(inputConstraints, { models: 9 });
 			console.log(solution);

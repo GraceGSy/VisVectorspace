@@ -26,5 +26,9 @@ export default function(vegaSpec) {
 		}
 	}
 
+	let mark = vegaSpec['mark']
+
+	result[`mark_${mark}`] = 1
+
 	return result
 }
