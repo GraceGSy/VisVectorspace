@@ -3,13 +3,18 @@
 
 	export let dataset = []
 
+	// let selectedAttributes = []
+
 	let attributes = Object.keys(dataset[0])
 
 	const dispatch = createEventDispatcher()
 
 	function update(a) {
+		// selectedAttributes = selectedAttributes.push(a)
+		let element = document.getElementById(a)
+		element.style.backgroundColor = "#a3ccb7"
 		dispatch('attributeClicked', {
-			attribute: a
+			attribute: a,
 		});
 	}
 </script>
@@ -17,7 +22,9 @@
 <div id="attributesBar">
 	<p><b>ATTRIBUTES</b></p>
 	{#each attributes as a}
-		<button on:click={() => update(a)}>{a}</button>
+		<button
+			id={a}
+			on:click={() => update(a)}>{a}</button>
 	{/each}
 </div>
 

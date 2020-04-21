@@ -252,7 +252,7 @@
 
 	function getRecombinations(vegaSpecs, dataset) {
 		let randomList = [7, 18, 142, 20, 212, 251, 213, 300, 272]
-		recommendations = []
+		let newRecommendations = []
 
 		for (let random of randomList) {
 			let currentVega = vegaSpecs[random]['vega']
@@ -262,22 +262,24 @@
 				console.log(random)
 				continue
 			} else {
-				recommendations.push({'spec':vegaSpecs[random]['spec'],
+				newRecommendations.push({'spec':vegaSpecs[random]['spec'],
 									  'vega':recombined
 									})
+				recommendations = newRecommendations
 			}
 		}
 	}
 
-	getRecombinations(vegaSpecs, dataset)
-
 	let count = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+	$: if (updateCount === 1) {
+		getRecombinations(vegaSpecs, dataset)
+	   } else if (updateCount > 0) {
+		solveDraco()}
 
 	$: for (let rec = 0; rec < recommendations.length; rec++) {
 		vegaEmbed(`#vis${rec}`, recommendations[rec]['vega'])
 	}
-
-	$: if (updateCount > 0) {solveDraco()}
 
 	function updateMore(i) {
 		moreLikeThis.push(recommendations[i])
