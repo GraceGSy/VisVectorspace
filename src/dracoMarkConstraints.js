@@ -1,4 +1,10 @@
+import defaultConstraints from './defaults.js'
+
 export default function(constraints) {
+	if (!constraints) {return ''}
+
+	let defaults = defaultConstraints['defaultMarkConstraints']
+	
 	let allConstraints = []
 
 	for (let c of constraints) {
@@ -12,11 +18,15 @@ export default function(constraints) {
 
 			if (value > 0) {
 				allConstraints.push(`mark(${markType}).`)
-			} else {
+			} else if (value < 0) {
 				allConstraints.push(`not mark(${markType}).`)
 			}
 		}
 	}
 
-	return allConstraints.join('\n\n')
+	if (allConstraints.length > 0) {
+		return allConstraints.join('\n\n')
+	}
+
+	return ''
 }

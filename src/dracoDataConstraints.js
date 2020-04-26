@@ -7,8 +7,6 @@ function getType(uniqueValues) {
 		// Needs verification
 		if (parseFloat(v)) {
 			return 'number'
-		} else if (Date.parse(v)) {
-			return 'temporal'
 		} else {
 			return 'string'
 		}
@@ -23,8 +21,10 @@ function schemaToConstraint(a, attributeSchema) {
 	return constraintTemplate
 }
 
-export default function(attributes, schema) {
+export default function(schema) {
 	let allConstraints = []
+
+	let attributes = Object.keys(schema['stats'])
 
 	for (let a of attributes) {
 		let attributeSchema = schema['stats'][a]

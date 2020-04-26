@@ -1,4 +1,6 @@
 export default function(constraints) {
+	if (!constraints) {return ''}
+
 	let channels = ['x', 'y', 'row', 'column', 'color', 'size', 'shape', 'text']
 
 	let encodingCount = 0
@@ -11,21 +13,10 @@ export default function(constraints) {
 
 		if (relevant.length != 0) {
 
-			let newConstraint = `encoding(e${encodingCount}).`
+			let newConstraint = `encoding(e${encodingCount}).:- not channel(e${encodingCount}, ${c}).`
 
 			for (let r of relevant) {
 				let attr = r['attr']
-
-				// If there are channel preferences
-				if (attr.includes('.channel')) {
-					if (r['value'] > 0) {
-						// 'moreLikeThis' channel
-						newConstraint = newConstraint + `:- not channel(e${encodingCount}, ${c}).`
-					} else {
-						// 'lessLikeThis' channel
-						newConstraint = newConstraint + `:- channel(e${encodingCount}, ${c}).`
-					}
-				}
 
 				// If there are datatype preferences
 				if (attr.includes('.type')) {
@@ -91,10 +82,14 @@ export default function(constraints) {
 			}
 
 			allConstraints.push(newConstraint)
-			encodingCount ++
+			encodingCount++
 		}
 
 	}
 
-	return allConstraints.join('\n\n')
+	if (allConstraints.length > 0) {
+		return allConstraints.join('\n\n')
+	}
+
+	return ''
 }
