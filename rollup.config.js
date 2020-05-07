@@ -4,6 +4,9 @@ import commonjs from '@rollup/plugin-commonjs';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 
+const appRoot = require('app-root-path');
+const spawn = require("child_process").spawn;
+
 const production = !process.env.ROLLUP_WATCH;
 
 export default {
@@ -53,8 +56,32 @@ export default {
 	}
 };
 
+
+function runbackend() {
+	console.log('------ > RUNNING BACKEND ...')
+	// run base model
+	let results = []
+	let modelpyfile = appRoot + "/backend/modeler.py"
+	let obj = {}
+	let baseMod = 1
+	console.log(' CHECKING APPROOT ', appRoot, modelpyfile)
+	var process = spawn("python3", [modelpyfile, "-", "-"])
+	process.stdout.on('data', (data) => {
+		console.log('python results came back ', data.toString())
+		results.push(data.toString());
+	})
+	process.stderr.on('data', (data) => {
+		console.log(`python results error:${data}`);
+	});
+	process.stderr.on('close', () => {
+		console.log("------- > PYTHON CALL DONE !!!! ");
+	});
+}
+
 function serve() {
 	let started = false;
+	console.log('SERVING THROUGH CONFIG.JS ...  ')
+	runbackend();
 
 	return {
 		writeBundle() {

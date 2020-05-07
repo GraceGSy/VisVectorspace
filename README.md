@@ -22,7 +22,7 @@ Install the dependencies...
 
 ```bash
 cd svelte-app
-npm install
+npm install 
 ```
 
 ...then start [Rollup](https://rollupjs.org):

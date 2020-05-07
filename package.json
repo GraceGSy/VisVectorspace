@@ -16,6 +16,8 @@
     "svelte": "^3.0.0"
   },
   "dependencies": {
+    "app-root-path": "^3.0.0",
+    "child_process": "^1.0.2",
     "d3": "^5.15.1",
     "draco-vis": "0.0.16",
     "flat": "^5.0.0",
