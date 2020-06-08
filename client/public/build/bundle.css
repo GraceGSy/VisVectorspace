@@ -1,0 +1,10 @@
+#main.svelte-1dx2uzi{display:flex;flex-direction:row
+	}
+#attributesBar.svelte-1t0xmpj{display:flex;flex-direction:column;width:150px;margin-right:50px
+	}
+#recommendationDisplay.svelte-94wtia{display:grid;grid-template-columns:repeat(3, 350px);grid-template-rows:repeat(3, 350px);grid-gap:50px;margin-top:50px
+	}.vis.svelte-94wtia{overflow:scroll}
+#recommendationsMain.svelte-1yvgkpb{display:flex;flex-direction:column;margin-bottom:150px
+	}
+
+/*# sourceMappingURL=bundle.css.map */

@@ -1,0 +1,30 @@
+{
+  "name": "svelte-app",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "rollup -c",
+    "autobuild": "rollup -c -w",
+    "dev": "rollup -c -w",
+    "start": "sirv public"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^11.0.0",
+    "@rollup/plugin-node-resolve": "^7.0.0",
+    "rollup": "^1.20.0",
+    "rollup-plugin-livereload": "^1.0.0",
+    "rollup-plugin-svelte": "^5.0.3",
+    "rollup-plugin-terser": "^5.1.2",
+    "svelte": "^3.0.0"
+  },
+  "dependencies": {
+    "app-root-path": "^3.0.0",
+    "child_process": "^1.0.2",
+    "d3": "^5.15.1",
+    "draco-vis": "0.0.16",
+    "flat": "^5.0.0",
+    "sirv-cli": "^0.4.4",
+    "vega": "^5.10.1",
+    "vega-embed": "^6.5.2",
+    "vega-lite": "^4.10.2"
+  }
+}
