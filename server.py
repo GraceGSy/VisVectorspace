@@ -18,23 +18,13 @@ def home(path):
 # The following route is used for testing
 @app.route("/rand/<val>")
 def hello(val):
-	print (val)
-	return str(15)
+	print(val)
+	return str(val)
 
+# The following route is used for testing
 @app.route("/read", methods=['POST'])
 def readFile():
-	# filepath = request.args['param1'][5:]
-	# print('data', request.data)
-	# f = open('./file.csv', 'wb')
-	# f.write(request.data)
-	# f.close()
-	# print(send_from_directory('/', filepath))
-	# try:
-	# 	with open('./file.csv') as f:
-	# 		content = f.read()
-	# 		print(content)
-	# except Exception as e:
-	# 	print(e)
+	print('data', request.data)
 	return
 
 # Call the classifier
@@ -58,7 +48,6 @@ def classify():
 	outobj['col_names'] = str(','.join(colData))
 	outobj['feature_wts'] = feat_arr_wt
 
-	print(type(json.dumps(outobj, sort_keys=True)))
 	return (json.dumps(outobj, sort_keys=True))
 
 if __name__ == "__main__":
