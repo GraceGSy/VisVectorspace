@@ -40,19 +40,14 @@ def readFile():
 # Call the classifier
 @app.route("/classifier", methods=['POST'])
 def classify():
-	print('new run', (request.data).decode("utf-8"))
-	# print(request.args)
-	path = './client/public/data/specs_binary_temp.json'
-
-	with open(path, 'w') as train_file:
-		train_file.write((request.data).decode("utf-8"))
+	dataset = json.loads(request.data)
 
 	mainCol = 'filename'
 	targetCol = 'label'
 
 	outobj = {}
 	m = Modeler()
-	m.read_data(path)
+	m.read_data(dataset)
 	df, colData = m.pre_processdata(m.df, mainCol)
 	X_train, X_test, y_train, y_test = m.train_test_split(df, targetCol)
 

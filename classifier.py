@@ -13,10 +13,10 @@ class Modeler():
         self.df = None
         pass
 
-    def read_data(self, csvpath):
+    def read_data(self, data):
         self.df = None
         try:
-            self.df = pd.read_json(csvpath)
+            self.df = pd.DataFrame(data)
         except Exception as e:
             print('error reading dataframe ', e)
         return self.df
