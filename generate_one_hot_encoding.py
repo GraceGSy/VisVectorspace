@@ -79,32 +79,33 @@ all_labels = {}
 
 for new_col in new_columns:
 	if new_col == 'filename': continue
-	col_labels = {}
 
 	col_values = list(df[new_col].unique())
-	num_values = len(col_values)
+	# num_values = len(col_values)
 
-	for i in range(num_values):
-		v = col_values[i]
-		if 'field' in new_col:
+	# for i in range(num_values):
+	# 	v = col_values[i]
+	if 'field' in new_col:
+		col_labels = {}
+		for v in col_values:
 			col_labels[v] = 0 if v == 'none' else 1
-		else:
-			label_string = list('0' * num_values)
-			label_string[i] = '1'
-			label_string = ''.join(label_string)
-			col_labels[v] = int(label_string)
+		df[new_col] = df[new_col].map(col_labels)
+	else:
+		df = pandas.get_dummies(df, columns=[new_col], prefix=new_col)
+			# label_string = list('0' * num_values)
+			# label_string[i] = '1'
+			# label_string = ''.join(label_string)
+			# col_labels[v] = int(label_string)
 
-	all_labels[new_col] = col_labels
+	# all_labels[new_col] = col_labels
 
-for new_col in new_columns:
-	if new_col == 'filename': continue
-	df[new_col] = df[new_col].map(all_labels[new_col])
+# for new_col in new_columns:
+# 	if new_col == 'filename': continue
+# 	df[new_col] = df[new_col].map(all_labels[new_col])
+
+print(df)
 
 df = df.set_index('filename')
 
-# do not un-comment the following unless you wish to rewrite the label mappings
-# current labels are saved under one_hot_encoding_mapping.json
-
+# do not un-comment the following unless you wish to rewrite the specs file
 # df.to_csv('./client/public/specs_one_hot_encoding.csv')
-# with open('./one_hot_encoding_mapping.json', 'w') as fw:
-# 	json.dump(all_labels, fw)
