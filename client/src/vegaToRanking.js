@@ -10,7 +10,11 @@ export default function(vegaSpec) {
 
 	for (let a of defaults) {
 		if (a in attributes && typeof(attributes[a]) == 'string') {
-			result[ a + '.' + attributes[a]] = 1
+			if (a.includes('field')) {
+				result[a] = 1
+			} else {
+				result[ a + '.' + attributes[a]] = 1
+			}
 		} else if (a in attributes) {
 			result[a] = 1
 		} else {

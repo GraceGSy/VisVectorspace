@@ -7,6 +7,8 @@
 	import dracoVisConstraints from './dracoVisConstraints.js'
 	import defaultConstraints from './defaults.js'
 
+	import getRecombinations from './getRecombinations.js'
+
 	export let vegaSpecs = []
 	export let dataset = []
 	export let selectedAttributes = []
@@ -19,104 +21,30 @@
 
 	// Current recomendations
 	let recommendations = []
-
-	// let trainingData = vegaSpecs['vega']
-	// console.log(vegaSpecs)
+	let similarRecommendations = []
 
 	let classifierResult
 
-	// update constraints
-	function getDracoConstraints() {
-		if (moreLikeThis.length == 0 || lessLikeThis.length == 0) {
-			return
-		}
-
-		let attrs = []
-
-		let high = []
-		let low = []
-
-		for (let h of moreLikeThis) {
-			let ranking = vegaToRanking(h['vega'])
-			high.push(ranking)
-			attrs = attrs.concat(Object.keys(ranking))
-		}
-
-		for (let l of lessLikeThis) {
-			let ranking = vegaToRanking(l['vega'])
-			low.push(ranking)
-			attrs = attrs.concat(Object.keys(ranking))
-		}
-
-		// Remove duplicates
-		attrs = new Set(attrs)
-
-		// Convert back to array
-		attrs = [...attrs]
-
-		let x1 = {}
-		let x0 = {}
-
-		for (let a of attrs) {
-			x1[a] = d3.mean(low, function(d) { if (d[a]) {return d[a]}; return 0 });
-			x0[a] = d3.mean(high, function(d) { if (d[a]) {return d[a]}; return 0});
-		}
-
-		var hlpair = [];
-		for (var i = 0; i<high.length; i++) {
-			for (var j = 0; j<low.length; j++) {
-				var tmpelt = {};
-				for (let k of attrs) {
-					tmpelt[k] = high[i][k] - low[j][k];
-				}
-				hlpair[hlpair.length] = tmpelt;
-			}
-		}
-		
-		// calculate new attr
-		console.log("Getting new axis vector...")
-		var V = {}, Vchanged = {}, Verror = {}, norm = 0;
-		for (let i of attrs) {
-			V[i] = 0;
-			Vchanged[i] = 0;
-		}
-		for (let i of attrs) {
-		 V[i] = x0[i]-x1[i];
-		 norm = norm + (x0[i]-x1[i])*(x0[i]-x1[i]);
-		}
-		let rankedConstraints = [];
-		for (let i of attrs) {
-			rankedConstraints.push({"attr":i, "value":V[i]})
-		}
-		rankedConstraints = rankedConstraints.sort(function(a,b) {return Math.abs(b["value"]) - Math.abs(a["value"]);})
-
-		rankedConstraints = rankedConstraints.filter(function(a) {return a["value"] != 0})
-
-		fetch(`./classifier`, {method:"POST", body:JSON.stringify(vegaSpecs)})
-			.then(d => d.text())
-      		.then(d => (classifierResult = d))
-
-		return rankedConstraints
-	}
-
-	function solveDraco() {
-		let recs = recommendations
+	function solveDraco(newConstraints) {
+		console.log(newConstraints)
+		let recs = []
 
 		const url = 'https://unpkg.com/wasm-clingo@0.2.2';
 
-		const newConstraints = getDracoConstraints()
+		// const newConstraints = getDracoConstraints()
 		// console.log(newConstraints)
 		let markConstraints = dracoMarkConstraints(newConstraints)
 		let visConstraints = dracoVisConstraints(newConstraints)
+		// let visConstraints = ''
 
 		const draco = new Draco(url)
-		draco.init().then(() => {
+		return draco.init().then(() => {
 			// Get metadata about dataset
 			draco.prepareData(dataset)
 			const schema = draco.getSchema()
 			const dataConstraints = dracoDataConstraints(schema)
 
-			console.log(schema)
+			// console.log(schema)
 
 			// Create constraints based on schema
 			const inputConstraints = `
@@ -131,37 +59,136 @@
 				${visConstraints}
 			`;
 
-			console.log(inputConstraints)
+			// console.log(inputConstraints)
 
 			const solution = draco.solve(inputConstraints, { models: recomendationCount });
-			console.log(solution);
-
-			recs = []
+			if (!solution) {
+				console.log(solution, newConstraints)
+				return 
+			}
 
 			for (let s of solution['specs']) {
 				recs.push({'vega':s})
 			}
 
-			recommendations = recs
-		});
+			similarRecommendations = []
+			similarRecommendations = recs
+
+			console.log(recs)
+
+			return recs
+		})
 	}
 
-	$: console.log(classifierResult)
+	function getSimilar(newRecommendations) {
+		let result = []
 
-	$: if (updateCount > 0) {solveDraco()}
+		for (let nr of newRecommendations) {
+			// console.log(nr)
+			let individualSpecs = vegaToRanking(nr['vega'])
+			let rankedSpecs = []
+			for (let s of Object.keys(individualSpecs)) {
+				if (individualSpecs[s] !== 0) {
+					rankedSpecs.push({'attr': s, 'value': individualSpecs[s]})
+				}
+			}
+
+			result.push(solveDraco(rankedSpecs))
+		}
+		
+		return result
+	}
+
+	// function getAllSimilar(newRecommendations) {
+	// 	// let individualSpecs = vegaToRanking(vegaSpec)
+		
+	// 	Promise.all(getSimilar(newRecommendations)).then((result) => {
+	// 		return 
+	// 		// console.log('here', result)
+	// 	})
+	// }
+
+	$: {console.log(classifierResult)
+		if (typeof classifierResult !== "undefined") {
+			let updatedPreferrences = []
+
+			for (let i = 0; i < classifierResult.length; i++) {
+				if (i === 1) {
+					updatedPreferrences.push(dataset[i])
+				}
+			}
+
+			Promise.all(getRecombinations(vegaSpecs, updatedPreferrences)).then((result) => {
+				similarRecommendations = result
+			})
+		}
+	}
+
+	function runClassifier() {
+		let testingData = vegaSpecs.map(v => v.spec)
+		let trainingData = []
+
+		for (let m of moreLikeThis) {
+			let newM = m.vega.encoding
+			newM.label = 1
+			newM['mark_' + m.vega.mark] = 1
+			trainingData.push(newM)
+		}
+		for (let l of lessLikeThis) {
+			let newL = l.vega.encoding
+			newL.label = -1
+			newL['mark_' + l.vega.mark] = 1
+			trainingData.push(newL)
+		}
+
+		console.log('updated', trainingData)
+
+		let classifierData = {
+			'training': trainingData,
+			'testing': testingData
+		}
+
+		fetch(`./classifier`, {method:"POST", body:JSON.stringify(classifierData)})
+			.then(d => d.text())
+      		.then(d => (classifierResult = d))
+	}
+
+	$: {recommendations = similarRecommendations.map(r => {
+			if (r.length === 0) {
+				return
+			}
+			return r[0]
+		})
+	}
+
+	$: {if (updateCount === 1) {
+			console.log(dataset)
+			Promise.all(getRecombinations(vegaSpecs, dataset)).then((result) => {
+				similarRecommendations = result
+			})
+			// let newRecommendations = getRecombinations(vegaSpecs, dataset)
+			// getAllSimilar(newRecommendations)
+			// recommendations = newRecommendations
+		}
+		else {
+			console.log('running classifier: ', updateCount)
+			runClassifier()
+		}}
 
 	$: for (let rec = 0; rec < recommendations.length; rec++) {
+		if (!recommendations[rec]) {continue}
 		vegaEmbed(`#vis${rec}`, recommendations[rec]['vega'])
 	}
 
 	// Update 'moreLikeThis' array
 	function updateMore(i) {
-		moreLikeThis.push(recommendations[i])
+		moreLikeThis = moreLikeThis.concat(similarRecommendations[i])
+		console.log(moreLikeThis)
 	}
 
 	// Update 'lessLikeThis' array
 	function updateLess(i) {
-		lessLikeThis.push(recommendations[i])
+		lessLikeThis = lessLikeThis.concat(similarRecommendations[i])
 	}
 </script>
 

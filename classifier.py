@@ -13,13 +13,21 @@ class Modeler():
         self.df = None
         pass
 
-    def read_data(self, data):
-        self.df = None
+    def read_data(self, trainingData, testingData):
+        self.trainingData = None
+        self.testingData = None
         try:
-            self.df = pd.DataFrame(data)
+            self.trainingData = pd.DataFrame(trainingData)
+            self.testingData = pd.DataFrame(testingData)
         except Exception as e:
             print('error reading dataframe ', e)
-        return self.df
+        return [self.trainingData, self.testingData]
+
+    def data_label_split(self, data, targetCol=''):
+        y = data[targetCol]
+        X = data.drop([targetCol], axis=1)
+
+        return X, y
 
     def train_test_split(self, data, targetCol=''):
         y = data[targetCol]
@@ -72,7 +80,7 @@ class Modeler():
         metric = 'Acc'
         accTrain = accuracy_score(targetTrain, predTrain, normalize=True)
         accTest = accuracy_score(targetTest, predTest, normalize=True)
-        return accTrain, accTest, feat_arr_wt, metric
+        return accTrain, accTest, feat_arr_wt, metric, predTest
 
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

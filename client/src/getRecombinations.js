@@ -1,0 +1,85 @@
+import Draco from 'draco-vis'
+import vegaToRanking from './vegaToRanking.js'
+import dracoDataConstraints from './dracoDataConstraints.js'
+import dracoMarkConstraints from './dracoMarkConstraints.js'
+import dracoVisConstraints from './dracoVisConstraints.js'
+import * as d3 from 'd3'
+
+function solveDraco(newConstraints, dataset) {
+	// console.log(newConstraints)
+	let recs = []
+
+	const url = 'https://unpkg.com/wasm-clingo@0.2.2'
+	let markConstraints = dracoMarkConstraints(newConstraints)
+	let visConstraints = dracoVisConstraints(newConstraints)
+	// let visConstraints = ''
+
+	const draco = new Draco(url)
+	return draco.init().then(() => {
+		// Get metadata about dataset
+		draco.prepareData(dataset)
+		const schema = draco.getSchema()
+		const dataConstraints = dracoDataConstraints(schema)
+
+		// Create constraints based on schema
+		const inputConstraints = `
+			data("cereal.csv").
+			num_rows(77).
+
+			${dataConstraints}
+
+			${markConstraints}
+
+			% ====== Query constraints ======
+			${visConstraints}
+		`;
+
+		const solution = draco.solve(inputConstraints, { models: 9 });
+		if (!solution) {
+			console.log('no solution')
+			return []
+		}
+
+		for (let s of solution['specs']) {
+			recs.push({'vega':s})
+		}
+
+		return recs
+	})
+}
+
+function getTests(index, vegaSpecs, dataset) {
+	let encoding = vegaToRanking(vegaSpecs[index].vega)
+
+	let constraints = []
+	for (let s of Object.keys(encoding)) {
+		if (encoding[s] !== 0) {
+			constraints.push({'attr': s, 'value': encoding[s]})
+		}
+	}
+	
+	return solveDraco(constraints, dataset)
+}
+
+
+function getRandom(min, max) {	
+	let value = Math.floor(Math.random() * (max - min) + min)
+	return value
+}
+
+export default function getRecombinations(vegaSpecs, dataset) {
+	let selectedIndices = new Set()
+	let allDracoRecommendations = []
+	let count = 9
+
+	while (allDracoRecommendations.length < count) {
+		let newIndex = getRandom(0, vegaSpecs.length)
+
+		if (!selectedIndices.has(newIndex)) {
+			let newRecommendations = getTests(newIndex, vegaSpecs, dataset)
+			allDracoRecommendations.push(newRecommendations)
+		}
+	}
+
+	return allDracoRecommendations
+}

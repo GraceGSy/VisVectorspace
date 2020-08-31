@@ -1,16 +1,20 @@
 // This is a heuristic function and may not always work
 // May need to be improved at a later date
 function getType(uniqueValues) {
+	let result = 'number'
+
 	for (let v of uniqueValues) {
 
 		// Does Draco support ordinal/temporal?
 		// Needs verification
-		if (parseFloat(v)) {
-			return 'number'
+		if (isNaN(parseFloat(v))) {
+			result = 'string'
 		} else {
-			return 'string'
+			continue
 		}
 	}
+
+	return result
 }
 
 function schemaToConstraint(a, attributeSchema) {

@@ -35,20 +35,20 @@ export default function(constraints) {
 				}
 
 				// If there are field preferences
-				if (attr.includes('.field')) {
+				// if (attr.includes('.field')) {
 
-					// Get field
-					let field = attr.slice(attr.indexOf('field')+6)
+				// 	// Get field
+				// 	let field = attr.slice(attr.indexOf('field')+6)
 
-					if (r['value'] > 0) {
-						// 'moreLikeThis' field
-						newConstraint = newConstraint + `:- not field(e${encodingCount}, ${field}).`
-					} else {
-						// 'lessLikeThis' field
-						newConstraint = newConstraint + `:- field(e${encodingCount}, ${field}).`
-					}
+				// 	if (r['value'] > 0) {
+				// 		// 'moreLikeThis' field
+				// 		newConstraint = newConstraint + `:- not field(e${encodingCount}, ${field}).`
+				// 	} else {
+				// 		// 'lessLikeThis' field
+				// 		newConstraint = newConstraint + `:- field(e${encodingCount}, ${field}).`
+				// 	}
 					
-				}
+				// }
 
 				// If there are aggregate preferences
 				if (attr.includes('.aggregate')) {
