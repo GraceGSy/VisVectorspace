@@ -66,7 +66,7 @@ accepted_columns = ['filename','x.field','x.type','x.aggregate','x.channel',
 					'size.maxbins','size.scale','shape.field','shape.type',
 					'shape.aggregate','shape.channel','shape.bin','shape.maxbins',
 					'shape.scale','text.field','text.type','text.aggregate',
-					'text.channel','text.bin','text.maxbins','text.scale']
+					'text.channel','text.bin','text.maxbins','text.scale', 'mark']
 
 # drop columns that are not in the range of our study
 for col in columns:
@@ -97,6 +97,8 @@ for new_col in new_columns:
 	df[new_col] = df[new_col].map(all_labels[new_col])
 
 df = df.set_index('filename')
+
+df['label'] = 0
 
 # do not un-comment the following unless you wish to rewrite the label mappings
 # current labels are saved under label_encoding_mapping.json

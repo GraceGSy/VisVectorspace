@@ -30,15 +30,15 @@
 	}
 </script>
 
-<div id="main">
+<div id="main" style="padding: '20px'">
 	<!-- <h1>Your number is {rand}!</h1> -->
 	<!-- <button on:click={getRand}>Get a random number</button> -->
 	{#await promise}
 		<p>...loading</p>
 	{:then dataset}
-			<AttributesBar
+			<!--<AttributesBar
 				on:attributeClicked={updateAttributes}
-				{dataset}/>
+				{dataset}/>-->
 			<RecommendationsMain
 				{selectedAttributes}
 				{dataset}/>

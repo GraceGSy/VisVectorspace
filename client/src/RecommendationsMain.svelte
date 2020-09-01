@@ -22,20 +22,19 @@
 	}
 
 	async function loadSpecs() {
-		const specs = await d3.csv(`/data/specs_binary.csv`, dataPreprocessor)
+		const specs = await d3.csv(`/specs_one_hot_encoding.csv`, dataPreprocessor)
 
 		const vegaSpecs = []
 
 		for (let i in specs) {
 			let s = specs[i]
 			let vegaFilename = s.filename
-
+			
 			if (!vegaFilename) { continue }
 				
-			vegaFilename = vegaFilename.replace("./", "")
+			vegaFilename = 'vega_examples/' + vegaFilename
 			const vegaSpec = await d3.json(vegaFilename)
 			vegaSpecs.push({ 'spec':s, 'vega':vegaSpec, 'index': i })
-			// vegaSpecs.push(s)
 		}
 
 		return vegaSpecs

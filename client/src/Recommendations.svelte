@@ -108,6 +108,48 @@
 	// 	})
 	// }
 
+	function selectRecommendations(similarRecommendations) {
+		let allNew = []
+
+		for (let i = 0; i < 9; i++) {
+			let currentSet = JSON.parse(JSON.stringify(similarRecommendations[i]))
+			if (currentSet && currentSet.length > 0) {
+				currentSet = currentSet.filter(r => r)
+				currentSet = currentSet.map(r => {
+					r.index = i
+					return r
+				})
+				allNew.push(currentSet)
+			}
+		}
+
+		let result = []
+		let setNumber = 0
+
+		while (result.length < 9) {
+			let set = allNew[setNumber % allNew.length]
+			let randomIndex = Math.floor(Math.random() * (set.length))
+			let selected = set[randomIndex]
+
+			if (result.length === 0) {
+				result.push(selected)
+			} else {
+				let isNew = true
+				for (let r of result) {
+					if (JSON.stringify(r.vega) === JSON.stringify(selected.vega)) {
+						isNew = false
+					}
+				}
+				if (isNew) {
+					result.push(selected)
+					setNumber++
+				}
+			}
+		}
+
+		return result
+	}
+
 	$: {console.log(classifierResult)
 		if (typeof classifierResult !== "undefined") {
 			let updatedPreferrences = []
@@ -120,6 +162,7 @@
 
 			Promise.all(getRecombinations(vegaSpecs, updatedPreferrences)).then((result) => {
 				similarRecommendations = result
+				recommendations = selectRecommendations(result)
 			})
 		}
 	}
@@ -131,13 +174,13 @@
 		for (let m of moreLikeThis) {
 			let newM = m.vega.encoding
 			newM.label = 1
-			newM['mark_' + m.vega.mark] = 1
+			newM['mark'] = m.vega.mark
 			trainingData.push(newM)
 		}
 		for (let l of lessLikeThis) {
 			let newL = l.vega.encoding
 			newL.label = -1
-			newL['mark_' + l.vega.mark] = 1
+			newL['mark'] = l.vega.mark
 			trainingData.push(newL)
 		}
 
@@ -153,23 +196,18 @@
       		.then(d => (classifierResult = d))
 	}
 
-	$: {recommendations = similarRecommendations.map(r => {
-			if (r.length === 0) {
-				return
-			}
-			return r[0]
-		})
-	}
-
-	$: {if (updateCount === 1) {
+	$: {console.log('update count', updateCount)
+		if (updateCount === 1) {
 			console.log(dataset)
 			Promise.all(getRecombinations(vegaSpecs, dataset)).then((result) => {
 				similarRecommendations = result
+				recommendations = selectRecommendations(result)
 			})
 			// let newRecommendations = getRecombinations(vegaSpecs, dataset)
 			// getAllSimilar(newRecommendations)
 			// recommendations = newRecommendations
 		}
+		else if (updateCount === 0) {}
 		else {
 			console.log('running classifier: ', updateCount)
 			runClassifier()
@@ -197,10 +235,10 @@
 		<div class="vis">
 			<div id="vis{i}"></div>
 			<div class="buttons">
-				<button on:click={() => updateMore(i)}>
+				<button on:click={() => updateMore(c.index)}>
 					More Like This
 				</button>
-				<button on:click={() => updateLess(i)}>
+				<button on:click={() => updateLess(c.index)}>
 					Less Like This
 				</button>
 			</div>

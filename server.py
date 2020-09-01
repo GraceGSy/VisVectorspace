@@ -29,32 +29,76 @@ def readFile():
 	print('data', request.data)
 	return
 
-def flatten(training, testing):
-	allFlattened = []
-	for t in training:
-		allFlattened.append(nested_to_record(t, '.'))
-	df = pd.DataFrame(allFlattened).fillna(0)
+def flatten_one_hot_encoding(training, testing):
+	result = []
 
-	allCols = list(df)
+	for specs in training:
+		current_spec = specs
+		result.append(nested_to_record(current_spec, sep='.'))
 
-	for c in allCols:
-		if ('label' in c): continue
-		elif ('zero' in c): df = df.drop(columns=[c])
-		else: df[c] = df[c].apply(lambda x: 1 if x != 0 else 0)
-	
-	testingCols = testing[0].keys()
+	df = pd.DataFrame(result)
 
-	for tc in testingCols:
-		if tc not in allCols:
-			df[tc] = 0
+	df = df.fillna('none')
 
-	newAllCols = list(df)
+	new_columns = list(df)
 
-	for nac in newAllCols:
-		if nac not in testingCols:
-			df = df.drop(columns=[nac])
+	for new_col in new_columns:
+		col_values = list(df[new_col].unique())
+
+		if 'field' in new_col:
+			col_labels = {}
+			for v in col_values:
+				col_labels[v] = 0 if v == 'none' else 1
+			df[new_col] = df[new_col].map(col_labels)
+		elif 'label' in new_col:
+			continue
+		elif 'mark' in new_col:
+			continue
+		else:
+			df = pd.get_dummies(df, columns=[new_col], prefix=new_col)
+
+	columns = list(df)
+
+	accepted_columns = list(pd.read_csv('./client/public/specs_one_hot_encoding.csv'))
+
+	for col in columns:
+		if 'label' in col:
+			continue
+		elif col not in accepted_columns:
+			df = df.drop(columns=[col])
+
+	for ac in accepted_columns:
+		if ac not in columns:
+			df[ac] = 0
 
 	return df.to_dict('records')
+
+# def flatten(training, testing):
+# 	allFlattened = []
+# 	for t in training:
+# 		allFlattened.append(nested_to_record(t, '.'))
+# 	df = pd.DataFrame(allFlattened).fillna(0)
+
+# 	allCols = list(df)
+
+# 	for c in allCols:
+# 		if ('label' in c): continue
+# 		elif ('zero' in c): df = df.drop(columns=[c])
+# 		else: df[c] = df[c].apply(lambda x: 1 if x != 0 else 0)
+	
+# 	testingCols = testing[0].keys()
+
+# 	for tc in testingCols:
+# 		if tc not in allCols:
+# 			df[tc] = 0
+
+# 	newAllCols = list(df)
+
+# 	for nac in newAllCols:
+# 		if nac not in testingCols:
+# 			df = df.drop(columns=[nac])
+
+# 	return df.to_dict('records')
 
 def getPreferred(predictions, testing):
 	result = []
@@ -70,7 +114,7 @@ def classify():
 	dataset = json.loads(request.data)
 
 	testingData = dataset['testing']
-	trainingData = flatten(dataset['training'], testingData)
+	trainingData = flatten_one_hot_encoding(dataset['training'], testingData)
 
 	mainCol = 'filename'
 	targetCol = 'label'
@@ -94,7 +138,7 @@ def classify():
 	outobj['feature_wts'] = feat_arr_wt
 
 	# print(getPreferred(predTest, testingData))
-	return json.dumps(predTest)
+	return json.dumps(getPreferred(predTest, testingData))
 	# return (json.dumps(outobj, sort_keys=True))
 
 if __name__ == "__main__":
