@@ -73,33 +73,6 @@ def flatten_one_hot_encoding(training, testing):
 
 	return df.to_dict('records')
 
-# def flatten(training, testing):
-# 	allFlattened = []
-# 	for t in training:
-# 		allFlattened.append(nested_to_record(t, '.'))
-# 	df = pd.DataFrame(allFlattened).fillna(0)
-
-# 	allCols = list(df)
-
-# 	for c in allCols:
-# 		if ('label' in c): continue
-# 		elif ('zero' in c): df = df.drop(columns=[c])
-# 		else: df[c] = df[c].apply(lambda x: 1 if x != 0 else 0)
-	
-# 	testingCols = testing[0].keys()
-
-# 	for tc in testingCols:
-# 		if tc not in allCols:
-# 			df[tc] = 0
-
-# 	newAllCols = list(df)
-
-# 	for nac in newAllCols:
-# 		if nac not in testingCols:
-# 			df = df.drop(columns=[nac])
-
-# 	return df.to_dict('records')
-
 def getPreferred(predictions, testing):
 	result = []
 	for i in range(len(predictions)):

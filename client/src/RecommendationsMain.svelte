@@ -28,13 +28,13 @@
 
 		for (let i in specs) {
 			let s = specs[i]
-			let vegaFilename = s.filename
+			// let vegaFilename = s.filename
 			
-			if (!vegaFilename) { continue }
+			// if (!vegaFilename) { continue }
 				
-			vegaFilename = 'vega_examples/' + vegaFilename
-			const vegaSpec = await d3.json(vegaFilename)
-			vegaSpecs.push({ 'spec':s, 'vega':vegaSpec, 'index': i })
+			// vegaFilename = 'vega_examples/' + vegaFilename
+			// const vegaSpec = await d3.json(vegaFilename)
+			vegaSpecs.push({ 'spec':s, 'index': i })
 		}
 
 		return vegaSpecs
