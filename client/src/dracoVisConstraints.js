@@ -24,14 +24,12 @@ export default function(constraints) {
 					// Get type
 					let type = attr.slice(attr.indexOf('type')+5)
 
+					console.log(type)
+
 					if (r['value'] > 0) {
 						// 'moreLikeThis' type
 						newConstraint = newConstraint + `:- not type(e${encodingCount}, ${type}).`
-					} else {
-						// 'lessLikeThis' type
-						newConstraint = newConstraint + `:- type(e${encodingCount}, ${type}).`
 					}
-					
 				}
 
 				// If there are field preferences
@@ -56,14 +54,12 @@ export default function(constraints) {
 					// Get aggregate
 					let agg = attr.slice(attr.indexOf('aggregate')+10)
 
+					console.log(agg)
+
 					if (r['value'] > 0) {
 						// 'moreLikeThis' field
 						newConstraint = newConstraint + `:- not aggregate(e${encodingCount}, ${agg}).`
-					} else {
-						// 'lessLikeThis' field
-						newConstraint = newConstraint + `:- aggregate(e${encodingCount}, ${agg}).`
 					}
-					
 				}
 
 				// If there are binning preferences
@@ -72,11 +68,7 @@ export default function(constraints) {
 					if (r['value'] > 0) {
 						// 'moreLikeThis' bin
 						newConstraint = newConstraint + `:- not bin(e${encodingCount}, 10).`
-					} else {
-						// 'lessLikeThis' bin
-						newConstraint = newConstraint + `:- bin(e${encodingCount}, 10}).`
 					}
-					
 				}
 
 			}

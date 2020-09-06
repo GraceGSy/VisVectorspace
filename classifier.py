@@ -18,7 +18,9 @@ class Modeler():
         self.testingData = None
         try:
             self.trainingData = pd.DataFrame(trainingData)
+            print('training data ok...')
             self.testingData = pd.DataFrame(testingData)
+            print('testing data ok...')
         except Exception as e:
             print('error reading dataframe ', e)
         return [self.trainingData, self.testingData]

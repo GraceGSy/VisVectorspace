@@ -18,8 +18,6 @@ export default function(constraints) {
 
 			if (value > 0) {
 				allConstraints.push(`mark(${markType}).`)
-			} else if (value < 0) {
-				allConstraints.push(`not mark(${markType}).`)
 			}
 		}
 	}

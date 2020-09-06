@@ -59,7 +59,7 @@ def flatten_one_hot_encoding(training, testing):
 
 	columns = list(df)
 
-	accepted_columns = list(pd.read_csv('./client/public/specs_one_hot_encoding.csv'))
+	accepted_columns = list(pd.read_csv('./client/public/manual_specs_one_hot_encoding.csv'))
 
 	for col in columns:
 		if 'label' in col:
@@ -84,12 +84,15 @@ def getPreferred(predictions, testing):
 # Call the classifier
 @app.route("/classifier", methods=['POST'])
 def classify():
+	print("call ok...")
 	dataset = json.loads(request.data)
+
+	print("running...")
 
 	testingData = dataset['testing']
 	trainingData = flatten_one_hot_encoding(dataset['training'], testingData)
 
-	mainCol = 'filename'
+	mainCol = 'index'
 	targetCol = 'label'
 
 	outobj = {}
@@ -109,6 +112,7 @@ def classify():
 	outobj['acc_test'] = str(accTest)
 	# outobj['col_names'] = str(','.join(colData))
 	outobj['feature_wts'] = feat_arr_wt
+	# print(json.dumps(getPreferred(predTest, testingData)))
 
 	# print(getPreferred(predTest, testingData))
 	return json.dumps(getPreferred(predTest, testingData))

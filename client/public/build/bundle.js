@@ -29247,8 +29247,6 @@ ${constraint.asp}`;
 
     			if (value > 0) {
     				allConstraints.push(`mark(${markType}).`);
-    			} else if (value < 0) {
-    				allConstraints.push(`not mark(${markType}).`);
     			}
     		}
     	}
@@ -29286,14 +29284,12 @@ ${constraint.asp}`;
     					// Get type
     					let type = attr.slice(attr.indexOf('type')+5);
 
+    					console.log(type);
+
     					if (r['value'] > 0) {
     						// 'moreLikeThis' type
     						newConstraint = newConstraint + `:- not type(e${encodingCount}, ${type}).`;
-    					} else {
-    						// 'lessLikeThis' type
-    						newConstraint = newConstraint + `:- type(e${encodingCount}, ${type}).`;
     					}
-    					
     				}
 
     				// If there are field preferences
@@ -29318,14 +29314,12 @@ ${constraint.asp}`;
     					// Get aggregate
     					let agg = attr.slice(attr.indexOf('aggregate')+10);
 
+    					console.log(agg);
+
     					if (r['value'] > 0) {
     						// 'moreLikeThis' field
     						newConstraint = newConstraint + `:- not aggregate(e${encodingCount}, ${agg}).`;
-    					} else {
-    						// 'lessLikeThis' field
-    						newConstraint = newConstraint + `:- aggregate(e${encodingCount}, ${agg}).`;
     					}
-    					
     				}
 
     				// If there are binning preferences
@@ -29334,11 +29328,7 @@ ${constraint.asp}`;
     					if (r['value'] > 0) {
     						// 'moreLikeThis' bin
     						newConstraint = newConstraint + `:- not bin(e${encodingCount}, 10).`;
-    					} else {
-    						// 'lessLikeThis' bin
-    						newConstraint = newConstraint + `:- bin(e${encodingCount}, 10}).`;
     					}
-    					
     				}
 
     			}
@@ -29379,11 +29369,11 @@ ${constraint.asp}`;
 
 			${dataConstraints}
 
-			${markConstraints}
-
 			% ====== Query constraints ======
 			${visConstraints}
 		`;
+
+    		console.log(inputConstraints);
 
     		const solution = draco.solve(inputConstraints, { models: 9 });
     		if (!solution) {
@@ -29400,7 +29390,7 @@ ${constraint.asp}`;
     }
 
     function getTests(index, vegaSpecs, dataset) {
-    	console.log('spec', vegaSpecs[index]);
+    	// console.log('spec', vegaSpecs[index])
     	let encoding = vegaSpecs[index].spec;
 
     	let constraints = [];
@@ -29450,7 +29440,7 @@ ${constraint.asp}`;
     	return child_ctx;
     }
 
-    // (244:1) {#each recommendations as c, i}
+    // (247:1) {#each recommendations as c, i}
     function create_each_block$1(ctx) {
     	let div2;
     	let div0;
@@ -29489,23 +29479,23 @@ ${constraint.asp}`;
     			t4 = space();
     			attr_dev(div0, "id", div0_id_value = "vis" + /*i*/ ctx[21]);
     			attr_dev(div0, "class", "svelte-jisuua");
-    			add_location(div0, file$1, 245, 3, 5968);
+    			add_location(div0, file$1, 248, 3, 6089);
 
     			attr_dev(button0, "class", button0_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[1][/*i*/ ctx[21]] === "more"
     			? "more"
     			: "default") + " svelte-jisuua"));
 
-    			add_location(button0, file$1, 247, 4, 6021);
+    			add_location(button0, file$1, 250, 4, 6142);
 
     			attr_dev(button1, "class", button1_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[1][/*i*/ ctx[21]] === "less"
     			? "less"
     			: "default") + " svelte-jisuua"));
 
-    			add_location(button1, file$1, 251, 4, 6171);
+    			add_location(button1, file$1, 254, 4, 6292);
     			attr_dev(div1, "class", "buttons");
-    			add_location(div1, file$1, 246, 3, 5995);
+    			add_location(div1, file$1, 249, 3, 6116);
     			attr_dev(div2, "class", "vis svelte-jisuua");
-    			add_location(div2, file$1, 244, 2, 5947);
+    			add_location(div2, file$1, 247, 2, 6068);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div2, anchor);
@@ -29550,7 +29540,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$1.name,
     		type: "each",
-    		source: "(244:1) {#each recommendations as c, i}",
+    		source: "(247:1) {#each recommendations as c, i}",
     		ctx
     	});
 
@@ -29577,7 +29567,7 @@ ${constraint.asp}`;
 
     			attr_dev(div, "id", "recommendationDisplay");
     			attr_dev(div, "class", "svelte-jisuua");
-    			add_location(div, file$1, 242, 0, 5879);
+    			add_location(div, file$1, 245, 0, 6000);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -29818,7 +29808,7 @@ ${constraint.asp}`;
     		fetch(`./classifier`, {
     			method: "POST",
     			body: JSON.stringify(classifierData)
-    		}).then(d => d.text()).then(d => $$invalidate(12, classifierResult = d));
+    		}).then(d => d.text()).then(d => console.log(d)).then(d => $$invalidate(12, classifierResult = d));
     	}
 
     	// Update 'moreLikeThis' array
@@ -29919,7 +29909,10 @@ ${constraint.asp}`;
     	$$self.$$.update = () => {
     		if ($$self.$$.dirty & /*classifierResult, dataset, vegaSpecs*/ 4144) {
     			 {
+    				console.log(typeof classifierResult);
+
     				if (typeof classifierResult !== "undefined") {
+    					console.log("classifier result updated...");
     					let updatedPreferrences = [];
 
     					for (let i = 0; i < classifierResult.length; i++) {
@@ -30050,7 +30043,7 @@ ${constraint.asp}`;
     /* src/RecommendationsMain.svelte generated by Svelte v3.20.1 */
     const file$2 = "src/RecommendationsMain.svelte";
 
-    // (61:1) {:catch error}
+    // (65:1) {:catch error}
     function create_catch_block(ctx) {
     	let p;
     	let t_value = /*error*/ ctx[6].message + "";
@@ -30061,7 +30054,7 @@ ${constraint.asp}`;
     			p = element("p");
     			t = text(t_value);
     			set_style(p, "color", "red");
-    			add_location(p, file$2, 61, 2, 1302);
+    			add_location(p, file$2, 65, 2, 1367);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -30079,14 +30072,14 @@ ${constraint.asp}`;
     		block,
     		id: create_catch_block.name,
     		type: "catch",
-    		source: "(61:1) {:catch error}",
+    		source: "(65:1) {:catch error}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (51:1) {:then vegaSpecs}
+    // (55:1) {:then vegaSpecs}
     function create_then_block(ctx) {
     	let div;
     	let p;
@@ -30118,10 +30111,10 @@ ${constraint.asp}`;
     			button.textContent = "Update Recommendations";
     			t3 = space();
     			create_component(recommendations.$$.fragment);
-    			add_location(b, file$2, 52, 6, 1097);
-    			add_location(p, file$2, 52, 3, 1094);
-    			add_location(button, file$2, 53, 3, 1127);
-    			add_location(div, file$2, 51, 2, 1085);
+    			add_location(b, file$2, 56, 6, 1162);
+    			add_location(p, file$2, 56, 3, 1159);
+    			add_location(button, file$2, 57, 3, 1192);
+    			add_location(div, file$2, 55, 2, 1150);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div, anchor);
@@ -30163,14 +30156,14 @@ ${constraint.asp}`;
     		block,
     		id: create_then_block.name,
     		type: "then",
-    		source: "(51:1) {:then vegaSpecs}",
+    		source: "(55:1) {:then vegaSpecs}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (49:17)    <p>...loading</p>  {:then vegaSpecs}
+    // (53:17)    <p>...loading</p>  {:then vegaSpecs}
     function create_pending_block(ctx) {
     	let p;
 
@@ -30178,7 +30171,7 @@ ${constraint.asp}`;
     		c: function create() {
     			p = element("p");
     			p.textContent = "...loading";
-    			add_location(p, file$2, 49, 2, 1046);
+    			add_location(p, file$2, 53, 2, 1111);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -30195,7 +30188,7 @@ ${constraint.asp}`;
     		block,
     		id: create_pending_block.name,
     		type: "pending",
-    		source: "(49:17)    <p>...loading</p>  {:then vegaSpecs}",
+    		source: "(53:17)    <p>...loading</p>  {:then vegaSpecs}",
     		ctx
     	});
 
@@ -30227,7 +30220,7 @@ ${constraint.asp}`;
     			info.block.c();
     			attr_dev(div, "id", "recommendationsMain");
     			attr_dev(div, "class", "svelte-1yvgkpb");
-    			add_location(div, file$2, 47, 0, 995);
+    			add_location(div, file$2, 51, 0, 1060);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -30297,11 +30290,16 @@ ${constraint.asp}`;
     }
 
     async function loadSpecs() {
-    	const specs = await csv$1(`/specs_one_hot_encoding.csv`, dataPreprocessor);
+    	const specs = await csv$1(`/manual_specs_one_hot_encoding.csv`, dataPreprocessor);
     	const vegaSpecs = [];
 
     	for (let i in specs) {
+    		if (i === "columns") {
+    			continue;
+    		}
+
     		let s = specs[i];
+    		delete s.index;
 
     		// let vegaFilename = s.filename
     		// if (!vegaFilename) { continue }

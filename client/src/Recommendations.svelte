@@ -141,7 +141,9 @@
 		return result
 	}
 
-	$: {if (typeof classifierResult !== "undefined") {
+	$: {console.log(typeof classifierResult)
+		if (typeof classifierResult !== "undefined") {
+			console.log('classifier result updated...')
 			let updatedPreferrences = []
 
 			for (let i = 0; i < classifierResult.length; i++) {
@@ -196,6 +198,7 @@
 
 		fetch(`./classifier`, {method:"POST", body:JSON.stringify(classifierData)})
 			.then(d => d.text())
+      		.then(d => console.log(d))
       		.then(d => (classifierResult = d))
 	}
 

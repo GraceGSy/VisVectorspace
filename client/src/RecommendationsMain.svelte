@@ -22,12 +22,16 @@
 	}
 
 	async function loadSpecs() {
-		const specs = await d3.csv(`/specs_one_hot_encoding.csv`, dataPreprocessor)
+		const specs = await d3.csv(`/manual_specs_one_hot_encoding.csv`, dataPreprocessor)
 
 		const vegaSpecs = []
 
 		for (let i in specs) {
+			if (i === 'columns') { continue; }
 			let s = specs[i]
+
+			delete s.index
+
 			// let vegaFilename = s.filename
 			
 			// if (!vegaFilename) { continue }
