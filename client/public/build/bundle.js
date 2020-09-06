@@ -27,6 +27,9 @@ var app = (function () {
     function safe_not_equal(a, b) {
         return a != a ? b == b : a !== b || ((a && typeof a === 'object') || typeof a === 'function');
     }
+    function null_to_empty(value) {
+        return value == null ? '' : value;
+    }
 
     function append(target, node) {
         target.appendChild(node);
@@ -25283,7 +25286,7 @@ ${constraint.asp}`;
         Object.defineProperty(exports, '__esModule', { value: true });
 
     })));
-    //# sourceMappingURL=draco.js.map
+
     });
 
     var Draco = unwrapExports(draco);
@@ -28972,8 +28975,6 @@ ${constraint.asp}`;
     };
     });
 
-    //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi9zcmMvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsY0FBYyxTQUFTLENBQUM7QUFDeEIsY0FBYyxRQUFRLENBQUM7QUFDdkIsY0FBYyxZQUFZLENBQUM7QUFDM0IsT0FBTyxLQUFLLE1BQU0sU0FBUyxDQUFDO0FBQzVCLGVBQWUsS0FBSyxDQUFDIn0=
-
     /*!
      * Determine if an object is a Buffer
      *
@@ -29354,7 +29355,7 @@ ${constraint.asp}`;
     }
 
     function solveDraco(newConstraints, dataset) {
-    	// console.log(newConstraints)
+    	console.log(newConstraints);
     	let recs = [];
 
     	const url = 'https://unpkg.com/wasm-clingo@0.2.2';
@@ -29397,11 +29398,14 @@ ${constraint.asp}`;
     }
 
     function getTests(index, vegaSpecs, dataset) {
-    	let encoding = vegaToRanking(vegaSpecs[index].vega);
+    	console.log('spec', vegaSpecs[index]);
+    	let encoding = vegaSpecs[index].spec;
 
     	let constraints = [];
     	for (let s of Object.keys(encoding)) {
-    		if (encoding[s] !== 0) {
+    		if (s.includes("filename")) { continue; }
+    		else if (s.includes("none")) { continue; }
+    		else if (encoding[s] !== 0) {
     			constraints.push({'attr': s, 'value': encoding[s]});
     		}
     	}
@@ -29439,12 +29443,12 @@ ${constraint.asp}`;
 
     function get_each_context$1(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[17] = list[i];
-    	child_ctx[19] = i;
+    	child_ctx[19] = list[i];
+    	child_ctx[21] = i;
     	return child_ctx;
     }
 
-    // (234:1) {#each recommendations as c, i}
+    // (247:1) {#each recommendations as c, i}
     function create_each_block$1(ctx) {
     	let div2;
     	let div0;
@@ -29452,17 +29456,21 @@ ${constraint.asp}`;
     	let t0;
     	let div1;
     	let button0;
+    	let t1;
+    	let button0_class_value;
     	let t2;
     	let button1;
+    	let t3;
+    	let button1_class_value;
     	let t4;
     	let dispose;
 
     	function click_handler(...args) {
-    		return /*click_handler*/ ctx[15](/*c*/ ctx[17], ...args);
+    		return /*click_handler*/ ctx[17](/*i*/ ctx[21], ...args);
     	}
 
     	function click_handler_1(...args) {
-    		return /*click_handler_1*/ ctx[16](/*c*/ ctx[17], ...args);
+    		return /*click_handler_1*/ ctx[18](/*i*/ ctx[21], ...args);
     	}
 
     	const block = {
@@ -29472,20 +29480,30 @@ ${constraint.asp}`;
     			t0 = space();
     			div1 = element("div");
     			button0 = element("button");
-    			button0.textContent = "More Like This";
+    			t1 = text("More Like This");
     			t2 = space();
     			button1 = element("button");
-    			button1.textContent = "Less Like This";
+    			t3 = text("Less Like This");
     			t4 = space();
-    			attr_dev(div0, "id", div0_id_value = "vis" + /*i*/ ctx[19]);
-    			attr_dev(div0, "class", "svelte-94wtia");
-    			add_location(div0, file$1, 235, 3, 5727);
-    			add_location(button0, file$1, 237, 4, 5780);
-    			add_location(button1, file$1, 240, 4, 5864);
+    			attr_dev(div0, "id", div0_id_value = "vis" + /*i*/ ctx[21]);
+    			attr_dev(div0, "class", "svelte-jisuua");
+    			add_location(div0, file$1, 248, 3, 6048);
+
+    			attr_dev(button0, "class", button0_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[1][/*i*/ ctx[21]] === "more"
+    			? "more"
+    			: "default") + " svelte-jisuua"));
+
+    			add_location(button0, file$1, 250, 4, 6101);
+
+    			attr_dev(button1, "class", button1_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[1][/*i*/ ctx[21]] === "less"
+    			? "less"
+    			: "default") + " svelte-jisuua"));
+
+    			add_location(button1, file$1, 254, 4, 6251);
     			attr_dev(div1, "class", "buttons");
-    			add_location(div1, file$1, 236, 3, 5754);
-    			attr_dev(div2, "class", "vis svelte-94wtia");
-    			add_location(div2, file$1, 234, 2, 5706);
+    			add_location(div1, file$1, 249, 3, 6075);
+    			attr_dev(div2, "class", "vis svelte-jisuua");
+    			add_location(div2, file$1, 247, 2, 6027);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div2, anchor);
@@ -29493,8 +29511,10 @@ ${constraint.asp}`;
     			append_dev(div2, t0);
     			append_dev(div2, div1);
     			append_dev(div1, button0);
+    			append_dev(button0, t1);
     			append_dev(div1, t2);
     			append_dev(div1, button1);
+    			append_dev(button1, t3);
     			append_dev(div2, t4);
     			if (remount) run_all(dispose);
 
@@ -29505,6 +29525,18 @@ ${constraint.asp}`;
     		},
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
+
+    			if (dirty & /*recommendationsClass*/ 2 && button0_class_value !== (button0_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[1][/*i*/ ctx[21]] === "more"
+    			? "more"
+    			: "default") + " svelte-jisuua"))) {
+    				attr_dev(button0, "class", button0_class_value);
+    			}
+
+    			if (dirty & /*recommendationsClass*/ 2 && button1_class_value !== (button1_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[1][/*i*/ ctx[21]] === "less"
+    			? "less"
+    			: "default") + " svelte-jisuua"))) {
+    				attr_dev(button1, "class", button1_class_value);
+    			}
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div2);
@@ -29516,7 +29548,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$1.name,
     		type: "each",
-    		source: "(234:1) {#each recommendations as c, i}",
+    		source: "(247:1) {#each recommendations as c, i}",
     		ctx
     	});
 
@@ -29542,8 +29574,8 @@ ${constraint.asp}`;
     			}
 
     			attr_dev(div, "id", "recommendationDisplay");
-    			attr_dev(div, "class", "svelte-94wtia");
-    			add_location(div, file$1, 232, 0, 5638);
+    			attr_dev(div, "class", "svelte-jisuua");
+    			add_location(div, file$1, 245, 0, 5959);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -29556,7 +29588,7 @@ ${constraint.asp}`;
     			}
     		},
     		p: function update(ctx, [dirty]) {
-    			if (dirty & /*updateLess, recommendations, updateMore*/ 7) {
+    			if (dirty & /*recommendationsClass, updateLess, updateMore, recommendations*/ 15) {
     				each_value = /*recommendations*/ ctx[0];
     				validate_each_argument(each_value);
     				let i;
@@ -29599,74 +29631,34 @@ ${constraint.asp}`;
     	return block;
     }
 
-    function selectRecommendations(similarRecommendations) {
-    	let allNew = [];
-
-    	for (let i = 0; i < 9; i++) {
-    		let currentSet = JSON.parse(JSON.stringify(similarRecommendations[i]));
-
-    		if (currentSet && currentSet.length > 0) {
-    			currentSet = currentSet.filter(r => r);
-
-    			currentSet = currentSet.map(r => {
-    				r.index = i;
-    				return r;
-    			});
-
-    			allNew.push(currentSet);
-    		}
-    	}
-
-    	let result = [];
-    	let setNumber = 0;
-
-    	while (result.length < 9) {
-    		let set = allNew[setNumber % allNew.length];
-    		let randomIndex = Math.floor(Math.random() * set.length);
-    		let selected = set[randomIndex];
-
-    		if (result.length === 0) {
-    			result.push(selected);
-    		} else {
-    			let isNew = true;
-
-    			for (let r of result) {
-    				if (JSON.stringify(r.vega) === JSON.stringify(selected.vega)) {
-    					isNew = false;
-    				}
-    			}
-
-    			if (isNew) {
-    				result.push(selected);
-    				setNumber++;
-    			}
-    		}
-    	}
-
-    	return result;
-    }
-
     function instance$1($$self, $$props, $$invalidate) {
     	let { vegaSpecs = [] } = $$props;
     	let { dataset = [] } = $$props;
     	let { selectedAttributes = [] } = $$props;
     	let { recomendationCount = 9 } = $$props;
     	let { updateCount = 0 } = $$props;
+    	console.log(vegaSpecs);
 
     	// Track of user preferences
     	let moreLikeThis = [];
 
     	let lessLikeThis = [];
 
-    	// Current recomendations
+    	// Current recommendations
     	let recommendations = [];
 
+    	// Recommendations generated from the same draco query
     	let similarRecommendations = [];
+
+    	// Recommendations class
+    	let recommendationsClass = Array(9).fill("default");
+
     	let classifierResult;
 
     	function solveDraco(newConstraints) {
-    		console.log(newConstraints);
+    		// console.log(newConstraints)
     		let recs = [];
+
     		const url = "https://unpkg.com/wasm-clingo@0.2.2";
 
     		// const newConstraints = getDracoConstraints()
@@ -29685,7 +29677,6 @@ ${constraint.asp}`;
     			const schema = draco.getSchema();
     			const dataConstraints = dracoDataConstraints(schema);
 
-    			// console.log(schema)
     			// Create constraints based on schema
     			const inputConstraints = `
 				data("cereal.csv").
@@ -29699,11 +29690,9 @@ ${constraint.asp}`;
 				${visConstraints}
 			`;
 
-    			// console.log(inputConstraints)
     			const solution = draco.solve(inputConstraints, { models: recomendationCount });
 
     			if (!solution) {
-    				console.log(solution, newConstraints);
     				return;
     			}
 
@@ -29713,7 +29702,6 @@ ${constraint.asp}`;
 
     			similarRecommendations = [];
     			similarRecommendations = recs;
-    			console.log(recs);
     			return recs;
     		});
     	}
@@ -29739,9 +29727,72 @@ ${constraint.asp}`;
     		return result;
     	}
 
+    	function selectRecommendations(similarRecommendations) {
+    		let allNew = [];
+
+    		for (let i = 0; i < 9; i++) {
+    			let currentSet = JSON.parse(JSON.stringify(similarRecommendations[i]));
+
+    			if (currentSet && currentSet.length > 0) {
+    				currentSet = currentSet.filter(r => r);
+
+    				currentSet = currentSet.map(r => {
+    					r.index = i;
+    					return r;
+    				});
+
+    				allNew.push(currentSet);
+    			}
+    		}
+
+    		let result = [];
+    		let setNumber = 0;
+
+    		while (result.length < 9) {
+    			let set = allNew[setNumber % allNew.length];
+    			let randomIndex = Math.floor(Math.random() * set.length);
+    			let selected = set[randomIndex];
+
+    			if (result.length === 0) {
+    				result.push(selected);
+    			} else {
+    				let isNew = true;
+
+    				for (let r of result) {
+    					if (JSON.stringify(r.vega) === JSON.stringify(selected.vega)) {
+    						isNew = false;
+    					}
+    				}
+
+    				if (isNew) {
+    					result.push(selected);
+    					setNumber++;
+    				}
+    			}
+    		}
+
+    		$$invalidate(1, recommendationsClass = recommendationsClass.map(r => "default"));
+    		return result;
+    	}
+
     	function runClassifier() {
     		let testingData = vegaSpecs.map(v => v.spec);
     		let trainingData = [];
+    		let newMore = [];
+    		let newLess = [];
+
+    		for (let i = 0; i < recommendationsClass.length; i++) {
+    			let r = recommendationsClass[i];
+
+    			if (r === "more") {
+    				newMore.push(recommendations[i]);
+    			} else if (r === "less") {
+    				newLess.push(recommendations[i]);
+    			}
+    		}
+
+    		moreLikeThis = moreLikeThis.concat(newMore);
+    		lessLikeThis = lessLikeThis.concat(newLess);
 
     		for (let m of moreLikeThis) {
     			let newM = m.vega.encoding;
@@ -29757,8 +29808,6 @@ ${constraint.asp}`;
     			trainingData.push(newL);
     		}
 
-    		console.log("updated", trainingData);
-
     		let classifierData = {
     			"training": trainingData,
     			"testing": testingData
@@ -29767,18 +29816,31 @@ ${constraint.asp}`;
     		fetch(`./classifier`, {
     			method: "POST",
     			body: JSON.stringify(classifierData)
-    		}).then(d => d.text()).then(d => $$invalidate(11, classifierResult = d));
+    		}).then(d => d.text()).then(d => $$invalidate(12, classifierResult = d));
     	}
 
     	// Update 'moreLikeThis' array
     	function updateMore(i) {
-    		moreLikeThis = moreLikeThis.concat(similarRecommendations[i]);
-    		console.log(moreLikeThis);
+    		// If items already in moreLikeThis, remove
+    		let current = recommendationsClass[i];
+
+    		if (current === "more") {
+    			$$invalidate(1, recommendationsClass[i] = "default", recommendationsClass);
+    		} else {
+    			$$invalidate(1, recommendationsClass[i] = "more", recommendationsClass);
+    		}
     	}
 
     	// Update 'lessLikeThis' array
     	function updateLess(i) {
-    		lessLikeThis = lessLikeThis.concat(similarRecommendations[i]);
+    		// If items already in lessLikeThis, remove
+    		let current = recommendationsClass[i];
+
+    		if (current === "less") {
+    			$$invalidate(1, recommendationsClass[i] = "default", recommendationsClass);
+    		} else {
+    			$$invalidate(1, recommendationsClass[i] = "less", recommendationsClass);
+    		}
     	}
 
     	const writable_props = [
@@ -29795,15 +29857,15 @@ ${constraint.asp}`;
 
     	let { $$slots = {}, $$scope } = $$props;
     	validate_slots("Recommendations", $$slots, []);
-    	const click_handler = c => updateMore(c.index);
-    	const click_handler_1 = c => updateLess(c.index);
+    	const click_handler = i => updateMore(i);
+    	const click_handler_1 = i => updateLess(i);
 
     	$$self.$set = $$props => {
-    		if ("vegaSpecs" in $$props) $$invalidate(3, vegaSpecs = $$props.vegaSpecs);
-    		if ("dataset" in $$props) $$invalidate(4, dataset = $$props.dataset);
-    		if ("selectedAttributes" in $$props) $$invalidate(5, selectedAttributes = $$props.selectedAttributes);
-    		if ("recomendationCount" in $$props) $$invalidate(6, recomendationCount = $$props.recomendationCount);
-    		if ("updateCount" in $$props) $$invalidate(7, updateCount = $$props.updateCount);
+    		if ("vegaSpecs" in $$props) $$invalidate(4, vegaSpecs = $$props.vegaSpecs);
+    		if ("dataset" in $$props) $$invalidate(5, dataset = $$props.dataset);
+    		if ("selectedAttributes" in $$props) $$invalidate(6, selectedAttributes = $$props.selectedAttributes);
+    		if ("recomendationCount" in $$props) $$invalidate(7, recomendationCount = $$props.recomendationCount);
+    		if ("updateCount" in $$props) $$invalidate(8, updateCount = $$props.updateCount);
     	};
 
     	$$self.$capture_state = () => ({
@@ -29824,6 +29886,7 @@ ${constraint.asp}`;
     		lessLikeThis,
     		recommendations,
     		similarRecommendations,
+    		recommendationsClass,
     		classifierResult,
     		solveDraco,
     		getSimilar,
@@ -29834,16 +29897,17 @@ ${constraint.asp}`;
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ("vegaSpecs" in $$props) $$invalidate(3, vegaSpecs = $$props.vegaSpecs);
-    		if ("dataset" in $$props) $$invalidate(4, dataset = $$props.dataset);
-    		if ("selectedAttributes" in $$props) $$invalidate(5, selectedAttributes = $$props.selectedAttributes);
-    		if ("recomendationCount" in $$props) $$invalidate(6, recomendationCount = $$props.recomendationCount);
-    		if ("updateCount" in $$props) $$invalidate(7, updateCount = $$props.updateCount);
+    		if ("vegaSpecs" in $$props) $$invalidate(4, vegaSpecs = $$props.vegaSpecs);
+    		if ("dataset" in $$props) $$invalidate(5, dataset = $$props.dataset);
+    		if ("selectedAttributes" in $$props) $$invalidate(6, selectedAttributes = $$props.selectedAttributes);
+    		if ("recomendationCount" in $$props) $$invalidate(7, recomendationCount = $$props.recomendationCount);
+    		if ("updateCount" in $$props) $$invalidate(8, updateCount = $$props.updateCount);
     		if ("moreLikeThis" in $$props) moreLikeThis = $$props.moreLikeThis;
     		if ("lessLikeThis" in $$props) lessLikeThis = $$props.lessLikeThis;
     		if ("recommendations" in $$props) $$invalidate(0, recommendations = $$props.recommendations);
     		if ("similarRecommendations" in $$props) similarRecommendations = $$props.similarRecommendations;
-    		if ("classifierResult" in $$props) $$invalidate(11, classifierResult = $$props.classifierResult);
+    		if ("recommendationsClass" in $$props) $$invalidate(1, recommendationsClass = $$props.recommendationsClass);
+    		if ("classifierResult" in $$props) $$invalidate(12, classifierResult = $$props.classifierResult);
     	};
 
     	if ($$props && "$$inject" in $$props) {
@@ -29851,7 +29915,7 @@ ${constraint.asp}`;
     	}
 
     	$$self.$$.update = () => {
-    		if ($$self.$$.dirty & /*classifierResult, dataset, vegaSpecs*/ 2072) {
+    		if ($$self.$$.dirty & /*classifierResult, vegaSpecs, dataset*/ 4144) {
     			 {
     				console.log(classifierResult);
 
@@ -29860,11 +29924,13 @@ ${constraint.asp}`;
 
     					for (let i = 0; i < classifierResult.length; i++) {
     						if (i === 1) {
-    							updatedPreferrences.push(dataset[i]);
+    							updatedPreferrences.push(vegaSpecs[i]);
     						}
     					}
 
-    					Promise.all(getRecombinations(vegaSpecs, updatedPreferrences)).then(result => {
+    					console.log("updatedPreferrences", updatedPreferrences);
+
+    					Promise.all(getRecombinations(updatedPreferrences, dataset)).then(result => {
     						similarRecommendations = result;
     						$$invalidate(0, recommendations = selectRecommendations(result));
     					});
@@ -29872,21 +29938,17 @@ ${constraint.asp}`;
     			}
     		}
 
-    		if ($$self.$$.dirty & /*updateCount, dataset, vegaSpecs*/ 152) {
+    		if ($$self.$$.dirty & /*updateCount, vegaSpecs, dataset*/ 304) {
     			 {
     				console.log("update count", updateCount);
 
     				if (updateCount === 1) {
-    					console.log(dataset);
-
     					Promise.all(getRecombinations(vegaSpecs, dataset)).then(result => {
     						similarRecommendations = result;
     						$$invalidate(0, recommendations = selectRecommendations(result));
     					});
-    				} else // getAllSimilar(newRecommendations)
-    				// recommendations = newRecommendations
-    				if (updateCount === 0) ; else {
-    					console.log("running classifier: ", updateCount); // let newRecommendations = getRecombinations(vegaSpecs, dataset)
+    				} else if (updateCount === 0) ; else {
+    					console.log("running classifier: ", updateCount);
     					runClassifier();
     				}
     			}
@@ -29905,6 +29967,7 @@ ${constraint.asp}`;
 
     	return [
     		recommendations,
+    		recommendationsClass,
     		updateMore,
     		updateLess,
     		vegaSpecs,
@@ -29918,6 +29981,7 @@ ${constraint.asp}`;
     		classifierResult,
     		solveDraco,
     		getSimilar,
+    		selectRecommendations,
     		runClassifier,
     		click_handler,
     		click_handler_1
@@ -29929,11 +29993,11 @@ ${constraint.asp}`;
     		super(options);
 
     		init(this, options, instance$1, create_fragment$1, safe_not_equal, {
-    			vegaSpecs: 3,
-    			dataset: 4,
-    			selectedAttributes: 5,
-    			recomendationCount: 6,
-    			updateCount: 7
+    			vegaSpecs: 4,
+    			dataset: 5,
+    			selectedAttributes: 6,
+    			recomendationCount: 7,
+    			updateCount: 8
     		});
 
     		dispatch_dev("SvelteRegisterComponent", {
@@ -29988,7 +30052,7 @@ ${constraint.asp}`;
     /* src/RecommendationsMain.svelte generated by Svelte v3.20.1 */
     const file$2 = "src/RecommendationsMain.svelte";
 
-    // (61:1) {:catch error}
+    // (62:1) {:catch error}
     function create_catch_block(ctx) {
     	let p;
     	let t_value = /*error*/ ctx[6].message + "";
@@ -29999,7 +30063,7 @@ ${constraint.asp}`;
     			p = element("p");
     			t = text(t_value);
     			set_style(p, "color", "red");
-    			add_location(p, file$2, 61, 2, 1307);
+    			add_location(p, file$2, 62, 2, 1340);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -30017,14 +30081,14 @@ ${constraint.asp}`;
     		block,
     		id: create_catch_block.name,
     		type: "catch",
-    		source: "(61:1) {:catch error}",
+    		source: "(62:1) {:catch error}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (51:1) {:then vegaSpecs}
+    // (52:1) {:then vegaSpecs}
     function create_then_block(ctx) {
     	let div;
     	let p;
@@ -30056,10 +30120,10 @@ ${constraint.asp}`;
     			button.textContent = "Update Recommendations";
     			t3 = space();
     			create_component(recommendations.$$.fragment);
-    			add_location(b, file$2, 52, 6, 1102);
-    			add_location(p, file$2, 52, 3, 1099);
-    			add_location(button, file$2, 53, 3, 1132);
-    			add_location(div, file$2, 51, 2, 1090);
+    			add_location(b, file$2, 53, 6, 1135);
+    			add_location(p, file$2, 53, 3, 1132);
+    			add_location(button, file$2, 54, 3, 1165);
+    			add_location(div, file$2, 52, 2, 1123);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div, anchor);
@@ -30101,14 +30165,14 @@ ${constraint.asp}`;
     		block,
     		id: create_then_block.name,
     		type: "then",
-    		source: "(51:1) {:then vegaSpecs}",
+    		source: "(52:1) {:then vegaSpecs}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (49:17)    <p>...loading</p>  {:then vegaSpecs}
+    // (50:17)    <p>...loading</p>  {:then vegaSpecs}
     function create_pending_block(ctx) {
     	let p;
 
@@ -30116,7 +30180,7 @@ ${constraint.asp}`;
     		c: function create() {
     			p = element("p");
     			p.textContent = "...loading";
-    			add_location(p, file$2, 49, 2, 1051);
+    			add_location(p, file$2, 50, 2, 1084);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -30133,7 +30197,7 @@ ${constraint.asp}`;
     		block,
     		id: create_pending_block.name,
     		type: "pending",
-    		source: "(49:17)    <p>...loading</p>  {:then vegaSpecs}",
+    		source: "(50:17)    <p>...loading</p>  {:then vegaSpecs}",
     		ctx
     	});
 
@@ -30165,7 +30229,7 @@ ${constraint.asp}`;
     			info.block.c();
     			attr_dev(div, "id", "recommendationsMain");
     			attr_dev(div, "class", "svelte-1yvgkpb");
-    			add_location(div, file$2, 47, 0, 1000);
+    			add_location(div, file$2, 48, 0, 1033);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -30239,16 +30303,17 @@ ${constraint.asp}`;
     	const vegaSpecs = [];
 
     	for (let i in specs) {
-    		let s = specs[i];
-    		let vegaFilename = s.filename;
-
-    		if (!vegaFilename) {
+    		if (i === "columns") {
     			continue;
     		}
 
-    		vegaFilename = "vega_examples/" + vegaFilename;
-    		const vegaSpec = await json(vegaFilename);
-    		vegaSpecs.push({ "spec": s, "vega": vegaSpec, "index": i });
+    		let s = specs[i];
+
+    		// let vegaFilename = s.filename
+    		// if (!vegaFilename) { continue }
+    		// vegaFilename = 'vega_examples/' + vegaFilename
+    		// const vegaSpec = await d3.json(vegaFilename)
+    		vegaSpecs.push({ "spec": s, "index": i });
     	}
 
     	return vegaSpecs;
@@ -30337,7 +30402,7 @@ ${constraint.asp}`;
     /* src/App.svelte generated by Svelte v3.20.1 */
     const file$3 = "src/App.svelte";
 
-    // (45:1) {:catch error}
+    // (42:1) {:catch error}
     function create_catch_block$1(ctx) {
     	let p;
     	let t_value = /*error*/ ctx[5].message + "";
@@ -30348,7 +30413,7 @@ ${constraint.asp}`;
     			p = element("p");
     			t = text(t_value);
     			set_style(p, "color", "red");
-    			add_location(p, file$3, 45, 2, 1035);
+    			add_location(p, file$3, 42, 2, 886);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -30366,16 +30431,24 @@ ${constraint.asp}`;
     		block,
     		id: create_catch_block$1.name,
     		type: "catch",
-    		source: "(45:1) {:catch error}",
+    		source: "(42:1) {:catch error}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (38:1) {:then dataset}
+    // (35:1) {:then dataset}
     function create_then_block$1(ctx) {
+    	let t;
     	let current;
+
+    	const attributesbar = new AttributesBar({
+    			props: { dataset: /*dataset*/ ctx[4] },
+    			$$inline: true
+    		});
+
+    	attributesbar.$on("attributeClicked", /*updateAttributes*/ ctx[2]);
 
     	const recommendationsmain = new RecommendationsMain({
     			props: {
@@ -30387,9 +30460,13 @@ ${constraint.asp}`;
 
     	const block = {
     		c: function create() {
+    			create_component(attributesbar.$$.fragment);
+    			t = space();
     			create_component(recommendationsmain.$$.fragment);
     		},
     		m: function mount(target, anchor) {
+    			mount_component(attributesbar, target, anchor);
+    			insert_dev(target, t, anchor);
     			mount_component(recommendationsmain, target, anchor);
     			current = true;
     		},
@@ -30400,14 +30477,18 @@ ${constraint.asp}`;
     		},
     		i: function intro(local) {
     			if (current) return;
+    			transition_in(attributesbar.$$.fragment, local);
     			transition_in(recommendationsmain.$$.fragment, local);
     			current = true;
     		},
     		o: function outro(local) {
+    			transition_out(attributesbar.$$.fragment, local);
     			transition_out(recommendationsmain.$$.fragment, local);
     			current = false;
     		},
     		d: function destroy(detaching) {
+    			destroy_component(attributesbar, detaching);
+    			if (detaching) detach_dev(t);
     			destroy_component(recommendationsmain, detaching);
     		}
     	};
@@ -30416,14 +30497,14 @@ ${constraint.asp}`;
     		block,
     		id: create_then_block$1.name,
     		type: "then",
-    		source: "(38:1) {:then dataset}",
+    		source: "(35:1) {:then dataset}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (36:17)    <p>...loading</p>  {:then dataset}
+    // (33:17)    <p>...loading</p>  {:then dataset}
     function create_pending_block$1(ctx) {
     	let p;
 
@@ -30431,7 +30512,7 @@ ${constraint.asp}`;
     		c: function create() {
     			p = element("p");
     			p.textContent = "...loading";
-    			add_location(p, file$3, 36, 2, 833);
+    			add_location(p, file$3, 33, 2, 691);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -30448,7 +30529,7 @@ ${constraint.asp}`;
     		block,
     		id: create_pending_block$1.name,
     		type: "pending",
-    		source: "(36:17)    <p>...loading</p>  {:then dataset}",
+    		source: "(33:17)    <p>...loading</p>  {:then dataset}",
     		ctx
     	});
 
@@ -30481,7 +30562,7 @@ ${constraint.asp}`;
     			attr_dev(div, "id", "main");
     			set_style(div, "padding", "'20px'");
     			attr_dev(div, "class", "svelte-1dx2uzi");
-    			add_location(div, file$3, 32, 0, 665);
+    			add_location(div, file$3, 31, 0, 631);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -30588,7 +30669,7 @@ ${constraint.asp}`;
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [selectedAttributes, promise];
+    	return [selectedAttributes, promise, updateAttributes];
     }
 
     class App extends SvelteComponentDev {
@@ -30607,7 +30688,7 @@ ${constraint.asp}`;
 
     {
         if(!window.console) window.console = {};
-        var methods = ["log", "debug", "warn", "info"];
+        var methods = ["debug", "warn", "info"];
         for(var i=0;i<methods.length;i++){
             console[methods[i]] = function(){};
         }

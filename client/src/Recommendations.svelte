@@ -15,18 +15,23 @@
 	export let recomendationCount = 9
 	export let updateCount = 0
 
+	console.log(vegaSpecs)
+
 	// Track of user preferences
 	let moreLikeThis = []
 	let lessLikeThis = []
 
-	// Current recomendations
+	// Current recommendations
 	let recommendations = []
+	// Recommendations generated from the same draco query
 	let similarRecommendations = []
+	// Recommendations class
+	let recommendationsClass = Array(9).fill("default")
 
 	let classifierResult
 
 	function solveDraco(newConstraints) {
-		console.log(newConstraints)
+		// console.log(newConstraints)
 		let recs = []
 
 		const url = 'https://unpkg.com/wasm-clingo@0.2.2';
@@ -44,8 +49,6 @@
 			const schema = draco.getSchema()
 			const dataConstraints = dracoDataConstraints(schema)
 
-			// console.log(schema)
-
 			// Create constraints based on schema
 			const inputConstraints = `
 				data("cereal.csv").
@@ -59,11 +62,8 @@
 				${visConstraints}
 			`;
 
-			// console.log(inputConstraints)
-
 			const solution = draco.solve(inputConstraints, { models: recomendationCount });
 			if (!solution) {
-				console.log(solution, newConstraints)
 				return 
 			}
 
@@ -73,8 +73,6 @@
 
 			similarRecommendations = []
 			similarRecommendations = recs
-
-			console.log(recs)
 
 			return recs
 		})
@@ -98,15 +96,6 @@
 		
 		return result
 	}
-
-	// function getAllSimilar(newRecommendations) {
-	// 	// let individualSpecs = vegaToRanking(vegaSpec)
-		
-	// 	Promise.all(getSimilar(newRecommendations)).then((result) => {
-	// 		return 
-	// 		// console.log('here', result)
-	// 	})
-	// }
 
 	function selectRecommendations(similarRecommendations) {
 		let allNew = []
@@ -147,6 +136,8 @@
 			}
 		}
 
+		recommendationsClass = recommendationsClass.map(r => 'default')
+
 		return result
 	}
 
@@ -156,11 +147,13 @@
 
 			for (let i = 0; i < classifierResult.length; i++) {
 				if (i === 1) {
-					updatedPreferrences.push(dataset[i])
+					updatedPreferrences.push(vegaSpecs[i])
 				}
 			}
 
-			Promise.all(getRecombinations(vegaSpecs, updatedPreferrences)).then((result) => {
+			console.log('updatedPreferrences', updatedPreferrences)
+
+			Promise.all(getRecombinations(updatedPreferrences, dataset)).then((result) => {
 				similarRecommendations = result
 				recommendations = selectRecommendations(result)
 			})
@@ -170,6 +163,21 @@
 	function runClassifier() {
 		let testingData = vegaSpecs.map(v => v.spec)
 		let trainingData = []
+
+		let newMore = []
+		let newLess = []
+
+		for (let i = 0; i < recommendationsClass.length; i++) {
+			let r = recommendationsClass[i]
+			if (r === 'more') {
+				newMore.push(recommendations[i])
+			} else if (r === 'less') {
+				newLess.push(recommendations[i])
+			}
+		}
+
+		moreLikeThis = moreLikeThis.concat(newMore)
+		lessLikeThis = lessLikeThis.concat(newLess)
 
 		for (let m of moreLikeThis) {
 			let newM = m.vega.encoding
@@ -184,8 +192,6 @@
 			trainingData.push(newL)
 		}
 
-		console.log('updated', trainingData)
-
 		let classifierData = {
 			'training': trainingData,
 			'testing': testingData
@@ -198,14 +204,10 @@
 
 	$: {console.log('update count', updateCount)
 		if (updateCount === 1) {
-			console.log(dataset)
 			Promise.all(getRecombinations(vegaSpecs, dataset)).then((result) => {
 				similarRecommendations = result
 				recommendations = selectRecommendations(result)
 			})
-			// let newRecommendations = getRecombinations(vegaSpecs, dataset)
-			// getAllSimilar(newRecommendations)
-			// recommendations = newRecommendations
 		}
 		else if (updateCount === 0) {}
 		else {
@@ -220,13 +222,24 @@
 
 	// Update 'moreLikeThis' array
 	function updateMore(i) {
-		moreLikeThis = moreLikeThis.concat(similarRecommendations[i])
-		console.log(moreLikeThis)
+		// If items already in moreLikeThis, remove
+		let current = recommendationsClass[i]
+		if (current === 'more') {
+			recommendationsClass[i] = 'default'
+		} else {
+			recommendationsClass[i] = 'more'
+		}
 	}
 
 	// Update 'lessLikeThis' array
 	function updateLess(i) {
-		lessLikeThis = lessLikeThis.concat(similarRecommendations[i])
+		// If items already in lessLikeThis, remove
+		let current = recommendationsClass[i]
+		if (current === 'less') {
+			recommendationsClass[i] = 'default'
+		} else {
+			recommendationsClass[i] = 'less'
+		}
 	}
 </script>
 
@@ -235,10 +248,12 @@
 		<div class="vis">
 			<div id="vis{i}"></div>
 			<div class="buttons">
-				<button on:click={() => updateMore(c.index)}>
+				<button class="{recommendationsClass[i] === 'more' ? 'more' : 'default'}"
+						on:click={() => updateMore(i)}>
 					More Like This
 				</button>
-				<button on:click={() => updateLess(c.index)}>
+				<button class="{recommendationsClass[i] === 'less' ? 'less' : 'default'}"
+						on:click={() => updateLess(i)}>
 					Less Like This
 				</button>
 			</div>
@@ -257,5 +272,17 @@
 
 	.vis {
 		overflow: scroll;
+	}
+
+	.more {
+		background-color: #cde09b;
+	}
+
+	.less {
+		background-color: #e0a99b;
+	}
+
+	.default {
+		background-color: #f4f4f4;
 	}
 </style>

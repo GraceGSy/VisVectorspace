@@ -1,6 +1,5 @@
 <script>
 	import * as d3 from 'd3'
-	// import Draco from 'draco-vis'
 	import AttributesBar from './AttributesBar.svelte'
 	import RecommendationsMain from './RecommendationsMain.svelte'
 
@@ -31,14 +30,12 @@
 </script>
 
 <div id="main" style="padding: '20px'">
-	<!-- <h1>Your number is {rand}!</h1> -->
-	<!-- <button on:click={getRand}>Get a random number</button> -->
 	{#await promise}
 		<p>...loading</p>
 	{:then dataset}
-			<!--<AttributesBar
+			<AttributesBar
 				on:attributeClicked={updateAttributes}
-				{dataset}/>-->
+				{dataset}/>
 			<RecommendationsMain
 				{selectedAttributes}
 				{dataset}/>
