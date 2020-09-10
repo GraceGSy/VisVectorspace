@@ -41,22 +41,18 @@
 			vegaSpecs.push({ 'spec':s, 'index': i })
 		}
 
+		print(vegaSpecs.length)
+
 		return vegaSpecs
 	}
 
-	function update() {
-		updateCount++
-	}
+	
 </script>
 
 <div id="recommendationsMain">
 	{#await promise}
 		<p>...loading</p>
 	{:then vegaSpecs}
-		<div>
-			<p><b>RECOMMENDATIONS</b></p>
-			<button on:click={update}>Update Recommendations</button>
-		</div>
 		<Recommendations
 			{dataset}
 			{vegaSpecs}

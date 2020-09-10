@@ -13,9 +13,8 @@
 	export let dataset = []
 	export let selectedAttributes = []
 	export let recomendationCount = 9
-	export let updateCount = 0
-
-	// console.log(dataset, vegaSpecs)
+	
+	let updateCount = 0
 
 	// Track of user preferences
 	let moreLikeThis = []
@@ -29,6 +28,8 @@
 	let recommendationsClass = Array(9).fill("default")
 
 	let classifierResult
+
+	let pinned = []
 
 	function solveDraco(newConstraints) {
 		// console.log(newConstraints)
@@ -141,8 +142,7 @@
 		return result
 	}
 
-	$: {console.log(typeof classifierResult)
-		if (typeof classifierResult !== "undefined") {
+	$: {if (typeof classifierResult !== "undefined") {
 			console.log('classifier result updated...')
 			let updatedPreferrences = []
 
@@ -198,7 +198,6 @@
 
 		fetch(`./classifier`, {method:"POST", body:JSON.stringify(classifierData)})
 			.then(d => d.text())
-      		.then(d => console.log(d))
       		.then(d => (classifierResult = d))
 	}
 
@@ -241,24 +240,61 @@
 			recommendationsClass[i] = 'less'
 		}
 	}
+
+	function update() {
+		updateCount++
+	}
+
+	function reset() {
+		recommendationsClass = recommendationsClass.map(r => 'default')
+		moreLikeThis = []
+		lessLikeThis = []
+	}
+
+	$: for (let p = 0; p < pinned.length; p++) {
+		if (!pinned[p]) {continue}
+		vegaEmbed(`#pin${p}`, pinned[p]['vega'])
+	}
+
+	function pin(i) {
+		pinned = pinned.concat([recommendations[i]])
+	}
 </script>
 
-<div id="recommendationDisplay">
-	{#each recommendations as c, i}
-		<div class="vis">
-			<div id="vis{i}"></div>
-			<div class="buttons">
-				<button class="{recommendationsClass[i] === 'more' ? 'more' : 'default'}"
-						on:click={() => updateMore(i)}>
-					More Like This
-				</button>
-				<button class="{recommendationsClass[i] === 'less' ? 'less' : 'default'}"
-						on:click={() => updateLess(i)}>
-					Less Like This
-				</button>
+<div>
+	<div>
+		<p><b>RECOMMENDATIONS</b></p>
+		<button on:click={update}>Update Recommendations</button>
+		<button on:click={reset}>Reset</button>
+	</div>
+	<div id="recommendationDisplay">
+		{#each recommendations as c, i}
+			<div class="vis">
+				<button on:click={() => pin(i)}>Pin</button>
+				<div>
+					<div id="vis{i}"></div>
+					<div class="buttons">
+						<button class="{recommendationsClass[i] === 'more' ? 'more' : 'default'}"
+								on:click={() => updateMore(i)}>
+							More Like This
+						</button>
+						<button class="{recommendationsClass[i] === 'less' ? 'less' : 'default'}"
+								on:click={() => updateLess(i)}>
+							Less Like This
+						</button>
+					</div>
+				</div>
 			</div>
+		{/each}
+	</div>
+	<div>
+		<p><b>PINNED</b></p>
+		<div id="pinnedDisplay">
+			{#each pinned as p, i}
+				<div id="pin{i}"></div>
+			{/each}
 		</div>
-	{/each}
+	</div>
 </div>
 
 <style>
@@ -268,6 +304,11 @@
 		grid-template-rows: repeat(3, 350px);
 		grid-gap: 50px;
 		margin-top: 50px
+	}
+
+	#pinnedDisplay {
+		display: flex;
+		flex-direction: row
 	}
 
 	.vis {

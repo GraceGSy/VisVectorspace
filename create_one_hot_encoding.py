@@ -2,9 +2,9 @@ import copy
 import itertools
 import pandas
 
-accepted_marks = ['mark_area','mark_bar','mark_boxplot',
-				  'mark_circle','mark_line','mark_point',
-				  'mark_rect','mark_rule','mark_tick']
+accepted_marks = ['mark_area','mark_bar','mark_circle',
+				  'mark_line','mark_point',
+				  'mark_rect','mark_tick']
 
 accepted_channels = ['x','y','color','size','shape']
 
@@ -13,7 +13,7 @@ accepted_aggregates = ['aggregate_average','aggregate_count',
 					   'aggregate_mean','aggregate_median',
 					   'aggregate_none','aggregate_sum']
 
-accepted_types = ['type_quantitative', 'type_nominal']
+accepted_types = ['type_quantitative']
 
 data = []
 
@@ -27,7 +27,7 @@ for m in accepted_marks:
 	new_row[m] = 1
 	data.append(new_row)
 
-# Add fields
+# Add fields(channels)
 accepted_fields = []
 
 for c in accepted_channels:
@@ -47,6 +47,10 @@ new_data = []
 
 for row in data:
 	for p in all_permutations:
+		# The shape channel can only be used with the point mark
+		if (not row["mark_point"] == 1) and ("shape.field" in p):
+			continue
+
 		new_permutation = copy.deepcopy(fields_template)
 
 		for f in p:
@@ -138,4 +142,4 @@ df.index.names = ['index']
 df['label'] = 0
 
 # do not un-comment the following unless you wish to rewrite the specs file
-df.to_csv('./client/public/manual_specs_one_hot_encoding.csv')
+# df.to_csv('./client/public/manual_specs_one_hot_encoding.csv')

@@ -2,8 +2,9 @@
 	}
 #attributesBar.svelte-1t0xmpj{display:flex;flex-direction:column;width:150px;margin-right:50px
 	}
-#recommendationDisplay.svelte-jisuua{display:grid;grid-template-columns:repeat(3, 350px);grid-template-rows:repeat(3, 350px);grid-gap:50px;margin-top:50px
-	}.vis.svelte-jisuua{overflow:scroll}.more.svelte-jisuua{background-color:#cde09b}.less.svelte-jisuua{background-color:#e0a99b}.default.svelte-jisuua{background-color:#f4f4f4}
+#recommendationDisplay.svelte-j5o4cc{display:grid;grid-template-columns:repeat(3, 350px);grid-template-rows:repeat(3, 350px);grid-gap:50px;margin-top:50px
+	}#pinnedDisplay.svelte-j5o4cc{display:flex;flex-direction:row
+	}.vis.svelte-j5o4cc{overflow:scroll}.more.svelte-j5o4cc{background-color:#cde09b}.less.svelte-j5o4cc{background-color:#e0a99b}.default.svelte-j5o4cc{background-color:#f4f4f4}
 #recommendationsMain.svelte-1yvgkpb{display:flex;flex-direction:column;margin-bottom:150px
 	}
 
