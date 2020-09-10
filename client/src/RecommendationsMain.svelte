@@ -41,8 +41,6 @@
 			vegaSpecs.push({ 'spec':s, 'index': i })
 		}
 
-		print(vegaSpecs.length)
-
 		return vegaSpecs
 	}
 

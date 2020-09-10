@@ -142,23 +142,6 @@
 		return result
 	}
 
-	$: {if (typeof classifierResult !== "undefined") {
-			console.log('classifier result updated...')
-			let updatedPreferrences = []
-
-			for (let i = 0; i < classifierResult.length; i++) {
-				if (i === 1) {
-					updatedPreferrences.push(dataset[i])
-				}
-			}
-
-			Promise.all(getRecombinations(vegaSpecs, updatedPreferrences)).then((result) => {
-				similarRecommendations = result
-				recommendations = selectRecommendations(result)
-			})
-		}
-	}
-
 	function runClassifier() {
 		let testingData = vegaSpecs.map(v => v.spec)
 		let trainingData = []
@@ -198,7 +181,21 @@
 
 		fetch(`./classifier`, {method:"POST", body:JSON.stringify(classifierData)})
 			.then(d => d.text())
-      		.then(d => (classifierResult = d))
+      		.then(d => {
+      			let preferred = JSON.parse(d)
+      			let updatedPreferrences = []
+
+				for (let i = 0; i < preferred.length; i++) {
+					if (preferred[i] === 1) {
+						updatedPreferrences.push(vegaSpecs[i])
+					}
+				}
+
+				Promise.all(getRecombinations(updatedPreferrences, dataset)).then((result) => {
+					similarRecommendations = result
+					recommendations = selectRecommendations(result)
+				})
+      		})
 	}
 
 	$: {console.log('update count', updateCount)

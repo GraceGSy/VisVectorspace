@@ -25286,7 +25286,7 @@ ${constraint.asp}`;
         Object.defineProperty(exports, '__esModule', { value: true });
 
     })));
-    //# sourceMappingURL=draco.js.map
+
     });
 
     var Draco = unwrapExports(draco);
@@ -28975,8 +28975,6 @@ ${constraint.asp}`;
     };
     });
 
-    //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi9zcmMvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsY0FBYyxTQUFTLENBQUM7QUFDeEIsY0FBYyxRQUFRLENBQUM7QUFDdkIsY0FBYyxZQUFZLENBQUM7QUFDM0IsT0FBTyxLQUFLLE1BQU0sU0FBUyxDQUFDO0FBQzVCLGVBQWUsS0FBSyxDQUFDIn0=
-
     /*!
      * Determine if an object is a Buffer
      *
@@ -29390,7 +29388,7 @@ ${constraint.asp}`;
     }
 
     function getTests(index, vegaSpecs, dataset) {
-    	// console.log('spec', vegaSpecs[index])
+    	console.log('spec', vegaSpecs[index]);
     	let encoding = vegaSpecs[index].spec;
 
     	let constraints = [];
@@ -29447,7 +29445,7 @@ ${constraint.asp}`;
     	return child_ctx;
     }
 
-    // (271:2) {#each recommendations as c, i}
+    // (268:2) {#each recommendations as c, i}
     function create_each_block_1(ctx) {
     	let div3;
     	let button0;
@@ -29495,27 +29493,27 @@ ${constraint.asp}`;
     			button2 = element("button");
     			t5 = text("Less Like This");
     			t6 = space();
-    			add_location(button0, file$1, 272, 4, 6513);
+    			add_location(button0, file$1, 269, 4, 6453);
     			attr_dev(div0, "id", div0_id_value = "vis" + /*i*/ ctx[26]);
     			attr_dev(div0, "class", "svelte-j5o4cc");
-    			add_location(div0, file$1, 274, 5, 6573);
+    			add_location(div0, file$1, 271, 5, 6513);
 
     			attr_dev(button1, "class", button1_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[1][/*i*/ ctx[26]] === "more"
     			? "more"
     			: "default") + " svelte-j5o4cc"));
 
-    			add_location(button1, file$1, 276, 6, 6630);
+    			add_location(button1, file$1, 273, 6, 6570);
 
     			attr_dev(button2, "class", button2_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[1][/*i*/ ctx[26]] === "less"
     			? "less"
     			: "default") + " svelte-j5o4cc"));
 
-    			add_location(button2, file$1, 280, 6, 6788);
+    			add_location(button2, file$1, 277, 6, 6728);
     			attr_dev(div1, "class", "buttons");
-    			add_location(div1, file$1, 275, 5, 6602);
-    			add_location(div2, file$1, 273, 4, 6562);
+    			add_location(div1, file$1, 272, 5, 6542);
+    			add_location(div2, file$1, 270, 4, 6502);
     			attr_dev(div3, "class", "vis svelte-j5o4cc");
-    			add_location(div3, file$1, 271, 3, 6491);
+    			add_location(div3, file$1, 268, 3, 6431);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div3, anchor);
@@ -29564,14 +29562,14 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_1.name,
     		type: "each",
-    		source: "(271:2) {#each recommendations as c, i}",
+    		source: "(268:2) {#each recommendations as c, i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (293:3) {#each pinned as p, i}
+    // (290:3) {#each pinned as p, i}
     function create_each_block$1(ctx) {
     	let div;
     	let div_id_value;
@@ -29581,7 +29579,7 @@ ${constraint.asp}`;
     			div = element("div");
     			attr_dev(div, "id", div_id_value = "pin" + /*i*/ ctx[26]);
     			attr_dev(div, "class", "svelte-j5o4cc");
-    			add_location(div, file$1, 293, 4, 7078);
+    			add_location(div, file$1, 290, 4, 7018);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -29595,7 +29593,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$1.name,
     		type: "each",
-    		source: "(293:3) {#each pinned as p, i}",
+    		source: "(290:3) {#each pinned as p, i}",
     		ctx
     	});
 
@@ -29668,21 +29666,21 @@ ${constraint.asp}`;
     				each_blocks[i].c();
     			}
 
-    			add_location(b0, file$1, 265, 5, 6283);
-    			add_location(p0, file$1, 265, 2, 6280);
-    			add_location(button0, file$1, 266, 2, 6312);
-    			add_location(button1, file$1, 267, 2, 6372);
-    			add_location(div0, file$1, 264, 1, 6272);
+    			add_location(b0, file$1, 262, 5, 6223);
+    			add_location(p0, file$1, 262, 2, 6220);
+    			add_location(button0, file$1, 263, 2, 6252);
+    			add_location(button1, file$1, 264, 2, 6312);
+    			add_location(div0, file$1, 261, 1, 6212);
     			attr_dev(div1, "id", "recommendationDisplay");
     			attr_dev(div1, "class", "svelte-j5o4cc");
-    			add_location(div1, file$1, 269, 1, 6421);
-    			add_location(b1, file$1, 290, 5, 7003);
-    			add_location(p1, file$1, 290, 2, 7000);
+    			add_location(div1, file$1, 266, 1, 6361);
+    			add_location(b1, file$1, 287, 5, 6943);
+    			add_location(p1, file$1, 287, 2, 6940);
     			attr_dev(div2, "id", "pinnedDisplay");
     			attr_dev(div2, "class", "svelte-j5o4cc");
-    			add_location(div2, file$1, 291, 2, 7023);
-    			add_location(div3, file$1, 289, 1, 6992);
-    			add_location(div4, file$1, 263, 0, 6265);
+    			add_location(div2, file$1, 288, 2, 6963);
+    			add_location(div3, file$1, 286, 1, 6932);
+    			add_location(div4, file$1, 260, 0, 6205);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -29975,7 +29973,21 @@ ${constraint.asp}`;
     		fetch(`./classifier`, {
     			method: "POST",
     			body: JSON.stringify(classifierData)
-    		}).then(d => d.text()).then(d => $$invalidate(16, classifierResult = d));
+    		}).then(d => d.text()).then(d => {
+    			let preferred = JSON.parse(d);
+    			let updatedPreferrences = [];
+
+    			for (let i = 0; i < preferred.length; i++) {
+    				if (preferred[i] === 1) {
+    					updatedPreferrences.push(vegaSpecs[i]);
+    				}
+    			}
+
+    			Promise.all(getRecombinations(updatedPreferrences, dataset)).then(result => {
+    				similarRecommendations = result;
+    				$$invalidate(0, recommendations = selectRecommendations(result));
+    			});
+    		});
     	}
 
     	// Update 'moreLikeThis' array
@@ -30078,7 +30090,7 @@ ${constraint.asp}`;
     		if ("recommendations" in $$props) $$invalidate(0, recommendations = $$props.recommendations);
     		if ("similarRecommendations" in $$props) similarRecommendations = $$props.similarRecommendations;
     		if ("recommendationsClass" in $$props) $$invalidate(1, recommendationsClass = $$props.recommendationsClass);
-    		if ("classifierResult" in $$props) $$invalidate(16, classifierResult = $$props.classifierResult);
+    		if ("classifierResult" in $$props) classifierResult = $$props.classifierResult;
     		if ("pinned" in $$props) $$invalidate(2, pinned = $$props.pinned);
     	};
 
@@ -30087,26 +30099,6 @@ ${constraint.asp}`;
     	}
 
     	$$self.$$.update = () => {
-    		if ($$self.$$.dirty & /*classifierResult, dataset, vegaSpecs*/ 66304) {
-    			 {
-    				if (typeof classifierResult !== "undefined") {
-    					console.log("classifier result updated...");
-    					let updatedPreferrences = [];
-
-    					for (let i = 0; i < classifierResult.length; i++) {
-    						if (i === 1) {
-    							updatedPreferrences.push(dataset[i]);
-    						}
-    					}
-
-    					Promise.all(getRecombinations(vegaSpecs, updatedPreferrences)).then(result => {
-    						similarRecommendations = result;
-    						$$invalidate(0, recommendations = selectRecommendations(result));
-    					});
-    				}
-    			}
-    		}
-
     		if ($$self.$$.dirty & /*updateCount, vegaSpecs, dataset*/ 4864) {
     			 {
     				console.log("update count", updateCount);
@@ -30227,7 +30219,7 @@ ${constraint.asp}`;
     /* src/RecommendationsMain.svelte generated by Svelte v3.20.1 */
     const file$2 = "src/RecommendationsMain.svelte";
 
-    // (61:1) {:catch error}
+    // (59:1) {:catch error}
     function create_catch_block(ctx) {
     	let p;
     	let t_value = /*error*/ ctx[5].message + "";
@@ -30238,7 +30230,7 @@ ${constraint.asp}`;
     			p = element("p");
     			t = text(t_value);
     			set_style(p, "color", "red");
-    			add_location(p, file$2, 61, 2, 1245);
+    			add_location(p, file$2, 59, 2, 1218);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -30256,14 +30248,14 @@ ${constraint.asp}`;
     		block,
     		id: create_catch_block.name,
     		type: "catch",
-    		source: "(61:1) {:catch error}",
+    		source: "(59:1) {:catch error}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (55:1) {:then vegaSpecs}
+    // (53:1) {:then vegaSpecs}
     function create_then_block(ctx) {
     	let current;
 
@@ -30309,14 +30301,14 @@ ${constraint.asp}`;
     		block,
     		id: create_then_block.name,
     		type: "then",
-    		source: "(55:1) {:then vegaSpecs}",
+    		source: "(53:1) {:then vegaSpecs}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (53:17)    <p>...loading</p>  {:then vegaSpecs}
+    // (51:17)    <p>...loading</p>  {:then vegaSpecs}
     function create_pending_block(ctx) {
     	let p;
 
@@ -30324,7 +30316,7 @@ ${constraint.asp}`;
     		c: function create() {
     			p = element("p");
     			p.textContent = "...loading";
-    			add_location(p, file$2, 53, 2, 1100);
+    			add_location(p, file$2, 51, 2, 1073);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -30341,7 +30333,7 @@ ${constraint.asp}`;
     		block,
     		id: create_pending_block.name,
     		type: "pending",
-    		source: "(53:17)    <p>...loading</p>  {:then vegaSpecs}",
+    		source: "(51:17)    <p>...loading</p>  {:then vegaSpecs}",
     		ctx
     	});
 
@@ -30373,7 +30365,7 @@ ${constraint.asp}`;
     			info.block.c();
     			attr_dev(div, "id", "recommendationsMain");
     			attr_dev(div, "class", "svelte-1yvgkpb");
-    			add_location(div, file$2, 51, 0, 1049);
+    			add_location(div, file$2, 49, 0, 1022);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -30461,7 +30453,6 @@ ${constraint.asp}`;
     		vegaSpecs.push({ "spec": s, "index": i });
     	}
 
-    	print(vegaSpecs.length);
     	return vegaSpecs;
     }
 

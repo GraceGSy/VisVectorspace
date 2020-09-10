@@ -49,7 +49,7 @@ function solveDraco(newConstraints, dataset) {
 }
 
 function getTests(index, vegaSpecs, dataset) {
-	// console.log('spec', vegaSpecs[index])
+	console.log('spec', vegaSpecs[index])
 	let encoding = vegaSpecs[index].spec
 
 	let constraints = []

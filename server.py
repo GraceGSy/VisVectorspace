@@ -115,8 +115,9 @@ def classify():
 	# print(json.dumps(getPreferred(predTest, testingData)))
 
 	# print(getPreferred(predTest, testingData))
-	return json.dumps(getPreferred(predTest, testingData))
-	# return (json.dumps(outobj, sort_keys=True))
+
+	result = json.dumps(predTest.tolist())
+	return result
 
 if __name__ == "__main__":
 	app.run(debug=True)
