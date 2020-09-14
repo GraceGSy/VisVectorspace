@@ -3,6 +3,7 @@
 	import Recommendations from './Recommendations.svelte'
 
 	export let dataset = []
+	export let types = {}
 	export let selectedAttributes = []
 
 	let promise = loadSpecs();
@@ -22,7 +23,7 @@
 	}
 
 	async function loadSpecs() {
-		const specs = await d3.csv(`/manual_specs_one_hot_encoding.csv`, dataPreprocessor)
+		const specs = await d3.csv(`/manual_specs_one_hot_encoding_2.csv`, dataPreprocessor)
 
 		const vegaSpecs = []
 
@@ -32,12 +33,6 @@
 
 			delete s.index
 
-			// let vegaFilename = s.filename
-			
-			// if (!vegaFilename) { continue }
-				
-			// vegaFilename = 'vega_examples/' + vegaFilename
-			// const vegaSpec = await d3.json(vegaFilename)
 			vegaSpecs.push({ 'spec':s, 'index': i })
 		}
 

@@ -2,9 +2,10 @@
 	}
 #attributesBar.svelte-1t0xmpj{display:flex;flex-direction:column;width:150px;margin-right:50px
 	}
-#recommendationDisplay.svelte-j5o4cc{display:grid;grid-template-columns:repeat(3, 350px);grid-template-rows:repeat(3, 350px);grid-gap:50px;margin-top:50px
-	}#pinnedDisplay.svelte-j5o4cc{display:flex;flex-direction:row
-	}.vis.svelte-j5o4cc{overflow:scroll}.more.svelte-j5o4cc{background-color:#cde09b}.less.svelte-j5o4cc{background-color:#e0a99b}.default.svelte-j5o4cc{background-color:#f4f4f4}
+#attributesBar.svelte-4fp91j{display:flex;flex-direction:column;width:200px;margin-right:50px;margin-left:25px}.attribute.svelte-4fp91j{height:25px;background:#f4f4f4;margin-bottom:10px;display:flex}.attributeLeft.svelte-4fp91j{border-radius:12px 0px 0px 12px;border:steelblue solid 2px;align-content:middle;padding:0px 5px 0px 10px}.attributeRight.svelte-4fp91j{border-radius:0px 12px 12px 0px;border-style:solid solid solid hidden;border-color:steelblue;border-width:2px;align-content:middle;padding:0px 10px 0px 5px}
+#overall.svelte-1c527wg{display:flex}#recommendationDisplay.svelte-1c527wg{display:grid;grid-template-columns:repeat(3, 350px);grid-template-rows:repeat(3, 350px);grid-gap:50px;margin-top:50px
+	}#pinnedDrawer.svelte-1c527wg{height:100%;width:0;position:fixed;z-index:1001;top:0;right:0;overflow:scroll;transition:0.5s;padding-top:30px;background:white;box-shadow:195px 8px 10px -5px rgba(0,0,0,0.2), 0px 16px 24px 2px rgba(0,0,0,0.14), 0px 6px 30px 5px rgba(0,0,0,0.12)}#pinnedText.svelte-1c527wg{margin-left:30px}#pinnedDisplay.svelte-1c527wg{display:flex;flex-direction:column;gap:30px;margin-left:30px;max-width:420px
+	}#closeButton.svelte-1c527wg{position:absolute;top:0;right:25px;font-size:36px;margin-left:50px;cursor:pointer}.vis.svelte-1c527wg{overflow:hidden}.buttons.svelte-1c527wg{display:flex;flex-direction:row}.pinButton.svelte-1c527wg{margin-left:auto;width:28px;height:28px;color:gray;cursor:pointer}.more.svelte-1c527wg{background-color:#cde09b;margin-right:0.5em}.less.svelte-1c527wg{background-color:#e0a99b;margin-right:0.5em}.default.svelte-1c527wg{background-color:#f4f4f4;margin-right:0.5em}
 #recommendationsMain.svelte-1yvgkpb{display:flex;flex-direction:column;margin-bottom:150px
 	}
 

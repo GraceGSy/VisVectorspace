@@ -13,7 +13,7 @@ accepted_aggregates = ['aggregate_average','aggregate_count',
 					   'aggregate_mean','aggregate_median',
 					   'aggregate_none','aggregate_sum']
 
-accepted_types = ['type_quantitative']
+accepted_types = ['type_quantitative', 'type_nominal']
 
 data = []
 
@@ -37,7 +37,25 @@ permutations1 = list(itertools.combinations(accepted_fields, 1))
 permutations2 = list(itertools.combinations(accepted_fields, 2))
 permutations3 = list(itertools.combinations(accepted_fields, 3))
 
-all_permutations = permutations1 + permutations2 + permutations3
+possible_permutations = permutations1 + permutations2 + permutations3
+
+all_permutations = []
+
+for p in possible_permutations:
+	if len(p) == 1:
+		if p[0] != "x.field" or p[0] != "y.field": continue
+		else: all_permutations.append(p)
+	if len(p) == 2:
+		if (p[0] == "x.field" and p[1] == "y.field") or (p[1] == "x.field" and p[0] == "y.field"):
+			all_permutations.append(p)
+	if len(p) == 3:
+		hasX = False
+		hasY = False
+		for i in p:
+			if i == "x.field": hasX = True
+			if i == "y.field": hasY = True
+		if hasX and hasY:
+			all_permutations.append(p)
 
 fields_template = {}
 for f in accepted_fields:
@@ -49,6 +67,22 @@ for row in data:
 	for p in all_permutations:
 		# The shape channel can only be used with the point mark
 		if (not row["mark_point"] == 1) and ("shape.field" in p):
+			continue
+
+		# The size channel can only be used with the point mark
+		if (not row["mark_point"] == 1) and ("size.field" in p):
+			continue
+
+		# point mark must have x and y channels
+		if len(p) == 1 and row["mark_point"] == 1:
+			continue
+
+		# area mark must have x and y channels
+		if len(p) == 1 and row["mark_area"] == 1:
+			continue
+
+		# line mark must have x and y channels
+		if len(p) == 1 and row["mark_line"] == 1:
 			continue
 
 		new_permutation = copy.deepcopy(fields_template)
@@ -69,8 +103,10 @@ all_types = []
 
 for c in accepted_channels:
 	for t in accepted_types:
+		# size channel can only be used with a quantitative variable
 		if c == 'size':
 			all_types.append('size.type_quantitative')
+		# shape channel can only be used with a quantitative variable
 		elif c == 'shape':
 			all_types.append('shape.type_nominal')
 		else:
@@ -107,6 +143,7 @@ def get_type_permutations(fields):
 			if f.startswith('x') or f.startswith('y'):
 				has_xy = True
 
+		# Only one nominal variable allowed
 		if nominal_count < 2 and has_xy:
 			type_permutations.append(p_set)
 
@@ -129,17 +166,67 @@ for row in data:
 
 		new_data.append(new_row)
 
-data = new_data
+def getOptions(spec, attrByType):
+	validChannels = ['x','y','color','size','shape']
 
-# for row in data:
-# 	if row['x.field'] == 1 and row['y.field'] == 1 and row["size.type_nominal"] == 1:
-# 		print(row)
+	myArgs = []
+	myFields = []
 
-df = pandas.DataFrame(data)
+	for c in validChannels:
+		if spec[c+'.field'] == 1:
+			myFields.append(c+'.field')
+			if (c+'.type_quantitative' in spec) and spec[c+'.type_quantitative'] == 1:
+				myArgs.append(attrByType['number'])
+			elif (c+'.type_nominal' in spec) and spec[c+'.type_nominal'] == 1:
+				myArgs.append(attrByType['string'])
+
+	allCombinations = list(itertools.product(*myArgs))
+
+	combinations = []
+
+	# Do not repeat variables
+	for c in allCombinations:
+		length = len(c)
+		uniqueLength = len(set(c))
+
+		if length == uniqueLength:
+			combinations.append(c)
+
+	specsWithFields = []
+
+	for c in combinations:
+		newSpec = copy.deepcopy(spec)
+		for i in range(len(c)):
+			newSpec[myFields[i]+'_'+c[i]] = 1
+
+		for vc in validChannels:
+			newSpec.pop(vc+'.field', None)
+
+		specsWithFields.append(newSpec)
+
+	return specsWithFields
+
+vegaSpecs = new_data
+
+# The following is only to be used with the cars dataset
+types = {'name': 'number', 'mfr': 'string', 'type': 'string', 'calories': 'number', 'protein': 'number', 'fat': 'number', 'sodium': 'number', 'fiber': 'number', 'carbo': 'number', 'sugars': 'number', 'potass': 'number', 'vitamins': 'number', 'shelf': 'number', 'weight': 'number', 'cups': 'number', 'rating': 'number'}
+
+attrByType = {"string": [], "number": []}
+
+for attr in types.keys():
+	attrByType[types[attr]].append(attr)
+
+specsWithFields = []
+
+for spec in vegaSpecs:
+	specsWithFields = specsWithFields + getOptions(spec, attrByType)
+
+df = pandas.DataFrame(specsWithFields)
+df = df.fillna(0)
 
 df.index.names = ['index']
 
 df['label'] = 0
 
 # do not un-comment the following unless you wish to rewrite the specs file
-# df.to_csv('./client/public/manual_specs_one_hot_encoding.csv')
+# df.to_csv('./client/public/manual_specs_one_hot_encoding_2.csv')

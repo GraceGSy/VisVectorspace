@@ -9,6 +9,8 @@
 
 	import getRecombinations from './getRecombinations.js'
 
+	import AttributesWeight from './AttributesWeight.svelte'
+
 	export let vegaSpecs = []
 	export let dataset = []
 	export let selectedAttributes = []
@@ -19,6 +21,7 @@
 	// Track of user preferences
 	let moreLikeThis = []
 	let lessLikeThis = []
+	let maybeLikeThis = []
 
 	// Current recommendations
 	let recommendations = []
@@ -31,72 +34,7 @@
 
 	let pinned = []
 
-	function solveDraco(newConstraints) {
-		// console.log(newConstraints)
-		let recs = []
-
-		const url = 'https://unpkg.com/wasm-clingo@0.2.2';
-
-		// const newConstraints = getDracoConstraints()
-		// console.log(newConstraints)
-		let markConstraints = dracoMarkConstraints(newConstraints)
-		let visConstraints = dracoVisConstraints(newConstraints)
-		// let visConstraints = ''
-
-		const draco = new Draco(url)
-		return draco.init().then(() => {
-			// Get metadata about dataset
-			draco.prepareData(dataset)
-			const schema = draco.getSchema()
-			const dataConstraints = dracoDataConstraints(schema)
-
-			// Create constraints based on schema
-			const inputConstraints = `
-				data("cereal.csv").
-				num_rows(77).
-
-				${dataConstraints}
-
-				${markConstraints}
-
-				% ====== Query constraints ======
-				${visConstraints}
-			`;
-
-			const solution = draco.solve(inputConstraints, { models: recomendationCount });
-			if (!solution) {
-				return 
-			}
-
-			for (let s of solution['specs']) {
-				recs.push({'vega':s})
-			}
-
-			similarRecommendations = []
-			similarRecommendations = recs
-
-			return recs
-		})
-	}
-
-	function getSimilar(newRecommendations) {
-		let result = []
-
-		for (let nr of newRecommendations) {
-			// console.log(nr)
-			let individualSpecs = vegaToRanking(nr['vega'])
-			let rankedSpecs = []
-			for (let s of Object.keys(individualSpecs)) {
-				if (individualSpecs[s] !== 0) {
-					rankedSpecs.push({'attr': s, 'value': individualSpecs[s]})
-				}
-			}
-
-			result.push(solveDraco(rankedSpecs))
-		}
-		
-		return result
-	}
+	let attributesWeight = []
 
 	function selectRecommendations(similarRecommendations) {
 		let allNew = []
@@ -148,6 +86,16 @@
 
 		let newMore = []
 		let newLess = []
+		let newMaybe = []
+
+		// If no user feedback provided
+		if (newMore.length === 0 && newLess.length  === 0) {
+			Promise.all(getRecombinations(vegaSpecs, dataset)).then((result) => {
+				similarRecommendations = result
+				recommendations = selectRecommendations(result)
+			})
+			return
+		}
 
 		for (let i = 0; i < recommendationsClass.length; i++) {
 			let r = recommendationsClass[i]
@@ -155,11 +103,14 @@
 				newMore.push(recommendations[i])
 			} else if (r === 'less') {
 				newLess.push(recommendations[i])
+			} else {
+				newMaybe.push(recommendations[i])
 			}
 		}
 
 		moreLikeThis = moreLikeThis.concat(newMore)
 		lessLikeThis = lessLikeThis.concat(newLess)
+		maybeLikeThis = maybeLikeThis.concat(newMaybe)
 
 		for (let m of moreLikeThis) {
 			let newM = m.vega.encoding
@@ -173,6 +124,12 @@
 			newL['mark'] = l.vega.mark
 			trainingData.push(newL)
 		}
+		for (let mb of maybeLikeThis) {
+			let newMb = mb.vega.encoding
+			newMb.label = 0
+			newMb['mark'] = mb.vega.mark
+			trainingData.push(newMb)
+		}
 
 		let classifierData = {
 			'training': trainingData,
@@ -182,13 +139,36 @@
 		fetch(`./classifier`, {method:"POST", body:JSON.stringify(classifierData)})
 			.then(d => d.text())
       		.then(d => {
-      			let preferred = JSON.parse(d)
-      			let updatedPreferrences = []
+      			let result = JSON.parse(d)
+
+      			attributesWeight = result["feature_wts"]
+
+      			let preferred = result["pred"]
+      			let updatedLikes = []
+      			let updatedMaybe = []
+      			let updatedNo = []
 
 				for (let i = 0; i < preferred.length; i++) {
 					if (preferred[i] === 1) {
-						updatedPreferrences.push(vegaSpecs[i])
+						updatedLikes.push(vegaSpecs[i])
+					} else if (preferred[i] === 0) {
+						updatedMaybe.push(vegaSpecs[i])
+					} else {
+						updatedNo.push(vegaSpecs[i])
 					}
+				}
+
+				let updatedPreferrences
+
+				console.log('recommended... ', updatedLikes.length)
+
+				if (updatedLikes.length < 9) {
+					updatedPreferrences = updatedLikes.concat(updatedMaybe)
+					if (updatedPreferrences.length < 9) {
+						updatedPreferrences = updatedPreferrences.concat(updatedNo)
+					}
+				} else {
+					updatedPreferrences = updatedLikes
 				}
 
 				Promise.all(getRecombinations(updatedPreferrences, dataset)).then((result) => {
@@ -199,13 +179,12 @@
 	}
 
 	$: {console.log('update count', updateCount)
-		if (updateCount === 1) {
+		if (updateCount === 0) {
 			Promise.all(getRecombinations(vegaSpecs, dataset)).then((result) => {
 				similarRecommendations = result
 				recommendations = selectRecommendations(result)
 			})
 		}
-		else if (updateCount === 0) {}
 		else {
 			console.log('running classifier: ', updateCount)
 			runClassifier()
@@ -213,7 +192,7 @@
 
 	$: for (let rec = 0; rec < recommendations.length; rec++) {
 		if (!recommendations[rec]) {continue}
-		vegaEmbed(`#vis${rec}`, recommendations[rec]['vega'])
+		vegaEmbed(`#vis${rec}`, recommendations[rec]['vega'], {actions:false})
 	}
 
 	// Update 'moreLikeThis' array
@@ -246,30 +225,39 @@
 		recommendationsClass = recommendationsClass.map(r => 'default')
 		moreLikeThis = []
 		lessLikeThis = []
+		maybeLikeThis = []
 	}
 
 	$: for (let p = 0; p < pinned.length; p++) {
 		if (!pinned[p]) {continue}
-		vegaEmbed(`#pin${p}`, pinned[p]['vega'])
+		vegaEmbed(`#pin${p}`, pinned[p]['vega'], {actions:false})
 	}
 
 	function pin(i) {
 		pinned = pinned.concat([recommendations[i]])
 	}
+
+	function showPin() {
+		document.getElementById("pinnedDrawer").style.width = "450px"
+	}
+
+	function closePin() {
+		document.getElementById("pinnedDrawer").style.width = "0px"
+	}
 </script>
 
-<div>
-	<div>
-		<p><b>RECOMMENDATIONS</b></p>
-		<button on:click={update}>Update Recommendations</button>
-		<button on:click={reset}>Reset</button>
-	</div>
-	<div id="recommendationDisplay">
-		{#each recommendations as c, i}
-			<div class="vis">
-				<button on:click={() => pin(i)}>Pin</button>
-				<div>
-					<div id="vis{i}"></div>
+<div id="overall">
+	<AttributesWeight attributes={attributesWeight}/>
+	<div id="recommendations">
+		<div id="menu">
+			<p><b>RECOMMENDATIONS</b></p>
+			<button on:click={update}>Update Recommendations</button>
+			<button on:click={reset}>Reset</button>
+			<button on:click={showPin}>Pinned</button>
+		</div>
+		<div id="recommendationDisplay">
+			{#each recommendations as c, i}
+				<div class="vis">
 					<div class="buttons">
 						<button class="{recommendationsClass[i] === 'more' ? 'more' : 'default'}"
 								on:click={() => updateMore(i)}>
@@ -279,13 +267,23 @@
 								on:click={() => updateLess(i)}>
 							Less Like This
 						</button>
+						<div on:click={() => pin(i)}>
+							<i class="material-icons-outlined md-24">open_in_new</i>
+						</div>
+						<div class="pinButton" on:click={() => pin(i)}>
+							<i class="material-icons-outlined md-24">push_pin</i>
+						</div>
+					</div>
+					<div class="vegaContainer">
+						<div id="vis{i}"></div>
 					</div>
 				</div>
-			</div>
-		{/each}
+			{/each}
+		</div>
 	</div>
-	<div>
-		<p><b>PINNED</b></p>
+	<div id="pinnedDrawer">
+		<p id="pinnedText"><b>PINNED</b></p>
+		<a id="closeButton" on:click={closePin}>&times;</a>
 		<div id="pinnedDisplay">
 			{#each pinned as p, i}
 				<div id="pin{i}"></div>
@@ -295,6 +293,10 @@
 </div>
 
 <style>
+	#overall {
+		display: flex;
+	}
+
 	#recommendationDisplay {
 		display: grid;
 		grid-template-columns: repeat(3, 350px);
@@ -303,24 +305,70 @@
 		margin-top: 50px
 	}
 
+	#pinnedDrawer {
+		height: 100%;
+		width: 0;
+		position: fixed;
+		z-index: 1001;
+		top: 0;
+		right: 0;
+		overflow: scroll;
+		transition: 0.5s;
+		padding-top: 30px;
+		background: white;
+		box-shadow: 195px 8px 10px -5px rgba(0,0,0,0.2), 0px 16px 24px 2px rgba(0,0,0,0.14), 0px 6px 30px 5px rgba(0,0,0,0.12);
+	}
+
+	#pinnedText {
+		margin-left: 30px;
+	}
+
 	#pinnedDisplay {
 		display: flex;
-		flex-direction: row
+		flex-direction: column;
+		gap: 30px;
+		margin-left: 30px;
+		max-width: 420px
+	}
+
+	#closeButton {
+		position: absolute;
+		top: 0;
+		right: 25px;
+		font-size: 36px;
+		margin-left: 50px;
+		cursor: pointer;
 	}
 
 	.vis {
-		overflow: scroll;
+		overflow: hidden;
+	}
+
+	.buttons {
+		display: flex;
+		flex-direction: row;
+	}
+
+	.pinButton {
+		margin-left: auto;
+		width: 28px;
+    	height: 28px;
+    	color: gray;
+    	cursor: pointer;
 	}
 
 	.more {
 		background-color: #cde09b;
+		margin-right: 0.5em;
 	}
 
 	.less {
 		background-color: #e0a99b;
+		margin-right: 0.5em;
 	}
 
 	.default {
 		background-color: #f4f4f4;
+		margin-right: 0.5em;
 	}
 </style>

@@ -8,14 +8,32 @@
 		fetch("./classifier/api?param1=1&param1=2")
 	}
 
-
 	let selectedAttributes = []
 	let promise = loadData();
+
+	function getType(row) {
+		const result = {}
+
+		for (let attr of Object.keys(row)) {
+			const value = row[attr]
+			if (isNaN(parseFloat(value))) {
+				result[attr] ='string'
+			} else {
+				result[attr] ='number'
+			}
+		}
+
+		return result
+	}
 
 	async function loadData() {
 		const dataset = await d3.csv(`cereal.csv`)
 
-		return dataset
+		const firstRow = dataset[0]
+
+		const types = getType(firstRow)
+
+		return {"dataset":dataset, "types":types}
 	}
 
 	function updateAttributes(event) {
@@ -33,12 +51,13 @@
 	{#await promise}
 		<p>...loading</p>
 	{:then dataset}
-			<AttributesBar
+			<!-- <AttributesBar
 				on:attributeClicked={updateAttributes}
-				{dataset}/>
+				dataset={dataset["dataset"]}/> -->
 			<RecommendationsMain
-				{selectedAttributes}
-				{dataset}/>
+				dataset = {dataset["dataset"]}
+				types = {dataset["types"]}
+				{selectedAttributes}/>
 	{:catch error}
 		<p style="color: red">{error.message}</p>
 	{/await}

@@ -77,7 +77,7 @@ class Modeler():
         feat_dict = dict(zip(feat_names, feat_wts))
         feat_arr_wt = sorted(
             feat_dict.items(), key=lambda kv: kv[1], reverse=True)  # [:5]
-        feat_arr_wt = [(str(x[0]), str(x[1])) for x in feat_arr_wt][0:8]
+        feat_arr_wt = [(str(x[0]), str(x[1])) for x in feat_arr_wt if abs(x[1]) > 0]
 
         metric = 'Acc'
         accTrain = accuracy_score(targetTrain, predTrain, normalize=True)
