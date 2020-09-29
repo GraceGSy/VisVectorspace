@@ -68,6 +68,8 @@ class Modeler():
                                      )
         clf.fit(train, targetTrain)
 
+        print('building classifier...')
+
         predTrain = clf.predict(train)
         predTest = clf.predict(test)
 
@@ -82,6 +84,8 @@ class Modeler():
         metric = 'Acc'
         accTrain = accuracy_score(targetTrain, predTrain, normalize=True)
         accTest = accuracy_score(targetTest, predTest, normalize=True)
+
+        print('accuracy...', accTrain, accTest)
         return accTrain, accTest, feat_arr_wt, metric, predTest
 
 

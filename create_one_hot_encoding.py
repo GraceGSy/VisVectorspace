@@ -2,7 +2,7 @@ import copy
 import itertools
 import pandas
 
-accepted_marks = ['mark_area','mark_bar','mark_circle',
+accepted_marks = ['mark_area','mark_bar',
 				  'mark_line','mark_point',
 				  'mark_rect','mark_tick']
 
@@ -166,6 +166,46 @@ for row in data:
 
 		new_data.append(new_row)
 
+# def getOptions(spec, attrByType):
+# 	validChannels = ['x','y','color','size','shape']
+
+# 	myArgs = []
+# 	myFields = []
+
+# 	for c in validChannels:
+# 		if spec[c+'.field'] == 1:
+# 			myFields.append(c+'.field')
+# 			if (c+'.type_quantitative' in spec) and spec[c+'.type_quantitative'] == 1:
+# 				myArgs.append(attrByType['number'])
+# 			elif (c+'.type_nominal' in spec) and spec[c+'.type_nominal'] == 1:
+# 				myArgs.append(attrByType['string'])
+
+# 	allCombinations = list(itertools.product(*myArgs))
+
+# 	combinations = []
+
+# 	# Do not repeat variables
+# 	for c in allCombinations:
+# 		length = len(c)
+# 		uniqueLength = len(set(c))
+
+# 		if length == uniqueLength:
+# 			combinations.append(c)
+
+# 	specsWithFields = []
+
+# 	for c in combinations:
+# 		newSpec = copy.deepcopy(spec)
+# 		for i in range(len(c)):
+# 			newSpec[myFields[i]+'_'+c[i]] = 1
+
+# 		for vc in validChannels:
+# 			newSpec.pop(vc+'.field', None)
+
+# 		specsWithFields.append(newSpec)
+
+# 	return specsWithFields
+
 def getOptions(spec, attrByType):
 	validChannels = ['x','y','color','size','shape']
 
@@ -180,36 +220,21 @@ def getOptions(spec, attrByType):
 			elif (c+'.type_nominal' in spec) and spec[c+'.type_nominal'] == 1:
 				myArgs.append(attrByType['string'])
 
-	allCombinations = list(itertools.product(*myArgs))
+	newSpec = copy.deepcopy(spec)
 
-	combinations = []
+	for i in range(len(myFields)):
+		field = myFields[i]
+		args = myArgs[i]
+		for a in args:
+			newSpec[field+'_'+a] = 0
 
-	# Do not repeat variables
-	for c in allCombinations:
-		length = len(c)
-		uniqueLength = len(set(c))
-
-		if length == uniqueLength:
-			combinations.append(c)
-
-	specsWithFields = []
-
-	for c in combinations:
-		newSpec = copy.deepcopy(spec)
-		for i in range(len(c)):
-			newSpec[myFields[i]+'_'+c[i]] = 1
-
-		for vc in validChannels:
-			newSpec.pop(vc+'.field', None)
-
-		specsWithFields.append(newSpec)
-
-	return specsWithFields
+	return [newSpec]
 
 vegaSpecs = new_data
 
 # The following is only to be used with the cars dataset
-types = {'name': 'number', 'mfr': 'string', 'type': 'string', 'calories': 'number', 'protein': 'number', 'fat': 'number', 'sodium': 'number', 'fiber': 'number', 'carbo': 'number', 'sugars': 'number', 'potass': 'number', 'vitamins': 'number', 'shelf': 'number', 'weight': 'number', 'cups': 'number', 'rating': 'number'}
+# types = {'name': 'number', 'mfr': 'string', 'type': 'string', 'calories': 'number', 'protein': 'number', 'fat': 'number', 'sodium': 'number', 'fiber': 'number', 'carbo': 'number', 'sugars': 'number', 'potass': 'number', 'vitamins': 'number', 'shelf': 'number', 'weight': 'number', 'cups': 'number', 'rating': 'number'}
+types = {'mfr': 'string', 'type': 'string', 'calories': 'number', 'protein': 'number', 'fat': 'number', 'sodium': 'number', 'carbo': 'number', 'sugars': 'number', 'vitamins': 'number', 'shelf': 'number'}
 
 attrByType = {"string": [], "number": []}
 
@@ -229,4 +254,4 @@ df.index.names = ['index']
 df['label'] = 0
 
 # do not un-comment the following unless you wish to rewrite the specs file
-# df.to_csv('./client/public/manual_specs_one_hot_encoding_2.csv')
+df.to_csv('./client/public/manual_specs_one_hot_encoding_3.csv')

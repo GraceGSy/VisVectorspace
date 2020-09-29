@@ -33,6 +33,7 @@
 		display: flex;
 		flex-direction: column;
 		width: 150px;
-		margin-right: 50px
+		margin-right: 50px;
+		background: white;
 	}
 </style>

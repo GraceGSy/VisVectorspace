@@ -1,7 +1,10 @@
 <script>
 	import * as d3 from 'd3'
 	import AttributesBar from './AttributesBar.svelte'
-	import RecommendationsMain from './RecommendationsMain.svelte'
+	import VersionRecommendations from './VersionRecommendations.svelte'
+	import VersionConstraintSolver from './VersionConstraintSolver.svelte'
+
+	let version = "constraintSolver"
 
 	let rand = -1;
 	function getRand() {
@@ -51,13 +54,20 @@
 	{#await promise}
 		<p>...loading</p>
 	{:then dataset}
-			<!-- <AttributesBar
-				on:attributeClicked={updateAttributes}
-				dataset={dataset["dataset"]}/> -->
-			<RecommendationsMain
+		{#if version === "constraintSolver"}
+			<VersionConstraintSolver
 				dataset = {dataset["dataset"]}
 				types = {dataset["types"]}
 				{selectedAttributes}/>
+		{:else}
+			<!-- <AttributesBar
+				on:attributeClicked={updateAttributes}
+				dataset={dataset["dataset"]}/> -->
+			<VersionRecommendations
+				dataset = {dataset["dataset"]}
+				types = {dataset["types"]}
+				{selectedAttributes}/>
+		{/if}
 	{:catch error}
 		<p style="color: red">{error.message}</p>
 	{/await}

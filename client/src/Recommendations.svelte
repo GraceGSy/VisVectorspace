@@ -2,9 +2,6 @@
 	import * as d3 from 'd3'
 	import Draco from 'draco-vis'
 	import vegaToRanking from './vegaToRanking.js'
-	import dracoDataConstraints from './dracoDataConstraints.js'
-	import dracoMarkConstraints from './dracoMarkConstraints.js'
-	import dracoVisConstraints from './dracoVisConstraints.js'
 	import defaultConstraints from './defaults.js'
 
 	import getRecombinations from './getRecombinations.js'
@@ -36,48 +33,21 @@
 
 	let attributesWeight = []
 
-	function selectRecommendations(similarRecommendations) {
-		let allNew = []
-
-		for (let i = 0; i < 9; i++) {
-			let currentSet = JSON.parse(JSON.stringify(similarRecommendations[i]))
-			if (currentSet && currentSet.length > 0) {
-				currentSet = currentSet.filter(r => r)
-				currentSet = currentSet.map(r => {
-					r.index = i
-					return r
-				})
-				allNew.push(currentSet)
-			}
-		}
+	function selectRecommendations(recommendationSets) {
+		similarRecommendations = recommendationSets
 
 		let result = []
 		let setNumber = 0
 
-		while (result.length < 9) {
-			let set = allNew[setNumber % allNew.length]
+		for (let set of similarRecommendations) {
 			let randomIndex = Math.floor(Math.random() * (set.length))
 			let selected = set[randomIndex]
 
-			if (result.length === 0) {
-				result.push(selected)
-			} else {
-				let isNew = true
-				for (let r of result) {
-					if (JSON.stringify(r.vega) === JSON.stringify(selected.vega)) {
-						isNew = false
-					}
-				}
-				if (isNew) {
-					result.push(selected)
-					setNumber++
-				}
-			}
+			result.push(selected)
 		}
 
 		recommendationsClass = recommendationsClass.map(r => 'default')
-
-		return result
+		recommendations = result
 	}
 
 	function runClassifier() {
@@ -88,15 +58,6 @@
 		let newLess = []
 		let newMaybe = []
 
-		// If no user feedback provided
-		if (newMore.length === 0 && newLess.length  === 0) {
-			Promise.all(getRecombinations(vegaSpecs, dataset)).then((result) => {
-				similarRecommendations = result
-				recommendations = selectRecommendations(result)
-			})
-			return
-		}
-
 		for (let i = 0; i < recommendationsClass.length; i++) {
 			let r = recommendationsClass[i]
 			if (r === 'more') {
@@ -106,6 +67,14 @@
 			} else {
 				newMaybe.push(recommendations[i])
 			}
+		}
+
+		// If no user feedback provided
+		if (newMore.length === 0 && newLess.length  === 0) {
+			Promise.all(getRecombinations(vegaSpecs, dataset)).then((result) => {
+				selectRecommendations(result)
+			})
+			return
 		}
 
 		moreLikeThis = moreLikeThis.concat(newMore)
@@ -130,6 +99,8 @@
 			newMb['mark'] = mb.vega.mark
 			trainingData.push(newMb)
 		}
+
+		console.log(testingData)
 
 		let classifierData = {
 			'training': trainingData,
@@ -172,8 +143,7 @@
 				}
 
 				Promise.all(getRecombinations(updatedPreferrences, dataset)).then((result) => {
-					similarRecommendations = result
-					recommendations = selectRecommendations(result)
+					selectRecommendations(result)
 				})
       		})
 	}
@@ -181,8 +151,7 @@
 	$: {console.log('update count', updateCount)
 		if (updateCount === 0) {
 			Promise.all(getRecombinations(vegaSpecs, dataset)).then((result) => {
-				similarRecommendations = result
-				recommendations = selectRecommendations(result)
+				selectRecommendations(result)
 			})
 		}
 		else {
@@ -251,9 +220,9 @@
 	<div id="recommendations">
 		<div id="menu">
 			<p><b>RECOMMENDATIONS</b></p>
-			<button on:click={update}>Update Recommendations</button>
-			<button on:click={reset}>Reset</button>
-			<button on:click={showPin}>Pinned</button>
+			<button on:click={update}>UPDATE RECOMMENDATIONS</button>
+			<button on:click={reset}>RESET</button>
+			<button on:click={showPin}>PINNED</button>
 		</div>
 		<div id="recommendationDisplay">
 			{#each recommendations as c, i}
@@ -267,9 +236,6 @@
 								on:click={() => updateLess(i)}>
 							Less Like This
 						</button>
-						<div on:click={() => pin(i)}>
-							<i class="material-icons-outlined md-24">open_in_new</i>
-						</div>
 						<div class="pinButton" on:click={() => pin(i)}>
 							<i class="material-icons-outlined md-24">push_pin</i>
 						</div>
@@ -295,13 +261,15 @@
 <style>
 	#overall {
 		display: flex;
+		background: #f4f4f4;
+		padding-right: 25px;
 	}
 
 	#recommendationDisplay {
 		display: grid;
 		grid-template-columns: repeat(3, 350px);
 		grid-template-rows: repeat(3, 350px);
-		grid-gap: 50px;
+		grid-gap: 15px;
 		margin-top: 50px
 	}
 
@@ -341,12 +309,17 @@
 	}
 
 	.vis {
-		overflow: hidden;
+		overflow: scroll;
+	    background: white;
+	    display: flex;
+	    flex-direction: column;
+	    padding: 15px;
 	}
 
 	.buttons {
 		display: flex;
 		flex-direction: row;
+		margin-bottom: 20px;
 	}
 
 	.pinButton {
@@ -370,5 +343,13 @@
 	.default {
 		background-color: #f4f4f4;
 		margin-right: 0.5em;
+	}
+
+	.vegaContainer {
+		height: 322px;
+		overflow: scroll;
+	    background: white;
+	    display: flex;
+	    flex-direction: column;
 	}
 </style>

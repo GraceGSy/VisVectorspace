@@ -126,7 +126,7 @@ def flatten_one_hot_encoding(training, testing):
 
 	columns = list(df)
 
-	accepted_columns = list(pd.read_csv('./client/public/manual_specs_one_hot_encoding_2.csv'))
+	accepted_columns = list(pd.read_csv('./client/public/manual_specs_one_hot_encoding_3.csv'))
 
 	for col in columns:
 		if 'label' in col:
@@ -170,8 +170,6 @@ def classify():
 
 	X_train, y_train = m.data_label_split(dfTraining, targetCol)
 	X_test, y_test = m.data_label_split(dfTesting, targetCol)
-
-	print(y_train, y_test)
 
 	accTrain, accTest, feat_arr_wt, metric, predTest = m.build_model_classif(X_train, X_test, y_train, y_test)
 	outobj['model_name'] = 'Classifier'

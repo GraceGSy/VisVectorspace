@@ -13,9 +13,8 @@
 		let result = {}
 		for (let i = 0; i < d3.keys(d).length; i++) {
 			let variableName = d3.keys(d)[i]
-			if (variableName === 'filename') {
-				result[variableName] = d3.values(d)[i]
-			} else {
+			if (variableName === 'filename') {}
+			else {
 				result[variableName] = +d3.values(d)[i]
 			}
 		}
@@ -23,7 +22,7 @@
 	}
 
 	async function loadSpecs() {
-		const specs = await d3.csv(`/manual_specs_one_hot_encoding_2.csv`, dataPreprocessor)
+		const specs = await d3.csv(`/manual_specs_one_hot_encoding_3.csv`, dataPreprocessor)
 
 		const vegaSpecs = []
 

@@ -26,7 +26,7 @@
 </script>
 
 <div id="attributesBar">
-	<p><b>ATTRIBUTES</b></p>
+	<p><b>LEARNED ENCODINGS</b></p>
 	{#each attributesProcessed as a}
 		<div key={a.join()} class="attribute">
 			<div class="attributeLeft">{a[0]}</div>

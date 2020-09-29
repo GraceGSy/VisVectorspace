@@ -36,7 +36,8 @@ export default function(constraints) {
 					// Get field
 					let field = attr.slice(attr.indexOf('field')+6)
 
-					if (r['value'] > 0) {
+					if (field === '') {}
+					else if (r['value'] > 0) {
 						// 'moreLikeThis' field
 						newConstraint = newConstraint + `:- not field(e${encodingCount}, ${field}).`
 					} else {
