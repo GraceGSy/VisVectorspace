@@ -27,28 +27,25 @@ export default function(constraints) {
 					if (r['value'] > 0) {
 						// 'moreLikeThis' type
 						newConstraint = newConstraint + `:- not type(e${encodingCount}, ${type}).`
-					} else {
-						// 'lessLikeThis' type
-						newConstraint = newConstraint + `:- type(e${encodingCount}, ${type}).`
 					}
-					
 				}
 
 				// If there are field preferences
-				// if (attr.includes('.field')) {
+				if (attr.includes('.field')) {
 
-				// 	// Get field
-				// 	let field = attr.slice(attr.indexOf('field')+6)
+					// Get field
+					let field = attr.slice(attr.indexOf('field')+6)
 
-				// 	if (r['value'] > 0) {
-				// 		// 'moreLikeThis' field
-				// 		newConstraint = newConstraint + `:- not field(e${encodingCount}, ${field}).`
-				// 	} else {
-				// 		// 'lessLikeThis' field
-				// 		newConstraint = newConstraint + `:- field(e${encodingCount}, ${field}).`
-				// 	}
+					if (field === '') {}
+					else if (r['value'] > 0) {
+						// 'moreLikeThis' field
+						newConstraint = newConstraint + `:- not field(e${encodingCount}, ${field}).`
+					} else {
+						// 'lessLikeThis' field
+						newConstraint = newConstraint + `:- field(e${encodingCount}, ${field}).`
+					}
 					
-				// }
+				}
 
 				// If there are aggregate preferences
 				if (attr.includes('.aggregate')) {
@@ -56,14 +53,12 @@ export default function(constraints) {
 					// Get aggregate
 					let agg = attr.slice(attr.indexOf('aggregate')+10)
 
+					console.log(agg)
+
 					if (r['value'] > 0) {
 						// 'moreLikeThis' field
 						newConstraint = newConstraint + `:- not aggregate(e${encodingCount}, ${agg}).`
-					} else {
-						// 'lessLikeThis' field
-						newConstraint = newConstraint + `:- aggregate(e${encodingCount}, ${agg}).`
 					}
-					
 				}
 
 				// If there are binning preferences
@@ -72,11 +67,7 @@ export default function(constraints) {
 					if (r['value'] > 0) {
 						// 'moreLikeThis' bin
 						newConstraint = newConstraint + `:- not bin(e${encodingCount}, 10).`
-					} else {
-						// 'lessLikeThis' bin
-						newConstraint = newConstraint + `:- bin(e${encodingCount}, 10}).`
 					}
-					
 				}
 
 			}

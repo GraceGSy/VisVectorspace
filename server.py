@@ -4,6 +4,8 @@ import random
 import json
 import pandas as pd
 from pandas.io.json._normalize import nested_to_record
+import itertools
+import copy
 
 app = Flask(__name__)
 
@@ -29,6 +31,74 @@ def readFile():
 	print('data', request.data)
 	return
 
+def getOptions(spec, attrByType):
+	validChannels = ['x','y','color','size','shape']
+
+	myArgs = []
+	myFields = []
+
+	for c in validChannels:
+		if spec[c+'.field'] == 1:
+			myFields.append(c+'.field')
+			if (c+'.type_quantitative' in spec) and spec[c+'.type_quantitative'] == 1:
+				myArgs.append(attrByType['number'])
+			elif (c+'.type_nominal' in spec) and spec[c+'.type_nominal'] == 1:
+				myArgs.append(attrByType['string'])
+
+	allCombinations = list(itertools.product(*myArgs))
+
+	combinations = []
+
+	# Do not repeat variables
+	for c in allCombinations:
+		length = len(c)
+		uniqueLength = len(set(c))
+
+		if length == uniqueLength:
+			combinations.append(c)
+
+	specsWithFields = []
+
+	for c in combinations:
+		newSpec = copy.deepcopy(spec)
+		for i in range(len(c)):
+			newSpec[myFields[i]+'_'+c[i]] = 1
+
+		for vc in validChannels:
+			newSpec.pop(vc+'.field', None)
+
+		specsWithFields.append(newSpec)
+
+	return specsWithFields
+
+# Create specs for user dataset
+@app.route("/recombine", methods=['POST'])
+def recombine():
+	data = json.loads(request.data)
+
+	vegaSpecs = data["vegaSpecs"]
+	types = data["types"]
+
+	print(types)
+
+	attrByType = {"string": [], "number": []}
+
+	for attr in types.keys():
+		attrByType[types[attr]].append(attr)
+
+	specsWithFields = []
+
+	for spec in vegaSpecs:
+		specsWithFields = specsWithFields + getOptions(spec, attrByType)
+
+	df = pd.DataFrame(specsWithFields)
+	df = df.fillna(0)
+
+	print(df)
+
+	return json.dumps(df.to_dict('records'))
+
+
 def flatten_one_hot_encoding(training, testing):
 	result = []
 
@@ -38,7 +108,7 @@ def flatten_one_hot_encoding(training, testing):
 
 	df = pd.DataFrame(result)
 
-	df = df.fillna('none')
+	df = df.fillna(0)
 
 	new_columns = list(df)
 
@@ -46,10 +116,7 @@ def flatten_one_hot_encoding(training, testing):
 		col_values = list(df[new_col].unique())
 
 		if 'field' in new_col:
-			col_labels = {}
-			for v in col_values:
-				col_labels[v] = 0 if v == 'none' else 1
-			df[new_col] = df[new_col].map(col_labels)
+			df = pd.get_dummies(df, columns=[new_col], prefix=new_col)
 		elif 'label' in new_col:
 			continue
 		elif 'mark' in new_col:
@@ -59,7 +126,7 @@ def flatten_one_hot_encoding(training, testing):
 
 	columns = list(df)
 
-	accepted_columns = list(pd.read_csv('./client/public/specs_one_hot_encoding.csv'))
+	accepted_columns = list(pd.read_csv('./client/public/manual_specs_one_hot_encoding_3.csv'))
 
 	for col in columns:
 		if 'label' in col:
@@ -84,12 +151,15 @@ def getPreferred(predictions, testing):
 # Call the classifier
 @app.route("/classifier", methods=['POST'])
 def classify():
+	print("call ok...")
 	dataset = json.loads(request.data)
+
+	print("running...")
 
 	testingData = dataset['testing']
 	trainingData = flatten_one_hot_encoding(dataset['training'], testingData)
 
-	mainCol = 'filename'
+	mainCol = 'index'
 	targetCol = 'label'
 
 	outobj = {}
@@ -101,8 +171,6 @@ def classify():
 	X_train, y_train = m.data_label_split(dfTraining, targetCol)
 	X_test, y_test = m.data_label_split(dfTesting, targetCol)
 
-	# print(y_train, y_test)
-
 	accTrain, accTest, feat_arr_wt, metric, predTest = m.build_model_classif(X_train, X_test, y_train, y_test)
 	outobj['model_name'] = 'Classifier'
 	outobj['acc_train'] = str(accTrain)
@@ -110,9 +178,12 @@ def classify():
 	# outobj['col_names'] = str(','.join(colData))
 	outobj['feature_wts'] = feat_arr_wt
 
-	# print(getPreferred(predTest, testingData))
-	return json.dumps(getPreferred(predTest, testingData))
-	# return (json.dumps(outobj, sort_keys=True))
+	# print(accTrain, accTest, feat_arr_wt, metric)
+
+	print(predTest, len(getPreferred(predTest, testingData)))
+
+	result = json.dumps({"pred": predTest.tolist(), "feature_wts": feat_arr_wt})
+	return result
 
 if __name__ == "__main__":
 	app.run(debug=True)

@@ -6,7 +6,7 @@ import dracoVisConstraints from './dracoVisConstraints.js'
 import * as d3 from 'd3'
 
 function solveDraco(newConstraints, dataset) {
-	console.log(newConstraints)
+	// console.log(newConstraints)
 	let recs = []
 
 	const url = 'https://unpkg.com/wasm-clingo@0.2.2'
@@ -34,9 +34,11 @@ function solveDraco(newConstraints, dataset) {
 			${visConstraints}
 		`;
 
+		// console.log(inputConstraints)
+
 		const solution = draco.solve(inputConstraints, { models: 9 });
 		if (!solution) {
-			console.log('no solution')
+			// console.log('no solution')
 			return []
 		}
 
@@ -49,7 +51,7 @@ function solveDraco(newConstraints, dataset) {
 }
 
 function getTests(index, vegaSpecs, dataset) {
-	console.log('spec', vegaSpecs[index])
+	// console.log('spec', vegaSpecs[index])
 	let encoding = vegaSpecs[index].spec
 
 	let constraints = []
