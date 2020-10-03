@@ -4,7 +4,7 @@
 	import VersionRecommendations from './VersionRecommendations.svelte'
 	import VersionConstraintSolver from './VersionConstraintSolver.svelte'
 
-	let version = "constraintSolver"
+	let version = "constraintLearner"
 
 	let rand = -1;
 	function getRand() {

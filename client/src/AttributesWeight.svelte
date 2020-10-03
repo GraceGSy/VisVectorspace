@@ -40,13 +40,14 @@
 		display: flex;
 		flex-direction: column;
 		width: 200px;
-		margin-right: 50px;
-		margin-left: 25px;
+	    padding-right: 50px;
+	    padding-left: 25px;
+	    margin-right: 25px;
+		background: white;
 	}
 
 	.attribute {
 		height: 25px;
-		background: #f4f4f4;
 		margin-bottom: 10px;
 		display: flex;
 	}

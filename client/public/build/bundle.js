@@ -25320,7 +25320,7 @@ ${constraint.asp}`;
         Object.defineProperty(exports, '__esModule', { value: true });
 
     })));
-    //# sourceMappingURL=draco.js.map
+
     });
 
     var Draco = unwrapExports(draco);
@@ -29009,8 +29009,6 @@ ${constraint.asp}`;
     };
     });
 
-    //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi9zcmMvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsY0FBYyxTQUFTLENBQUM7QUFDeEIsY0FBYyxRQUFRLENBQUM7QUFDdkIsY0FBYyxZQUFZLENBQUM7QUFDM0IsT0FBTyxLQUFLLE1BQU0sU0FBUyxDQUFDO0FBQzVCLGVBQWUsS0FBSyxDQUFDIn0=
-
     /*!
      * Determine if an object is a Buffer
      *
@@ -29495,12 +29493,12 @@ ${constraint.asp}`;
     			div1 = element("div");
     			t2 = text(t2_value);
     			t3 = space();
-    			attr_dev(div0, "class", "attributeLeft svelte-4fp91j");
+    			attr_dev(div0, "class", "attributeLeft svelte-10tgs7z");
     			add_location(div0, file$1, 31, 3, 715);
-    			attr_dev(div1, "class", "attributeRight svelte-4fp91j");
+    			attr_dev(div1, "class", "attributeRight svelte-10tgs7z");
     			add_location(div1, file$1, 32, 3, 758);
     			attr_dev(div2, "key", div2_key_value = /*a*/ ctx[2].join());
-    			attr_dev(div2, "class", "attribute svelte-4fp91j");
+    			attr_dev(div2, "class", "attribute svelte-10tgs7z");
     			add_location(div2, file$1, 30, 2, 673);
     		},
     		m: function mount(target, anchor) {
@@ -29564,7 +29562,7 @@ ${constraint.asp}`;
     			add_location(b, file$1, 28, 4, 608);
     			add_location(p, file$1, 28, 1, 605);
     			attr_dev(div, "id", "attributesBar");
-    			attr_dev(div, "class", "svelte-4fp91j");
+    			attr_dev(div, "class", "svelte-10tgs7z");
     			add_location(div, file$1, 27, 0, 579);
     		},
     		l: function claim(nodes) {
@@ -32035,7 +32033,7 @@ ${constraint.asp}`;
     			p = element("p");
     			t = text(t_value);
     			set_style(p, "color", "red");
-    			add_location(p, file$6, 71, 2, 1595);
+    			add_location(p, file$6, 71, 2, 1596);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -32226,7 +32224,7 @@ ${constraint.asp}`;
     		c: function create() {
     			p = element("p");
     			p.textContent = "...loading";
-    			add_location(p, file$6, 54, 2, 1139);
+    			add_location(p, file$6, 54, 2, 1140);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -32276,7 +32274,7 @@ ${constraint.asp}`;
     			attr_dev(div, "id", "main");
     			set_style(div, "padding", "'20px'");
     			attr_dev(div, "class", "svelte-1dx2uzi");
-    			add_location(div, file$6, 52, 0, 1079);
+    			add_location(div, file$6, 52, 0, 1080);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -32357,7 +32355,7 @@ ${constraint.asp}`;
     }
 
     function instance$6($$self, $$props, $$invalidate) {
-    	let version = "constraintSolver";
+    	let version = "constraintLearner";
     	let rand = -1;
     	let selectedAttributes = [];
     	let promise = loadData();
