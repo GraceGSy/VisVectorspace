@@ -1,11 +1,14 @@
 from flask import Flask, send_from_directory, request
 from classifier import Modeler
+from kneighbors import knnModeler
+import numpy as np
 import random
 import json
 import pandas as pd
 from pandas.io.json._normalize import nested_to_record
 import itertools
 import copy
+from umap import UMAP
 
 app = Flask(__name__)
 
@@ -126,17 +129,23 @@ def flatten_one_hot_encoding(training, testing):
 
 	columns = list(df)
 
-	accepted_columns = list(pd.read_csv('./client/public/manual_specs_one_hot_encoding_3.csv'))
+	print(columns)
+
+	# accepted_columns = list(pd.read_csv('./client/public/manual_specs_one_hot_encoding_3.csv'))
 
 	for col in columns:
-		if 'label' in col:
-			continue
-		elif col not in accepted_columns:
+		if '0' in col:
+			df = df.drop(columns=[col])
+		elif 'scale' in col:
+			df = df.drop(columns=[col])
+		elif 'zero' in col:
+			df = df.drop(columns=[col])
+		elif 'stack' in col:
 			df = df.drop(columns=[col])
 
-	for ac in accepted_columns:
-		if ac not in columns:
-			df[ac] = 0
+	# for ac in accepted_columns:
+	# 	if ac not in columns:
+	# 		df[ac] = 0
 
 	return df.to_dict('records')
 
@@ -151,10 +160,8 @@ def getPreferred(predictions, testing):
 # Call the classifier
 @app.route("/classifier", methods=['POST'])
 def classify():
-	print("call ok...")
+	print("classifier call ok...")
 	dataset = json.loads(request.data)
-
-	print("running...")
 
 	testingData = dataset['testing']
 	trainingData = flatten_one_hot_encoding(dataset['training'], testingData)
@@ -180,10 +187,61 @@ def classify():
 
 	# print(accTrain, accTest, feat_arr_wt, metric)
 
-	print(predTest, len(getPreferred(predTest, testingData)))
+	# print(predTest, len(getPreferred(predTest, testingData)))
 
 	result = json.dumps({"pred": predTest.tolist(), "feature_wts": feat_arr_wt})
 	return result
+
+def getCoords(df):
+	xy = UMAP().fit_transform(df)
+	return xy.tolist()
+
+@app.route("/kneighbors", methods=["POST"])
+def kneighbors():
+	print("kneighbors call ok...")
+	dataset = json.loads(request.data)
+
+	testingData = dataset['testing']
+	trainingData = flatten_one_hot_encoding(dataset['training'], testingData)
+
+	mainCol = 'index'
+	targetCol = 'label'
+
+	m = knnModeler()
+	m.read_data(trainingData, testingData)
+	df, colData = m.pre_processdata(m.df, mainCol)
+
+	X, y = m.data_label_split(df, targetCol)
+	m.build_model_knn(X)
+
+	predictions = []
+
+	umapCoords = getCoords(X)
+
+	dists, inds = m.knn.query(X, k=10)
+	for instance in range(len(df.index)):
+		dist = dists[instance].tolist()
+		ind = inds[instance].tolist()
+		pairs = zip(ind, dist)
+		labels = []
+		for (i, d) in pairs:
+			labels.append(y.iloc[i])
+		prediction = sum(labels)/len(labels)
+
+		df.at[instance, 'label'] = prediction
+		df.at[instance, 'umapX'] = umapCoords[instance][0]
+		df.at[instance, 'umapY'] = umapCoords[instance][1]
+		predictions.append(prediction)
+		# 	print(neighbor, dist[i], y[neighbor])
+
+	# relevant = sorted(relevant, key=lambda p: p[1], reverse=True)
+
+	# for i in ind:
+	# 	print(X[i], y[i])
+
+	result = json.dumps({"newData": df.to_dict(orient="records"), "predictions":predictions})
+	return result
+
 
 if __name__ == "__main__":
 	app.run(debug=True)

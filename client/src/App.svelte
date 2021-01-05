@@ -50,32 +50,54 @@
 	}
 </script>
 
-<div id="main" style="padding: '20px'">
-	{#await promise}
-		<p>...loading</p>
-	{:then dataset}
-		{#if version === "constraintSolver"}
-			<VersionConstraintSolver
-				dataset = {dataset["dataset"]}
-				types = {dataset["types"]}
-				{selectedAttributes}/>
-		{:else}
-			<!-- <AttributesBar
-				on:attributeClicked={updateAttributes}
-				dataset={dataset["dataset"]}/> -->
-			<VersionRecommendations
-				dataset = {dataset["dataset"]}
-				types = {dataset["types"]}
-				{selectedAttributes}/>
-		{/if}
-	{:catch error}
-		<p style="color: red">{error.message}</p>
-	{/await}
+<div style="padding: '20px'">
+	<div id="versioning">
+		<label class="versionOption">
+			<input type=radio bind:group={version} value={"constraintSolver"}>
+			Constraint Solver
+		</label>
+		<label class="versionOption">
+			<input type=radio bind:group={version} value={"constraintLearner"}>
+			Constraint Learner
+		</label>
+	</div>
+	<div id="main">
+		{#await promise}
+			<p>...loading</p>
+		{:then dataset}
+			{#if version === "constraintSolver"}
+				<VersionConstraintSolver
+					dataset = {dataset["dataset"]}
+					types = {dataset["types"]}
+					{selectedAttributes}/>
+			{:else}
+				<!-- <AttributesBar
+					on:attributeClicked={updateAttributes}
+					dataset={dataset["dataset"]}/> -->
+				<VersionRecommendations
+					dataset = {dataset["dataset"]}
+					types = {dataset["types"]}
+					{selectedAttributes}/>
+			{/if}
+		{:catch error}
+			<p style="color: red">{error.message}</p>
+		{/await}
+	</div>
 </div>
 
 <style>
 	#main {
 		display: flex;
 		flex-direction: row
+	}
+
+	#versioning {
+		width: 100%;
+		display: flex;
+		padding: 10px 0px 20px 20px;
+	}
+
+	.versionOption {
+		margin-right: 20px;
 	}
 </style>

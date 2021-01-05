@@ -234,19 +234,21 @@ vegaSpecs = new_data
 
 # The following is only to be used with the cars dataset
 # types = {'name': 'number', 'mfr': 'string', 'type': 'string', 'calories': 'number', 'protein': 'number', 'fat': 'number', 'sodium': 'number', 'fiber': 'number', 'carbo': 'number', 'sugars': 'number', 'potass': 'number', 'vitamins': 'number', 'shelf': 'number', 'weight': 'number', 'cups': 'number', 'rating': 'number'}
-types = {'mfr': 'string', 'type': 'string', 'calories': 'number', 'protein': 'number', 'fat': 'number', 'sodium': 'number', 'carbo': 'number', 'sugars': 'number', 'vitamins': 'number', 'shelf': 'number'}
+# types = {'mfr': 'string', 'type': 'string', 'calories': 'number', 'protein': 'number', 'fat': 'number', 'sodium': 'number', 'carbo': 'number', 'sugars': 'number', 'vitamins': 'number', 'shelf': 'number'}
 
-attrByType = {"string": [], "number": []}
+# attrByType = {"string": [], "number": []}
 
-for attr in types.keys():
-	attrByType[types[attr]].append(attr)
+# for attr in types.keys():
+# 	attrByType[types[attr]].append(attr)
 
-specsWithFields = []
+# specsWithFields = []
 
-for spec in vegaSpecs:
-	specsWithFields = specsWithFields + getOptions(spec, attrByType)
+# for spec in vegaSpecs:
+# 	specsWithFields = specsWithFields + getOptions(spec, attrByType)
 
-df = pandas.DataFrame(specsWithFields)
+# df = pandas.DataFrame(specsWithFields)
+
+df = pandas.DataFrame(new_data)
 df = df.fillna(0)
 
 df.index.names = ['index']
@@ -254,4 +256,4 @@ df.index.names = ['index']
 df['label'] = 0
 
 # do not un-comment the following unless you wish to rewrite the specs file
-df.to_csv('./client/public/manual_specs_one_hot_encoding_3.csv')
+df.to_csv('./client/public/manual_specs_one_hot_encoding_4.csv')

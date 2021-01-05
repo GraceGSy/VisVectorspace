@@ -33,6 +33,38 @@
 
 	let attributesWeight = []
 
+	let visVectors = []
+
+	let allPoints = []
+	let shownPoints = []
+
+	let sessionData = []
+
+	$: visVectors = vegaSpecs
+
+	function getRandom(count, choices) {
+		if (choices.length < count) {
+			return choices
+		}
+
+		let numChoices = choices.length
+		let chosen = new Set()
+		while (chosen.size < count) {
+			let randomIndex = Math.floor(Math.random() * Math.floor(numChoices))
+
+			chosen.add(randomIndex)
+		}
+
+		let result = []
+		for (let i of Array.from(chosen)) {
+			result.push(choices[i])
+		}
+
+		// console.log(result)
+
+		return result
+	}
+
 	function selectRecommendations(recommendationSets) {
 		similarRecommendations = recommendationSets
 
@@ -51,96 +83,154 @@
 	}
 
 	function runClassifier() {
-		let testingData = vegaSpecs.map(v => v.spec)
+		let testingData = visVectors.map(v => v.spec)
 		let trainingData = []
 
-		let newMore = []
-		let newLess = []
-		let newMaybe = []
+		let moreLikeThis = []
+		let lessLikeThis = []
+		let maybeLikeThis = []
+
+		let date = new Date()
 
 		for (let i = 0; i < recommendationsClass.length; i++) {
 			let r = recommendationsClass[i]
 			if (r === 'more') {
-				newMore.push(recommendations[i])
+				moreLikeThis = moreLikeThis.concat(similarRecommendations[i])
+				sessionData = sessionData.concat({"seen": recommendations[i], "label": "more", "date": date})
+				// maybeLikeThis = maybeLikeThis.concat(similarRecommendations[i])
 			} else if (r === 'less') {
-				newLess.push(recommendations[i])
+				lessLikeThis.push(recommendations[i])
+				sessionData = sessionData.concat({"seen": recommendations[i], "label": "less", "date": date})
 			} else {
-				newMaybe.push(recommendations[i])
+				// maybeLikeThis.push(recommendations[i])
+				sessionData = sessionData.concat({"seen": recommendations[i], "label": "none", "date": date})
 			}
 		}
 
 		// If no user feedback provided
-		if (newMore.length === 0 && newLess.length  === 0) {
+		if (moreLikeThis.length === 0 && lessLikeThis.length  === 0) {
 			Promise.all(getRecombinations(vegaSpecs, dataset)).then((result) => {
 				selectRecommendations(result)
 			})
 			return
 		}
 
-		moreLikeThis = moreLikeThis.concat(newMore)
-		lessLikeThis = lessLikeThis.concat(newLess)
-		maybeLikeThis = maybeLikeThis.concat(newMaybe)
+		// moreLikeThis = moreLikeThis.concat(newMore)
+		// lessLikeThis = lessLikeThis.concat(newLess)
+		// maybeLikeThis = maybeLikeThis.concat(newMaybe)
 
 		for (let m of moreLikeThis) {
 			let newM = m.vega.encoding
 			newM.label = 1
-			newM['mark'] = m.vega.mark
+			newM['mark_'+m.vega.mark] = 1
 			trainingData.push(newM)
 		}
 		for (let l of lessLikeThis) {
 			let newL = l.vega.encoding
 			newL.label = -1
-			newL['mark'] = l.vega.mark
+			newL['mark_'+l.vega.mark] = 1
 			trainingData.push(newL)
 		}
-		for (let mb of maybeLikeThis) {
-			let newMb = mb.vega.encoding
-			newMb.label = 0
-			newMb['mark'] = mb.vega.mark
-			trainingData.push(newMb)
-		}
+		// for (let mb of maybeLikeThis) {
+		// 	let newMb = mb.vega.encoding
+		// 	newMb.label = 0
+		// 	newMb['mark_'+mb.vega.mark] = 1
+		// 	trainingData.push(newMb)
+		// }
 
-		console.log(testingData)
+		// for (let set of similarRecommendations) {
+		// 	for (let s of set) {
+		// 		let newS = s.vega.encoding
+		// 		newS.label = 0
+		// 		newS['mark'] = s.vega.mark
+		// 		trainingData.push(newS)
+		// 	}
+		// }
+
+		// console.log(testingData.length)
 
 		let classifierData = {
 			'training': trainingData,
 			'testing': testingData
 		}
 
-		fetch(`./classifier`, {method:"POST", body:JSON.stringify(classifierData)})
+		fetch(`./kneighbors`, {method:"POST", body:JSON.stringify(classifierData)})
 			.then(d => d.text())
       		.then(d => {
       			let result = JSON.parse(d)
 
-      			attributesWeight = result["feature_wts"]
+      			let newPrediction = result["predictions"]
+      			let newDataset = result["newData"].map((d, i) => {d.label = newPrediction[i]; return d})
+      			let newVectors = []
 
-      			let preferred = result["pred"]
+      			for (let d of newDataset) {
+      				let s = d
+
+					delete s.index
+
+					newVectors.push({ 'spec':s })
+      			}
+
+      			// We keep only the most recent 200 visualizations
+      			if (newVectors.length > 200) {
+      				let difference = newVectors.length - 200
+      				newVectors = newVectors.slice(difference, newVectors.length)
+      			}
+
+      			visVectors = newVectors
+
+      			// let preferred = result["pred"]
       			let updatedLikes = []
       			let updatedMaybe = []
       			let updatedNo = []
 
-				for (let i = 0; i < preferred.length; i++) {
-					if (preferred[i] === 1) {
-						updatedLikes.push(vegaSpecs[i])
-					} else if (preferred[i] === 0) {
-						updatedMaybe.push(vegaSpecs[i])
+				for (let i = 0; i < newDataset.length; i++) {
+					let current = newDataset[i]
+					if (current.label > 0) {
+						updatedLikes.push(newVectors[i])
+					} else if (current.label === 0) {
+						updatedMaybe.push(newVectors[i])
 					} else {
-						updatedNo.push(vegaSpecs[i])
+						updatedNo.push(newVectors[i])
 					}
 				}
 
 				let updatedPreferrences
 
-				console.log('recommended... ', updatedLikes.length)
-
-				if (updatedLikes.length < 9) {
-					updatedPreferrences = updatedLikes.concat(updatedMaybe)
-					if (updatedPreferrences.length < 9) {
-						updatedPreferrences = updatedPreferrences.concat(updatedNo)
+				if (updatedLikes.length == 0) {
+					if (updatedMaybe.length < 9) {
+						updatedPreferrences = getRandom(9, updatedNo)
+					} else {
+						updatedPreferrences = getRandom(9, updatedMaybe)
 					}
 				} else {
-					updatedPreferrences = updatedLikes
+					// Introduce some randomness by including parts of the vectorspace
+					// Not yet explored
+					let randomMaybe = getRandom(4, updatedMaybe)
+					let randomYes = getRandom(5, updatedLikes)
+					updatedPreferrences = randomYes.concat(randomMaybe)
 				}
+
+				allPoints = newDataset
+				shownPoints = updatedPreferrences
+
+				let attributes = Object.keys(newDataset[0])
+				let attributeMeans = []
+
+				for (let a of attributes) {
+					if (a.indexOf("label") > -1 || a.indexOf("umapX") > -1 || a.indexOf("umapY") > -1) {
+						continue
+					}
+					let attributeValues = newDataset.map(d => {
+						if (d[a] == 1) {
+							return d.label
+						}
+						return 0
+					})
+					attributeMeans.push([a, d3.mean(attributeValues)])
+				}
+
+				attributesWeight = attributeMeans.filter(d => d[1] > 0)
 
 				Promise.all(getRecombinations(updatedPreferrences, dataset)).then((result) => {
 					selectRecommendations(result)
@@ -204,6 +294,9 @@
 
 	function pin(i) {
 		pinned = pinned.concat([recommendations[i]])
+
+		let date = new Date()
+		sessionData = sessionData.concat({"pinned": recommendations[i], "label": "pinned", "date": date})
 	}
 
 	function showPin() {
@@ -213,16 +306,33 @@
 	function closePin() {
 		document.getElementById("pinnedDrawer").style.width = "0px"
 	}
+
+	function exportJSON() {
+		var filename = "sessionData.json"
+		var element = document.createElement('a');
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(sessionData)))
+		element.setAttribute('download', filename)
+
+		element.style.display = 'none'
+		document.body.appendChild(element)
+
+		element.click()
+
+		document.body.removeChild(element)
+	}
+
 </script>
 
 <div id="overall">
-	<AttributesWeight attributes={attributesWeight}/>
+	<AttributesWeight attributes={attributesWeight}
+						allPoints={allPoints}
+						shownPoints={shownPoints}/>
 	<div id="recommendations">
 		<div id="menu">
 			<p><b>RECOMMENDATIONS</b></p>
 			<button on:click={update}>UPDATE RECOMMENDATIONS</button>
-			<button on:click={reset}>RESET</button>
 			<button on:click={showPin}>PINNED</button>
+			<button id="exportJSON" on:click={exportJSON} class="btn">DOWNLOAD</button>
 		</div>
 		<div id="recommendationDisplay">
 			{#each recommendations as c, i}
@@ -265,12 +375,16 @@
 		padding-right: 25px;
 	}
 
+	#recommendations {
+		margin-bottom: 20px
+	}
+
 	#recommendationDisplay {
 		display: grid;
 		grid-template-columns: repeat(3, 350px);
 		grid-template-rows: repeat(3, 350px);
 		grid-gap: 15px;
-		margin-top: 50px
+		margin-top: 50px;
 	}
 
 	#pinnedDrawer {

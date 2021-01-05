@@ -17,6 +17,8 @@
 
 	let recommendations = []
 
+	let sessionData = []
+
 	// Track user constraints
 	let selectedMark
 	let channelSelections = {}
@@ -64,6 +66,11 @@
 			}
 
 			recommendations = recs
+
+			sessionData.push({"markConstraints":selectedMark,
+							  "visConstraints":channelSelections,
+							  "recommendations": recs,
+							  "date": new Date()})
 
 			console.log(recommendations)
 		})
@@ -130,6 +137,9 @@
 
 	function pin(i) {
 		pinned = pinned.concat([recommendations[i]])
+
+		let date = new Date()
+		sessionData = sessionData.concat({"pinned": recommendations[i], "label": "pinned", "date": date})
 	}
 
 	function showPin() {
@@ -138,6 +148,20 @@
 
 	function closePin() {
 		document.getElementById("pinnedDrawer").style.width = "0px"
+	}
+
+	function exportJSON() {
+		var filename = "sessionData.json"
+		var element = document.createElement('a');
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(sessionData)))
+		element.setAttribute('download', filename)
+
+		element.style.display = 'none'
+		document.body.appendChild(element)
+
+		element.click()
+
+		document.body.removeChild(element)
 	}
 </script>
 
@@ -149,6 +173,7 @@
 			<button on:click={update}>UPDATE RECOMMENDATIONS</button>
 			<button on:click={reset}>RESET</button>
 			<button on:click={showPin}>PINNED</button>
+			<button id="exportJSON" on:click={exportJSON} class="btn">DOWNLOAD</button>
 		</div>
 		<div id="recommendationDisplay">
 			{#each recommendations as c, i}

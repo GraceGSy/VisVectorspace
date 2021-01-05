@@ -22,7 +22,7 @@
 	}
 
 	async function loadSpecs() {
-		const specs = await d3.csv(`/manual_specs_one_hot_encoding_3.csv`, dataPreprocessor)
+		const specs = await d3.csv(`/manual_specs_one_hot_encoding_4.csv`, dataPreprocessor)
 
 		const vegaSpecs = []
 
@@ -32,7 +32,7 @@
 
 			delete s.index
 
-			vegaSpecs.push({ 'spec':s, 'index': i })
+			vegaSpecs.push({ 'spec':s })
 		}
 
 		return vegaSpecs
@@ -59,6 +59,5 @@
 	#recommendationsMain {
 		display: flex;
 		flex-direction: column;
-		margin-bottom: 150px
 	}
 </style>

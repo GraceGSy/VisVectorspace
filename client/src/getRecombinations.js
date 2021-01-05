@@ -36,7 +36,7 @@ function solveDraco(newConstraints, dataset) {
 
 		// console.log(inputConstraints)
 
-		const solution = draco.solve(inputConstraints, { models: 9 });
+		const solution = draco.solve(inputConstraints, { models: 5 });
 		if (!solution) {
 			// console.log('no solution')
 			return []
@@ -81,6 +81,7 @@ export default function getRecombinations(vegaSpecs, dataset) {
 		let newIndex = getRandom(0, vegaSpecs.length)
 
 		if (!selectedIndices.has(newIndex)) {
+			selectedIndices.add(newIndex)
 			let newRecommendations = getTests(newIndex, vegaSpecs, dataset)
 			allDracoRecommendations.push(newRecommendations)
 		}

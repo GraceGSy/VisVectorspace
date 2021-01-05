@@ -1,9 +1,14 @@
 <script>
+	import Vectorspace from './Vectorspace.svelte'
+
 	export let attributes = []
+	export let allPoints = []
+	export let shownPoints = []
 
 	let attributesProcessed = []
 
 	$: {
+		console.log(attributes)
 		let newAttributes = []
 		for (let a of attributes) {
 			let feature = a[0]
@@ -19,7 +24,10 @@
 			}
 			
 		}
-		attributesProcessed = newAttributes
+
+		newAttributes = newAttributes.sort((a, b) => b[1] > a[1])
+
+		attributesProcessed = newAttributes.slice(0, 10)
 	}
 
 	// let attributes = Object.keys(dataset[0])
@@ -33,6 +41,8 @@
 			<div class="attributeRight">{a[1]}</div>
 		</div>
 	{/each}
+	<!-- <p><b>EMBEDDINGS</b></p>
+	<Vectorspace allPoints={allPoints} shownPoints={shownPoints} /> -->
 </div>
 
 <style>
