@@ -29,8 +29,20 @@
 		return result
 	}
 
+	function dataPreprocessor(d) {
+		let result = {}
+		for (let i = 0; i < d3.keys(d).length; i++) {
+			let variableName = d3.keys(d)[i]
+			if (variableName === 'tconst' || variableName === "title" || variableName === "titleType") {}
+			else {
+				result[variableName] = +d3.values(d)[i]
+			}
+		}
+	    return result
+	}
+
 	async function loadData() {
-		const dataset = await d3.csv(`cereal.csv`)
+		const dataset = await d3.csv(`movies.csv`, dataPreprocessor)
 
 		const firstRow = dataset[0]
 

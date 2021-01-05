@@ -7,18 +7,22 @@ function getType(uniqueValues) {
 
 		// Does Draco support ordinal/temporal?
 		// Needs verification
-		if (isNaN(parseFloat(v))) {
+		if (isNaN(parseFloat(v)) && v != "NaN") {
 			result = 'string'
 		} else {
 			continue
 		}
 	}
 
+	console.log(result)
+
 	return result
 }
 
 function schemaToConstraint(a, attributeSchema) {
 	let attributeType = getType(Object.keys(attributeSchema['unique']))
+
+	console.log("attribute schema", attributeSchema)
 
 	let constraintTemplate = `fieldtype(${a},${attributeType}). cardinality(${a},${attributeSchema['distinct']}).`
 
@@ -37,6 +41,8 @@ export default function(schema) {
 
 		allConstraints.push(attributeConstraint)
 	}
+
+	console.log(allConstraints)
 
 	return allConstraints.join('\n\n')
 }

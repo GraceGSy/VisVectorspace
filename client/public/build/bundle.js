@@ -29240,18 +29240,22 @@ ${constraint.asp}`;
 
     		// Does Draco support ordinal/temporal?
     		// Needs verification
-    		if (isNaN(parseFloat(v))) {
+    		if (isNaN(parseFloat(v)) && v != "NaN") {
     			result = 'string';
     		} else {
     			continue
     		}
     	}
 
+    	console.log(result);
+
     	return result
     }
 
     function schemaToConstraint(a, attributeSchema) {
     	let attributeType = getType(Object.keys(attributeSchema['unique']));
+
+    	console.log("attribute schema", attributeSchema);
 
     	let constraintTemplate = `fieldtype(${a},${attributeType}). cardinality(${a},${attributeSchema['distinct']}).`;
 
@@ -29270,6 +29274,8 @@ ${constraint.asp}`;
 
     		allConstraints.push(attributeConstraint);
     	}
+
+    	console.log(allConstraints);
 
     	return allConstraints.join('\n\n')
     }
@@ -29406,7 +29412,7 @@ ${constraint.asp}`;
 
     		// Create constraints based on schema
     		const inputConstraints = `
-			data("cereal.csv").
+			data("movies.csv").
 			num_rows(77).
 
 			${dataConstraints}
@@ -29417,7 +29423,7 @@ ${constraint.asp}`;
 			${visConstraints}
 		`;
 
-    		// console.log(inputConstraints)
+    		console.log(inputConstraints);
 
     		const solution = draco.solve(inputConstraints, { models: 5 });
     		if (!solution) {
@@ -31182,7 +31188,7 @@ ${constraint.asp}`;
     	return child_ctx;
     }
 
-    // (23:3) {#each marks as m}
+    // (27:3) {#each marks as m}
     function create_each_block_2(ctx) {
     	let option;
     	let t_value = /*m*/ ctx[15] + "";
@@ -31195,7 +31201,7 @@ ${constraint.asp}`;
     			t = text(t_value);
     			option.__value = option_value_value = /*m*/ ctx[15];
     			option.value = option.__value;
-    			add_location(option, file$5, 23, 4, 947);
+    			add_location(option, file$5, 27, 4, 1095);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, option, anchor);
@@ -31211,14 +31217,14 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_2.name,
     		type: "each",
-    		source: "(23:3) {#each marks as m}",
+    		source: "(27:3) {#each marks as m}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (34:4) {#each variables as v}
+    // (38:4) {#each variables as v}
     function create_each_block_1$1(ctx) {
     	let option;
     	let t_value = /*v*/ ctx[12] + "";
@@ -31231,7 +31237,7 @@ ${constraint.asp}`;
     			t = text(t_value);
     			option.__value = option_value_value = /*v*/ ctx[12];
     			option.value = option.__value;
-    			add_location(option, file$5, 34, 5, 1236);
+    			add_location(option, file$5, 38, 5, 1384);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, option, anchor);
@@ -31247,14 +31253,14 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_1$1.name,
     		type: "each",
-    		source: "(34:4) {#each variables as v}",
+    		source: "(38:4) {#each variables as v}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (30:1) {#each channels as c}
+    // (34:1) {#each channels as c}
     function create_each_block$3(ctx) {
     	let div1;
     	let div0;
@@ -31290,13 +31296,13 @@ ${constraint.asp}`;
 
     			t2 = space();
     			attr_dev(div0, "class", "attributeLeft svelte-1mu888i");
-    			add_location(div0, file$5, 31, 3, 1079);
+    			add_location(div0, file$5, 35, 3, 1227);
     			attr_dev(select, "id", "mark-dropdown");
     			attr_dev(select, "class", "attributeRight svelte-1mu888i");
     			if (/*channelSelections*/ ctx[1][/*c*/ ctx[9]] === void 0) add_render_callback(select_change_handler_1);
-    			add_location(select, file$5, 32, 3, 1119);
+    			add_location(select, file$5, 36, 3, 1267);
     			attr_dev(div1, "class", "attribute svelte-1mu888i");
-    			add_location(div1, file$5, 30, 2, 1052);
+    			add_location(div1, file$5, 34, 2, 1200);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div1, anchor);
@@ -31356,7 +31362,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$3.name,
     		type: "each",
-    		source: "(30:1) {#each channels as c}",
+    		source: "(34:1) {#each channels as c}",
     		ctx
     	});
 
@@ -31423,21 +31429,21 @@ ${constraint.asp}`;
     				each_blocks[i].c();
     			}
 
-    			add_location(b, file$5, 17, 4, 743);
-    			add_location(p0, file$5, 17, 1, 740);
-    			add_location(p1, file$5, 18, 1, 765);
+    			add_location(b, file$5, 21, 4, 891);
+    			add_location(p0, file$5, 21, 1, 888);
+    			add_location(p1, file$5, 22, 1, 913);
     			attr_dev(div0, "class", "attributeLeft svelte-1mu888i");
-    			add_location(div0, file$5, 20, 2, 804);
+    			add_location(div0, file$5, 24, 2, 952);
     			attr_dev(select, "id", "mark-dropdown");
     			attr_dev(select, "class", "attributeRight svelte-1mu888i");
     			if (/*selectedMark*/ ctx[0] === void 0) add_render_callback(() => /*select_change_handler*/ ctx[7].call(select));
-    			add_location(select, file$5, 21, 2, 844);
+    			add_location(select, file$5, 25, 2, 992);
     			attr_dev(div1, "class", "attribute svelte-1mu888i");
-    			add_location(div1, file$5, 19, 1, 778);
-    			add_location(p2, file$5, 27, 1, 1010);
+    			add_location(div1, file$5, 23, 1, 926);
+    			add_location(p2, file$5, 31, 1, 1158);
     			attr_dev(div2, "id", "attributesBar");
     			attr_dev(div2, "class", "svelte-1mu888i");
-    			add_location(div2, file$5, 16, 0, 714);
+    			add_location(div2, file$5, 20, 0, 862);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -31551,23 +31557,13 @@ ${constraint.asp}`;
     	let channels = ["x", "y", "color", "size", "shape"];
     	let accepted_types = ["type_quantitative", "type_nominal"];
 
+    	// let variable_types = {'name': 'number', 'mfr': 'string', 'type': 'string', 'calories': 'number', 'protein': 'number', 'fat': 'number', 'sodium': 'number', 'fiber': 'number', 'carbo': 'number', 'sugars': 'number', 'potass': 'number', 'vitamins': 'number', 'shelf': 'number', 'weight': 'number', 'cups': 'number', 'rating': 'number'}
     	let variable_types = {
-    		"name": "number",
-    		"mfr": "string",
-    		"type": "string",
-    		"calories": "number",
-    		"protein": "number",
-    		"fat": "number",
-    		"sodium": "number",
-    		"fiber": "number",
-    		"carbo": "number",
-    		"sugars": "number",
-    		"potass": "number",
-    		"vitamins": "number",
-    		"shelf": "number",
-    		"weight": "number",
-    		"cups": "number",
-    		"rating": "number"
+    		"title": "string",
+    		"startYear": "number",
+    		"runtimeMinutes": "number",
+    		"averageRating": "number",
+    		"numVotes": "number"
     	};
 
     	let variables = [""].concat(accepted_types).concat(Object.keys(variable_types).map(v => "field_" + v));
@@ -32125,7 +32121,7 @@ ${constraint.asp}`;
 
     			// Create constraints based on schema
     			const inputConstraints = `
-				data("cereal.csv").
+				data("movies.csv").
 				num_rows(77).
 
 				${dataConstraints}
@@ -32400,7 +32396,7 @@ ${constraint.asp}`;
     const { Object: Object_1$4 } = globals;
     const file$7 = "src/App.svelte";
 
-    // (82:2) {:catch error}
+    // (94:2) {:catch error}
     function create_catch_block$1(ctx) {
     	let p;
     	let t_value = /*error*/ ctx[9].message + "";
@@ -32411,7 +32407,7 @@ ${constraint.asp}`;
     			p = element("p");
     			t = text(t_value);
     			set_style(p, "color", "red");
-    			add_location(p, file$7, 82, 3, 1923);
+    			add_location(p, file$7, 94, 3, 2258);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -32429,14 +32425,14 @@ ${constraint.asp}`;
     		block,
     		id: create_catch_block$1.name,
     		type: "catch",
-    		source: "(82:2) {:catch error}",
+    		source: "(94:2) {:catch error}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (67:2) {:then dataset}
+    // (79:2) {:then dataset}
     function create_then_block$1(ctx) {
     	let current_block_type_index;
     	let if_block;
@@ -32507,14 +32503,14 @@ ${constraint.asp}`;
     		block,
     		id: create_then_block$1.name,
     		type: "then",
-    		source: "(67:2) {:then dataset}",
+    		source: "(79:2) {:then dataset}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (73:3) {:else}
+    // (85:3) {:else}
     function create_else_block(ctx) {
     	let current;
 
@@ -32558,14 +32554,14 @@ ${constraint.asp}`;
     		block,
     		id: create_else_block.name,
     		type: "else",
-    		source: "(73:3) {:else}",
+    		source: "(85:3) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (68:3) {#if version === "constraintSolver"}
+    // (80:3) {#if version === "constraintSolver"}
     function create_if_block(ctx) {
     	let current;
 
@@ -32609,14 +32605,14 @@ ${constraint.asp}`;
     		block,
     		id: create_if_block.name,
     		type: "if",
-    		source: "(68:3) {#if version === \\\"constraintSolver\\\"}",
+    		source: "(80:3) {#if version === \\\"constraintSolver\\\"}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (65:18)     <p>...loading</p>   {:then dataset}
+    // (77:18)     <p>...loading</p>   {:then dataset}
     function create_pending_block$1(ctx) {
     	let p;
 
@@ -32624,7 +32620,7 @@ ${constraint.asp}`;
     		c: function create() {
     			p = element("p");
     			p.textContent = "...loading";
-    			add_location(p, file$7, 65, 3, 1450);
+    			add_location(p, file$7, 77, 3, 1785);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -32641,7 +32637,7 @@ ${constraint.asp}`;
     		block,
     		id: create_pending_block$1.name,
     		type: "pending",
-    		source: "(65:18)     <p>...loading</p>   {:then dataset}",
+    		source: "(77:18)     <p>...loading</p>   {:then dataset}",
     		ctx
     	});
 
@@ -32698,24 +32694,24 @@ ${constraint.asp}`;
     			input0.__value = input0_value_value = "constraintSolver";
     			input0.value = input0.__value;
     			/*$$binding_groups*/ ctx[6][0].push(input0);
-    			add_location(input0, file$7, 55, 3, 1168);
+    			add_location(input0, file$7, 67, 3, 1503);
     			attr_dev(label0, "class", "versionOption svelte-4a69bg");
-    			add_location(label0, file$7, 54, 2, 1135);
+    			add_location(label0, file$7, 66, 2, 1470);
     			attr_dev(input1, "type", "radio");
     			input1.__value = input1_value_value = "constraintLearner";
     			input1.value = input1.__value;
     			/*$$binding_groups*/ ctx[6][0].push(input1);
-    			add_location(input1, file$7, 59, 3, 1302);
+    			add_location(input1, file$7, 71, 3, 1637);
     			attr_dev(label1, "class", "versionOption svelte-4a69bg");
-    			add_location(label1, file$7, 58, 2, 1269);
+    			add_location(label1, file$7, 70, 2, 1604);
     			attr_dev(div0, "id", "versioning");
     			attr_dev(div0, "class", "svelte-4a69bg");
-    			add_location(div0, file$7, 53, 1, 1111);
+    			add_location(div0, file$7, 65, 1, 1446);
     			attr_dev(div1, "id", "main");
     			attr_dev(div1, "class", "svelte-4a69bg");
-    			add_location(div1, file$7, 63, 1, 1412);
+    			add_location(div1, file$7, 75, 1, 1747);
     			set_style(div2, "padding", "'20px'");
-    			add_location(div2, file$7, 52, 0, 1080);
+    			add_location(div2, file$7, 64, 0, 1415);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -32817,8 +32813,22 @@ ${constraint.asp}`;
     	return result;
     }
 
+    function dataPreprocessor$1(d) {
+    	let result = {};
+
+    	for (let i = 0; i < keys(d).length; i++) {
+    		let variableName = keys(d)[i];
+
+    		if (variableName === "tconst" || variableName === "title" || variableName === "titleType") ; else {
+    			result[variableName] = +values(d)[i];
+    		}
+    	}
+
+    	return result;
+    }
+
     async function loadData() {
-    	const dataset = await csv$1(`cereal.csv`);
+    	const dataset = await csv$1(`movies.csv`, dataPreprocessor$1);
     	const firstRow = dataset[0];
     	const types = getType$1(firstRow);
     	return { dataset, types };
@@ -32870,6 +32880,7 @@ ${constraint.asp}`;
     		selectedAttributes,
     		promise,
     		getType: getType$1,
+    		dataPreprocessor: dataPreprocessor$1,
     		loadData,
     		updateAttributes
     	});

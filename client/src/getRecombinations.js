@@ -23,7 +23,7 @@ function solveDraco(newConstraints, dataset) {
 
 		// Create constraints based on schema
 		const inputConstraints = `
-			data("cereal.csv").
+			data("movies.csv").
 			num_rows(77).
 
 			${dataConstraints}
@@ -34,7 +34,7 @@ function solveDraco(newConstraints, dataset) {
 			${visConstraints}
 		`;
 
-		// console.log(inputConstraints)
+		console.log(inputConstraints)
 
 		const solution = draco.solve(inputConstraints, { models: 5 });
 		if (!solution) {

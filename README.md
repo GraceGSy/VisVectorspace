@@ -1,5 +1,11 @@
 # Installation Instructions
 
+### Datasets
+
+The raw movies datasets used in this demo is from [IMDB](https://www.imdb.com/interfaces/)
+
+To use or modify the dataset, download the files title.akas.tsv, title.basics.tsv, and title.ratings.tsv into the preprocessing file. Then run tsv_to_csv.py
+
 ### Server
 
 We recommend downloading and installing Anaconda to obtain all relevant packages for this app.

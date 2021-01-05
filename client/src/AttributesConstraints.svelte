@@ -9,7 +9,11 @@
 
 	let accepted_types = ['type_quantitative', 'type_nominal']
 
-	let variable_types = {'name': 'number', 'mfr': 'string', 'type': 'string', 'calories': 'number', 'protein': 'number', 'fat': 'number', 'sodium': 'number', 'fiber': 'number', 'carbo': 'number', 'sugars': 'number', 'potass': 'number', 'vitamins': 'number', 'shelf': 'number', 'weight': 'number', 'cups': 'number', 'rating': 'number'}
+	// let variable_types = {'name': 'number', 'mfr': 'string', 'type': 'string', 'calories': 'number', 'protein': 'number', 'fat': 'number', 'sodium': 'number', 'fiber': 'number', 'carbo': 'number', 'sugars': 'number', 'potass': 'number', 'vitamins': 'number', 'shelf': 'number', 'weight': 'number', 'cups': 'number', 'rating': 'number'}
+
+
+	let variable_types = {'title': 'string', 'startYear': 'number', 'runtimeMinutes': 'number', 'averageRating': 'number', 'numVotes': 'number'}
+
 
 	let variables = [''].concat(accepted_types).concat(Object.keys(variable_types).map(v => 'field_' + v))
 </script>

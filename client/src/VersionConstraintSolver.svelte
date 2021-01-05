@@ -38,7 +38,7 @@
 
 			// Create constraints based on schema
 			const inputConstraints = `
-				data("cereal.csv").
+				data("movies.csv").
 				num_rows(77).
 
 				${dataConstraints}

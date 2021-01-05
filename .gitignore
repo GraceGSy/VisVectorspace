@@ -1,4 +1,7 @@
 /node_modules/
 /public/build/
+/preprocessing/title.ratings.tsv
+/preprocessing/title.basics.tsv
+/preprocessing/title.akas.tsv
 
 .DS_Store
