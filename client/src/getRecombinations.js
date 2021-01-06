@@ -34,7 +34,7 @@ function solveDraco(newConstraints, dataset) {
 			${visConstraints}
 		`;
 
-		console.log(inputConstraints)
+		// console.log(inputConstraints)
 
 		const solution = draco.solve(inputConstraints, { models: 5 });
 		if (!solution) {
@@ -43,7 +43,9 @@ function solveDraco(newConstraints, dataset) {
 		}
 
 		for (let s of solution['specs']) {
-			recs.push({'vega':s})
+			s.width = 300
+			s.height = 300
+			recs.push({'vega':s, 'uid': 'id' + (new Date()).getTime()})
 		}
 
 		return recs
@@ -75,7 +77,7 @@ function getRandom(min, max) {
 export default function getRecombinations(vegaSpecs, dataset) {
 	let selectedIndices = new Set()
 	let allDracoRecommendations = []
-	let count = 9
+	let count = 4
 
 	while (allDracoRecommendations.length < count) {
 		let newIndex = getRandom(0, vegaSpecs.length)

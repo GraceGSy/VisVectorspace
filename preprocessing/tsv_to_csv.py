@@ -40,7 +40,7 @@ with open("title.basics.tsv") as fileMeta:
 	# Skip headers
 	next(readMeta, None)
 
-	moviesData = ["tconst,title,titleType,startYear,runtimeMinutes,averageRating,numVotes"]
+	moviesData = ["tconst,title,type,start year,runtime (min),average rating,num votes"]
 
 	for row in readMeta:
 

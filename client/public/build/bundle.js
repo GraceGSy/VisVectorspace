@@ -90,6 +90,9 @@ var app = (function () {
         const selected_option = select.querySelector(':checked') || select.options[0];
         return selected_option && selected_option.__value;
     }
+    function toggle_class(element, name, toggle) {
+        element.classList[toggle ? 'add' : 'remove'](name);
+    }
     function custom_event(type, detail) {
         const e = document.createEvent('CustomEvent');
         e.initCustomEvent(type, false, false, detail);
@@ -25331,7 +25334,7 @@ ${constraint.asp}`;
         Object.defineProperty(exports, '__esModule', { value: true });
 
     })));
-
+    //# sourceMappingURL=draco.js.map
     });
 
     var Draco = unwrapExports(draco);
@@ -29020,6 +29023,8 @@ ${constraint.asp}`;
     };
     });
 
+    //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi9zcmMvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsY0FBYyxTQUFTLENBQUM7QUFDeEIsY0FBYyxRQUFRLENBQUM7QUFDdkIsY0FBYyxZQUFZLENBQUM7QUFDM0IsT0FBTyxLQUFLLE1BQU0sU0FBUyxDQUFDO0FBQzVCLGVBQWUsS0FBSyxDQUFDIn0=
+
     /*!
      * Determine if an object is a Buffer
      *
@@ -29423,7 +29428,7 @@ ${constraint.asp}`;
 			${visConstraints}
 		`;
 
-    		console.log(inputConstraints);
+    		// console.log(inputConstraints)
 
     		const solution = draco.solve(inputConstraints, { models: 5 });
     		if (!solution) {
@@ -29432,7 +29437,9 @@ ${constraint.asp}`;
     		}
 
     		for (let s of solution['specs']) {
-    			recs.push({'vega':s});
+    			s.width = 300;
+    			s.height = 300;
+    			recs.push({'vega':s, 'uid': 'id' + (new Date()).getTime()});
     		}
 
     		return recs
@@ -29464,7 +29471,7 @@ ${constraint.asp}`;
     function getRecombinations(vegaSpecs, dataset) {
     	let selectedIndices = new Set();
     	let allDracoRecommendations = [];
-    	let count = 9;
+    	let count = 4;
 
     	while (allDracoRecommendations.length < count) {
     		let newIndex = getRandom(0, vegaSpecs.length);
@@ -29891,19 +29898,19 @@ ${constraint.asp}`;
 
     function get_each_context$2(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[29] = list[i];
-    	child_ctx[31] = i;
+    	child_ctx[30] = list[i];
+    	child_ctx[32] = i;
     	return child_ctx;
     }
 
     function get_each_context_1(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[32] = list[i];
-    	child_ctx[31] = i;
+    	child_ctx[33] = list[i];
+    	child_ctx[32] = i;
     	return child_ctx;
     }
 
-    // (338:3) {#each recommendations as c, i}
+    // (362:3) {#each recommendations as c, i}
     function create_each_block_1(ctx) {
     	let div4;
     	let div1;
@@ -29925,15 +29932,15 @@ ${constraint.asp}`;
     	let dispose;
 
     	function click_handler(...args) {
-    		return /*click_handler*/ ctx[26](/*i*/ ctx[31], ...args);
+    		return /*click_handler*/ ctx[27](/*i*/ ctx[32], ...args);
     	}
 
     	function click_handler_1(...args) {
-    		return /*click_handler_1*/ ctx[27](/*i*/ ctx[31], ...args);
+    		return /*click_handler_1*/ ctx[28](/*i*/ ctx[32], ...args);
     	}
 
     	function click_handler_2(...args) {
-    		return /*click_handler_2*/ ctx[28](/*i*/ ctx[31], ...args);
+    		return /*click_handler_2*/ ctx[29](/*i*/ ctx[32], ...args);
     	}
 
     	const block = {
@@ -29954,30 +29961,31 @@ ${constraint.asp}`;
     			div2 = element("div");
     			t6 = space();
 
-    			attr_dev(button0, "class", button0_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[1][/*i*/ ctx[31]] === "more"
+    			attr_dev(button0, "class", button0_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[1][/*i*/ ctx[32]] === "more"
     			? "more"
-    			: "default") + " svelte-tgf09h"));
+    			: "default") + " svelte-1uwujac"));
 
-    			add_location(button0, file$3, 340, 6, 8794);
+    			add_location(button0, file$3, 364, 6, 9488);
 
-    			attr_dev(button1, "class", button1_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[1][/*i*/ ctx[31]] === "less"
+    			attr_dev(button1, "class", button1_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[1][/*i*/ ctx[32]] === "less"
     			? "less"
-    			: "default") + " svelte-tgf09h"));
+    			: "default") + " svelte-1uwujac"));
 
-    			add_location(button1, file$3, 344, 6, 8952);
+    			add_location(button1, file$3, 368, 6, 9646);
     			attr_dev(i_1, "class", "material-icons-outlined md-24");
-    			add_location(i_1, file$3, 349, 7, 9165);
-    			attr_dev(div0, "class", "pinButton svelte-tgf09h");
-    			add_location(div0, file$3, 348, 6, 9110);
-    			attr_dev(div1, "class", "buttons svelte-tgf09h");
-    			add_location(div1, file$3, 339, 5, 8766);
-    			attr_dev(div2, "id", div2_id_value = "vis" + /*i*/ ctx[31]);
-    			attr_dev(div2, "class", "svelte-tgf09h");
-    			add_location(div2, file$3, 353, 6, 9283);
-    			attr_dev(div3, "class", "vegaContainer svelte-tgf09h");
-    			add_location(div3, file$3, 352, 5, 9249);
-    			attr_dev(div4, "class", "vis svelte-tgf09h");
-    			add_location(div4, file$3, 338, 4, 8743);
+    			add_location(i_1, file$3, 375, 7, 9924);
+    			attr_dev(div0, "class", "pinButton svelte-1uwujac");
+    			toggle_class(div0, "isPinned", /*currentPinned*/ ctx[3].indexOf(/*i*/ ctx[32]) > -1);
+    			add_location(div0, file$3, 372, 6, 9804);
+    			attr_dev(div1, "class", "buttons svelte-1uwujac");
+    			add_location(div1, file$3, 363, 5, 9460);
+    			attr_dev(div2, "id", div2_id_value = "vis" + /*i*/ ctx[32]);
+    			attr_dev(div2, "class", "svelte-1uwujac");
+    			add_location(div2, file$3, 379, 6, 10042);
+    			attr_dev(div3, "class", "vegaContainer svelte-1uwujac");
+    			add_location(div3, file$3, 378, 5, 10008);
+    			attr_dev(div4, "class", "vis svelte-1uwujac");
+    			add_location(div4, file$3, 362, 4, 9437);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div4, anchor);
@@ -30005,16 +30013,20 @@ ${constraint.asp}`;
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
 
-    			if (dirty[0] & /*recommendationsClass*/ 2 && button0_class_value !== (button0_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[1][/*i*/ ctx[31]] === "more"
+    			if (dirty[0] & /*recommendationsClass*/ 2 && button0_class_value !== (button0_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[1][/*i*/ ctx[32]] === "more"
     			? "more"
-    			: "default") + " svelte-tgf09h"))) {
+    			: "default") + " svelte-1uwujac"))) {
     				attr_dev(button0, "class", button0_class_value);
     			}
 
-    			if (dirty[0] & /*recommendationsClass*/ 2 && button1_class_value !== (button1_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[1][/*i*/ ctx[31]] === "less"
+    			if (dirty[0] & /*recommendationsClass*/ 2 && button1_class_value !== (button1_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[1][/*i*/ ctx[32]] === "less"
     			? "less"
-    			: "default") + " svelte-tgf09h"))) {
+    			: "default") + " svelte-1uwujac"))) {
     				attr_dev(button1, "class", button1_class_value);
+    			}
+
+    			if (dirty[0] & /*currentPinned*/ 8) {
+    				toggle_class(div0, "isPinned", /*currentPinned*/ ctx[3].indexOf(/*i*/ ctx[32]) > -1);
     			}
     		},
     		d: function destroy(detaching) {
@@ -30027,14 +30039,14 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_1.name,
     		type: "each",
-    		source: "(338:3) {#each recommendations as c, i}",
+    		source: "(362:3) {#each recommendations as c, i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (364:3) {#each pinned as p, i}
+    // (390:3) {#each pinned as p, i}
     function create_each_block$2(ctx) {
     	let div;
     	let div_id_value;
@@ -30042,9 +30054,9 @@ ${constraint.asp}`;
     	const block = {
     		c: function create() {
     			div = element("div");
-    			attr_dev(div, "id", div_id_value = "pin" + /*i*/ ctx[31]);
-    			attr_dev(div, "class", "svelte-tgf09h");
-    			add_location(div, file$3, 364, 4, 9533);
+    			attr_dev(div, "id", div_id_value = "pin" + /*i*/ ctx[32]);
+    			attr_dev(div, "class", "svelte-1uwujac");
+    			add_location(div, file$3, 390, 4, 10292);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -30058,7 +30070,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$2.name,
     		type: "each",
-    		source: "(364:3) {#each pinned as p, i}",
+    		source: "(390:3) {#each pinned as p, i}",
     		ctx
     	});
 
@@ -30093,9 +30105,9 @@ ${constraint.asp}`;
 
     	const attributesweight = new AttributesWeight({
     			props: {
-    				attributes: /*attributesWeight*/ ctx[3],
-    				allPoints: /*allPoints*/ ctx[4],
-    				shownPoints: /*shownPoints*/ ctx[5]
+    				attributes: /*attributesWeight*/ ctx[4],
+    				allPoints: /*allPoints*/ ctx[5],
+    				shownPoints: /*shownPoints*/ ctx[6]
     			},
     			$$inline: true
     		});
@@ -30157,37 +30169,37 @@ ${constraint.asp}`;
     				each_blocks[i].c();
     			}
 
-    			add_location(b0, file$3, 331, 6, 8447);
-    			add_location(p0, file$3, 331, 3, 8444);
-    			add_location(button0, file$3, 332, 3, 8477);
-    			add_location(button1, file$3, 333, 3, 8538);
+    			add_location(b0, file$3, 355, 6, 9141);
+    			add_location(p0, file$3, 355, 3, 9138);
+    			add_location(button0, file$3, 356, 3, 9171);
+    			add_location(button1, file$3, 357, 3, 9232);
     			attr_dev(button2, "id", "exportJSON");
     			attr_dev(button2, "class", "btn");
-    			add_location(button2, file$3, 334, 3, 8584);
+    			add_location(button2, file$3, 358, 3, 9278);
     			attr_dev(div0, "id", "menu");
-    			add_location(div0, file$3, 330, 2, 8425);
+    			add_location(div0, file$3, 354, 2, 9119);
     			attr_dev(div1, "id", "recommendationDisplay");
-    			attr_dev(div1, "class", "svelte-tgf09h");
-    			add_location(div1, file$3, 336, 2, 8671);
+    			attr_dev(div1, "class", "svelte-1uwujac");
+    			add_location(div1, file$3, 360, 2, 9365);
     			attr_dev(div2, "id", "recommendations");
-    			attr_dev(div2, "class", "svelte-tgf09h");
-    			add_location(div2, file$3, 329, 1, 8396);
-    			add_location(b1, file$3, 360, 21, 9404);
+    			attr_dev(div2, "class", "svelte-1uwujac");
+    			add_location(div2, file$3, 353, 1, 9090);
+    			add_location(b1, file$3, 386, 21, 10163);
     			attr_dev(p1, "id", "pinnedText");
-    			attr_dev(p1, "class", "svelte-tgf09h");
-    			add_location(p1, file$3, 360, 2, 9385);
+    			attr_dev(p1, "class", "svelte-1uwujac");
+    			add_location(p1, file$3, 386, 2, 10144);
     			attr_dev(a, "id", "closeButton");
-    			attr_dev(a, "class", "svelte-tgf09h");
-    			add_location(a, file$3, 361, 2, 9424);
+    			attr_dev(a, "class", "svelte-1uwujac");
+    			add_location(a, file$3, 387, 2, 10183);
     			attr_dev(div3, "id", "pinnedDisplay");
-    			attr_dev(div3, "class", "svelte-tgf09h");
-    			add_location(div3, file$3, 362, 2, 9478);
+    			attr_dev(div3, "class", "svelte-1uwujac");
+    			add_location(div3, file$3, 388, 2, 10237);
     			attr_dev(div4, "id", "pinnedDrawer");
-    			attr_dev(div4, "class", "svelte-tgf09h");
-    			add_location(div4, file$3, 359, 1, 9359);
+    			attr_dev(div4, "class", "svelte-1uwujac");
+    			add_location(div4, file$3, 385, 1, 10118);
     			attr_dev(div5, "id", "overall");
-    			attr_dev(div5, "class", "svelte-tgf09h");
-    			add_location(div5, file$3, 325, 0, 8265);
+    			attr_dev(div5, "class", "svelte-1uwujac");
+    			add_location(div5, file$3, 349, 0, 8959);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -30230,20 +30242,20 @@ ${constraint.asp}`;
     			if (remount) run_all(dispose);
 
     			dispose = [
-    				listen_dev(button0, "click", /*update*/ ctx[8], false, false, false),
+    				listen_dev(button0, "click", /*update*/ ctx[9], false, false, false),
     				listen_dev(button1, "click", showPin, false, false, false),
-    				listen_dev(button2, "click", /*exportJSON*/ ctx[10], false, false, false),
+    				listen_dev(button2, "click", /*exportJSON*/ ctx[11], false, false, false),
     				listen_dev(a, "click", closePin, false, false, false)
     			];
     		},
     		p: function update(ctx, dirty) {
     			const attributesweight_changes = {};
-    			if (dirty[0] & /*attributesWeight*/ 8) attributesweight_changes.attributes = /*attributesWeight*/ ctx[3];
-    			if (dirty[0] & /*allPoints*/ 16) attributesweight_changes.allPoints = /*allPoints*/ ctx[4];
-    			if (dirty[0] & /*shownPoints*/ 32) attributesweight_changes.shownPoints = /*shownPoints*/ ctx[5];
+    			if (dirty[0] & /*attributesWeight*/ 16) attributesweight_changes.attributes = /*attributesWeight*/ ctx[4];
+    			if (dirty[0] & /*allPoints*/ 32) attributesweight_changes.allPoints = /*allPoints*/ ctx[5];
+    			if (dirty[0] & /*shownPoints*/ 64) attributesweight_changes.shownPoints = /*shownPoints*/ ctx[6];
     			attributesweight.$set(attributesweight_changes);
 
-    			if (dirty[0] & /*pin, recommendationsClass, updateLess, updateMore, recommendations*/ 707) {
+    			if (dirty[0] & /*currentPinned, pin, recommendationsClass, updateLess, updateMore, recommendations*/ 1419) {
     				each_value_1 = /*recommendations*/ ctx[0];
     				validate_each_argument(each_value_1);
     				let i;
@@ -30354,7 +30366,7 @@ ${constraint.asp}`;
     	let { vegaSpecs = [] } = $$props;
     	let { dataset = [] } = $$props;
     	let { selectedAttributes = [] } = $$props;
-    	let { recomendationCount = 9 } = $$props;
+    	let { recommendationCount = 4 } = $$props;
     	let updateCount = 0;
 
     	// Track of user preferences
@@ -30370,10 +30382,11 @@ ${constraint.asp}`;
     	let similarRecommendations = [];
 
     	// Recommendations class
-    	let recommendationsClass = Array(9).fill("default");
+    	let recommendationsClass = Array(recommendationCount).fill("default");
 
     	let classifierResult;
     	let pinned = [];
+    	let currentPinned = [];
     	let attributesWeight = [];
     	let visVectors = [];
     	let allPoints = [];
@@ -30525,22 +30538,22 @@ ${constraint.asp}`;
     			let updatedPreferrences;
 
     			if (updatedLikes.length == 0) {
-    				if (updatedMaybe.length < 9) {
-    					updatedPreferrences = getRandom$1(9, updatedNo);
+    				if (updatedMaybe.length < recommendationCount) {
+    					updatedPreferrences = getRandom$1(recommendationCount, updatedNo);
     				} else {
-    					updatedPreferrences = getRandom$1(9, updatedMaybe);
+    					updatedPreferrences = getRandom$1(recommendationCount, updatedMaybe);
     				}
     			} else {
     				// Introduce some randomness by including parts of the vectorspace
     				// Not yet explored
-    				let randomMaybe = getRandom$1(4, updatedMaybe);
+    				let randomMaybe = getRandom$1(recommendationCount / 2, updatedMaybe);
 
-    				let randomYes = getRandom$1(5, updatedLikes);
+    				let randomYes = getRandom$1(recommendationCount - randomMaybe, updatedLikes);
     				updatedPreferrences = randomYes.concat(randomMaybe);
     			}
 
-    			$$invalidate(4, allPoints = newDataset);
-    			$$invalidate(5, shownPoints = updatedPreferrences);
+    			$$invalidate(5, allPoints = newDataset);
+    			$$invalidate(6, shownPoints = updatedPreferrences);
     			let attributes = Object.keys(newDataset[0]);
     			let attributeMeans = [];
 
@@ -30560,7 +30573,7 @@ ${constraint.asp}`;
     				attributeMeans.push([a, mean(attributeValues)]);
     			}
 
-    			$$invalidate(3, attributesWeight = attributeMeans.filter(d => d[1] > 0));
+    			$$invalidate(4, attributesWeight = attributeMeans.filter(d => d[1] > 0));
 
     			Promise.all(getRecombinations(updatedPreferrences, dataset)).then(result => {
     				selectRecommendations(result);
@@ -30593,7 +30606,7 @@ ${constraint.asp}`;
     	}
 
     	function update() {
-    		$$invalidate(15, updateCount++, updateCount);
+    		$$invalidate(16, updateCount++, updateCount);
     	}
 
     	function reset() {
@@ -30604,14 +30617,41 @@ ${constraint.asp}`;
     	}
 
     	function pin(i) {
-    		$$invalidate(2, pinned = pinned.concat([recommendations[i]]));
-    		let date = new Date();
+    		let pinnedIndex = currentPinned.indexOf(i);
+    		let selectedUid = recommendations[i].uid;
 
-    		sessionData = sessionData.concat({
-    			"pinned": recommendations[i],
-    			"label": "pinned",
-    			date
-    		});
+    		if (pinnedIndex === -1) {
+    			$$invalidate(3, currentPinned = [...currentPinned, i]);
+    			$$invalidate(2, pinned = pinned.concat([recommendations[i]]));
+    			let date = new Date();
+
+    			sessionData = sessionData.concat({
+    				"pinned": recommendations[i],
+    				"label": "pinned",
+    				date
+    			});
+    		} else {
+    			currentPinned.splice(pinnedIndex, 1);
+    			$$invalidate(3, currentPinned);
+    			let newPinned = [];
+
+    			for (let p of pinned) {
+    				if (p.uid === selectedUid) {
+    					continue;
+    				} else {
+    					newPinned.push(p);
+    				}
+    			}
+
+    			$$invalidate(2, pinned = newPinned);
+    			let date = new Date();
+
+    			sessionData = sessionData.concat({
+    				"pinned": recommendations[i],
+    				"label": "unpinned",
+    				date
+    			});
+    		}
     	}
 
     	function exportJSON() {
@@ -30625,7 +30665,7 @@ ${constraint.asp}`;
     		document.body.removeChild(element);
     	}
 
-    	const writable_props = ["vegaSpecs", "dataset", "selectedAttributes", "recomendationCount"];
+    	const writable_props = ["vegaSpecs", "dataset", "selectedAttributes", "recommendationCount"];
 
     	Object_1$1.keys($$props).forEach(key => {
     		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$2.warn(`<Recommendations> was created with unknown prop '${key}'`);
@@ -30638,10 +30678,10 @@ ${constraint.asp}`;
     	const click_handler_2 = i => pin(i);
 
     	$$self.$set = $$props => {
-    		if ("vegaSpecs" in $$props) $$invalidate(11, vegaSpecs = $$props.vegaSpecs);
-    		if ("dataset" in $$props) $$invalidate(12, dataset = $$props.dataset);
-    		if ("selectedAttributes" in $$props) $$invalidate(13, selectedAttributes = $$props.selectedAttributes);
-    		if ("recomendationCount" in $$props) $$invalidate(14, recomendationCount = $$props.recomendationCount);
+    		if ("vegaSpecs" in $$props) $$invalidate(12, vegaSpecs = $$props.vegaSpecs);
+    		if ("dataset" in $$props) $$invalidate(13, dataset = $$props.dataset);
+    		if ("selectedAttributes" in $$props) $$invalidate(14, selectedAttributes = $$props.selectedAttributes);
+    		if ("recommendationCount" in $$props) $$invalidate(15, recommendationCount = $$props.recommendationCount);
     	};
 
     	$$self.$capture_state = () => ({
@@ -30654,7 +30694,7 @@ ${constraint.asp}`;
     		vegaSpecs,
     		dataset,
     		selectedAttributes,
-    		recomendationCount,
+    		recommendationCount,
     		updateCount,
     		moreLikeThis,
     		lessLikeThis,
@@ -30664,6 +30704,7 @@ ${constraint.asp}`;
     		recommendationsClass,
     		classifierResult,
     		pinned,
+    		currentPinned,
     		attributesWeight,
     		visVectors,
     		allPoints,
@@ -30683,11 +30724,11 @@ ${constraint.asp}`;
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ("vegaSpecs" in $$props) $$invalidate(11, vegaSpecs = $$props.vegaSpecs);
-    		if ("dataset" in $$props) $$invalidate(12, dataset = $$props.dataset);
-    		if ("selectedAttributes" in $$props) $$invalidate(13, selectedAttributes = $$props.selectedAttributes);
-    		if ("recomendationCount" in $$props) $$invalidate(14, recomendationCount = $$props.recomendationCount);
-    		if ("updateCount" in $$props) $$invalidate(15, updateCount = $$props.updateCount);
+    		if ("vegaSpecs" in $$props) $$invalidate(12, vegaSpecs = $$props.vegaSpecs);
+    		if ("dataset" in $$props) $$invalidate(13, dataset = $$props.dataset);
+    		if ("selectedAttributes" in $$props) $$invalidate(14, selectedAttributes = $$props.selectedAttributes);
+    		if ("recommendationCount" in $$props) $$invalidate(15, recommendationCount = $$props.recommendationCount);
+    		if ("updateCount" in $$props) $$invalidate(16, updateCount = $$props.updateCount);
     		if ("moreLikeThis" in $$props) moreLikeThis = $$props.moreLikeThis;
     		if ("lessLikeThis" in $$props) lessLikeThis = $$props.lessLikeThis;
     		if ("maybeLikeThis" in $$props) maybeLikeThis = $$props.maybeLikeThis;
@@ -30696,10 +30737,11 @@ ${constraint.asp}`;
     		if ("recommendationsClass" in $$props) $$invalidate(1, recommendationsClass = $$props.recommendationsClass);
     		if ("classifierResult" in $$props) classifierResult = $$props.classifierResult;
     		if ("pinned" in $$props) $$invalidate(2, pinned = $$props.pinned);
-    		if ("attributesWeight" in $$props) $$invalidate(3, attributesWeight = $$props.attributesWeight);
+    		if ("currentPinned" in $$props) $$invalidate(3, currentPinned = $$props.currentPinned);
+    		if ("attributesWeight" in $$props) $$invalidate(4, attributesWeight = $$props.attributesWeight);
     		if ("visVectors" in $$props) visVectors = $$props.visVectors;
-    		if ("allPoints" in $$props) $$invalidate(4, allPoints = $$props.allPoints);
-    		if ("shownPoints" in $$props) $$invalidate(5, shownPoints = $$props.shownPoints);
+    		if ("allPoints" in $$props) $$invalidate(5, allPoints = $$props.allPoints);
+    		if ("shownPoints" in $$props) $$invalidate(6, shownPoints = $$props.shownPoints);
     		if ("sessionData" in $$props) sessionData = $$props.sessionData;
     	};
 
@@ -30708,11 +30750,11 @@ ${constraint.asp}`;
     	}
 
     	$$self.$$.update = () => {
-    		if ($$self.$$.dirty[0] & /*vegaSpecs*/ 2048) {
+    		if ($$self.$$.dirty[0] & /*vegaSpecs*/ 4096) {
     			 visVectors = vegaSpecs;
     		}
 
-    		if ($$self.$$.dirty[0] & /*updateCount, vegaSpecs, dataset*/ 38912) {
+    		if ($$self.$$.dirty[0] & /*updateCount, vegaSpecs, dataset*/ 77824) {
     			 {
     				console.log("update count", updateCount);
 
@@ -30752,6 +30794,7 @@ ${constraint.asp}`;
     		recommendations,
     		recommendationsClass,
     		pinned,
+    		currentPinned,
     		attributesWeight,
     		allPoints,
     		shownPoints,
@@ -30763,7 +30806,7 @@ ${constraint.asp}`;
     		vegaSpecs,
     		dataset,
     		selectedAttributes,
-    		recomendationCount,
+    		recommendationCount,
     		updateCount,
     		moreLikeThis,
     		lessLikeThis,
@@ -30792,10 +30835,10 @@ ${constraint.asp}`;
     			create_fragment$3,
     			safe_not_equal,
     			{
-    				vegaSpecs: 11,
-    				dataset: 12,
-    				selectedAttributes: 13,
-    				recomendationCount: 14
+    				vegaSpecs: 12,
+    				dataset: 13,
+    				selectedAttributes: 14,
+    				recommendationCount: 15
     			},
     			[-1, -1]
     		);
@@ -30832,11 +30875,11 @@ ${constraint.asp}`;
     		throw new Error("<Recommendations>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
 
-    	get recomendationCount() {
+    	get recommendationCount() {
     		throw new Error("<Recommendations>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
 
-    	set recomendationCount(value) {
+    	set recommendationCount(value) {
     		throw new Error("<Recommendations>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
     }

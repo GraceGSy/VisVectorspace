@@ -3,5 +3,7 @@
 /preprocessing/title.ratings.tsv
 /preprocessing/title.basics.tsv
 /preprocessing/title.akas.tsv
+/preprocessing/title.crew.tsv
+/preprocessing/title.principals.tsv
 
 .DS_Store

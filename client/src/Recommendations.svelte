@@ -11,7 +11,7 @@
 	export let vegaSpecs = []
 	export let dataset = []
 	export let selectedAttributes = []
-	export let recomendationCount = 9
+	export let recommendationCount = 4
 	
 	let updateCount = 0
 
@@ -25,11 +25,12 @@
 	// Recommendations generated from the same draco query
 	let similarRecommendations = []
 	// Recommendations class
-	let recommendationsClass = Array(9).fill("default")
+	let recommendationsClass = Array(recommendationCount).fill("default")
 
 	let classifierResult
 
 	let pinned = []
+	let currentPinned = []
 
 	let attributesWeight = []
 
@@ -198,16 +199,16 @@
 				let updatedPreferrences
 
 				if (updatedLikes.length == 0) {
-					if (updatedMaybe.length < 9) {
-						updatedPreferrences = getRandom(9, updatedNo)
+					if (updatedMaybe.length < recommendationCount) {
+						updatedPreferrences = getRandom(recommendationCount, updatedNo)
 					} else {
-						updatedPreferrences = getRandom(9, updatedMaybe)
+						updatedPreferrences = getRandom(recommendationCount, updatedMaybe)
 					}
 				} else {
 					// Introduce some randomness by including parts of the vectorspace
 					// Not yet explored
-					let randomMaybe = getRandom(4, updatedMaybe)
-					let randomYes = getRandom(5, updatedLikes)
+					let randomMaybe = getRandom(recommendationCount/2, updatedMaybe)
+					let randomYes = getRandom(recommendationCount - randomMaybe, updatedLikes)
 					updatedPreferrences = randomYes.concat(randomMaybe)
 				}
 
@@ -293,10 +294,33 @@
 	}
 
 	function pin(i) {
-		pinned = pinned.concat([recommendations[i]])
+		let pinnedIndex = currentPinned.indexOf(i)
+		let selectedUid = recommendations[i].uid
+		if (pinnedIndex === -1) {
+			currentPinned = [...currentPinned, i]
+			pinned = pinned.concat([recommendations[i]])
 
-		let date = new Date()
-		sessionData = sessionData.concat({"pinned": recommendations[i], "label": "pinned", "date": date})
+			let date = new Date()
+			sessionData = sessionData.concat({"pinned": recommendations[i], "label": "pinned", "date": date})
+		} else {
+			currentPinned.splice(pinnedIndex, 1)
+			currentPinned = currentPinned
+
+			let newPinned = []
+
+			for (let p of pinned) {
+				if (p.uid === selectedUid) {
+					continue
+				} else {
+					newPinned.push(p)
+				}
+			}
+
+			pinned = newPinned
+
+			let date = new Date()
+			sessionData = sessionData.concat({"pinned": recommendations[i], "label": "unpinned", "date": date})
+		}
 	}
 
 	function showPin() {
@@ -346,7 +370,9 @@
 								on:click={() => updateLess(i)}>
 							Less Like This
 						</button>
-						<div class="pinButton" on:click={() => pin(i)}>
+						<div class:isPinned="{currentPinned.indexOf(i) > -1}"
+							 class="pinButton"
+							 on:click={() => pin(i)}>
 							<i class="material-icons-outlined md-24">push_pin</i>
 						</div>
 					</div>
@@ -379,10 +405,18 @@
 		margin-bottom: 20px
 	}
 
-	#recommendationDisplay {
+	/*#recommendationDisplay {
 		display: grid;
 		grid-template-columns: repeat(3, 350px);
 		grid-template-rows: repeat(3, 350px);
+		grid-gap: 15px;
+		margin-top: 50px;
+	}*/
+
+	#recommendationDisplay {
+		display: grid;
+		grid-template-columns: repeat(2, 500px);
+		grid-template-rows: repeat(2, 500px);
 		grid-gap: 15px;
 		margin-top: 50px;
 	}
@@ -442,6 +476,13 @@
     	height: 28px;
     	color: gray;
     	cursor: pointer;
+    	transition: transform 0.5s;
+	}
+
+	.isPinned {
+		color: green;
+	    transform: rotate(45deg);
+	    transition: transform 0.5s;
 	}
 
 	.more {
@@ -460,7 +501,7 @@
 	}
 
 	.vegaContainer {
-		height: 322px;
+		height: 380px;
 		overflow: scroll;
 	    background: white;
 	    display: flex;
