@@ -14,7 +14,7 @@ function getType(uniqueValues) {
 		}
 	}
 
-	console.log(result)
+	// console.log(result)
 
 	return result
 }
@@ -22,7 +22,7 @@ function getType(uniqueValues) {
 function schemaToConstraint(a, attributeSchema) {
 	let attributeType = getType(Object.keys(attributeSchema['unique']))
 
-	console.log("attribute schema", attributeSchema)
+	// console.log("attribute schema", attributeSchema)
 
 	let constraintTemplate = `fieldtype(${a},${attributeType}). cardinality(${a},${attributeSchema['distinct']}).`
 
@@ -42,7 +42,7 @@ export default function(schema) {
 		allConstraints.push(attributeConstraint)
 	}
 
-	console.log(allConstraints)
+	// console.log(allConstraints)
 
 	return allConstraints.join('\n\n')
 }

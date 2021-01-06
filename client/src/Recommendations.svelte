@@ -160,6 +160,7 @@
       		.then(d => {
       			let result = JSON.parse(d)
 
+      			// console.log("result", result)
       			let newPrediction = result["predictions"]
       			let newDataset = result["newData"].map((d, i) => {d.label = newPrediction[i]; return d})
       			let newVectors = []
@@ -200,15 +201,15 @@
 
 				if (updatedLikes.length == 0) {
 					if (updatedMaybe.length < recommendationCount) {
-						updatedPreferrences = getRandom(recommendationCount, updatedNo)
+						updatedPreferrences = getRandom(4, updatedNo)
 					} else {
-						updatedPreferrences = getRandom(recommendationCount, updatedMaybe)
+						updatedPreferrences = getRandom(4, updatedMaybe)
 					}
 				} else {
 					// Introduce some randomness by including parts of the vectorspace
 					// Not yet explored
-					let randomMaybe = getRandom(recommendationCount/2, updatedMaybe)
-					let randomYes = getRandom(recommendationCount - randomMaybe, updatedLikes)
+					let randomMaybe = getRandom(2, updatedMaybe)
+					let randomYes = getRandom(2, updatedLikes)
 					updatedPreferrences = randomYes.concat(randomMaybe)
 				}
 
@@ -294,10 +295,10 @@
 	}
 
 	function pin(i) {
-		let pinnedIndex = currentPinned.indexOf(i)
 		let selectedUid = recommendations[i].uid
+		let pinnedIndex = currentPinned.indexOf(selectedUid)
 		if (pinnedIndex === -1) {
-			currentPinned = [...currentPinned, i]
+			currentPinned = [...currentPinned, selectedUid]
 			pinned = pinned.concat([recommendations[i]])
 
 			let date = new Date()
@@ -370,7 +371,7 @@
 								on:click={() => updateLess(i)}>
 							Less Like This
 						</button>
-						<div class:isPinned="{currentPinned.indexOf(i) > -1}"
+						<div class:isPinned="{currentPinned.indexOf(recommendations[i].uid) > -1}"
 							 class="pinButton"
 							 on:click={() => pin(i)}>
 							<i class="material-icons-outlined md-24">push_pin</i>

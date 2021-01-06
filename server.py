@@ -115,6 +115,8 @@ def flatten_one_hot_encoding(training, testing):
 
 	new_columns = list(df)
 
+	print(new_columns)
+
 	for new_col in new_columns:
 		col_values = list(df[new_col].unique())
 
@@ -240,6 +242,7 @@ def kneighbors():
 	# 	print(X[i], y[i])
 
 	result = json.dumps({"newData": df.to_dict(orient="records"), "predictions":predictions})
+	print(result)
 	return result
 
 
