@@ -1,6 +1,6 @@
 import csv
 
-{'Drama': 133400,
+allGenres = {'Drama': 133400,
 'Short': 12665,
 'Documentary': 42250,
 'Action': 32333,
@@ -28,29 +28,60 @@ import csv
 'Sport': 7081,
 'Reality-TV': 4722}
 
-with open("title.basics.tsv") as fileMeta:
+other = ['Horror', 'Biography', 'Mystery', 'Fantasy', 'Thriller', 'Western', 'Sci-Fi', 'History', 'War', 'Romance', 'Musical', 'Sport', 'Reality-TV']
+
+# with open("title.basics.tsv") as fileMeta:
+# 	readMeta = csv.reader(fileMeta, delimiter="\t", quotechar='"')
+
+# 	# Skip headers
+# 	next(readMeta, None)
+
+# 	moviesData = ["tconst,title,type,start year,runtime (min),average rating,num votes"]
+
+# 	genresDict = {}
+
+# 	for row in readMeta:
+
+# 		try:
+# 			[tconst, titleType, primaryTitle, originalTitle, isAdult, startYear, endYear, runtimeMinutes, genres] = row
+# 			if (int(startYear) >= 1990) and (int(startYear) < 2000) and (genres != "\\N"):
+# 				genreMain = genres.split(",")[0]
+# 				if genreMain in other:
+# 					genreMain = 'Other'
+
+# 				if genreMain not in genresDict:
+# 					genresDict[genreMain] = 0
+
+# 				genresDict[genreMain] += 1
+
+
+# 		except Exception as e:
+# 			continue
+
+# 	print(genresDict)
+
+with open("title.principals.tsv") as fileMeta:
 	readMeta = csv.reader(fileMeta, delimiter="\t", quotechar='"')
 
 	# Skip headers
 	next(readMeta, None)
 
-	moviesData = ["tconst,title,type,start year,runtime (min),average rating,num votes"]
-
-	genresDict = {}
+	principalsCount = {}
 
 	for row in readMeta:
 
 		try:
-			[tconst, titleType, primaryTitle, originalTitle, isAdult, startYear, endYear, runtimeMinutes, genres] = row
-			if (int(startYear) >= 1990) and (int(startYear) < 2000) and (genres != "\\N"):
-				genreMain = genres.split(",")[0]
-				if genreMain not in genresDict:
-					genresDict[genreMain] = 0
+			[tconst, ordering, nconst, category, job, characters] = row
+			if tconst not in principalsCount:
+				principalsCount[tconst] = 0
 
-				genresDict[genreMain] += 1
+			principalsCount[tconst] += 1
 
 
 		except Exception as e:
 			continue
 
-	print(genresDict)
+	print(principalsCount['tt0000001'])
+
+
+
