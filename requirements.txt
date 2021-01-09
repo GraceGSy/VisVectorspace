@@ -1,11 +1,11 @@
 Flask==1.1.2
-Flask-Compress @ file:///home/conda/feedstock_root/build_artifacts/flask-compress_1602267119698/work
+Flask-Compress
 numpy==1.18.5
-numpydoc @ file:///tmp/build/80754af9/numpydoc_1594166760263/work
-pandas @ file:///opt/concourse/worker/volumes/live/5ef6147e-ea92-446e-4065-0c8c7435293f/volume/pandas_1592841676717/work
+numpydoc
+pandas
 pandocfilters==1.4.2
 scikit-image==0.16.2
-scikit-learn @ file:///opt/concourse/worker/volumes/live/47a3ec7c-70dc-43c0-7317-def24a8afaf5/volume/scikit-learn_1592503037057/work
-scikit-posthocs @ file:///home/conda/feedstock_root/build_artifacts/scikit-posthocs_1602551305540/work
-scipy @ file:///opt/concourse/worker/volumes/live/7f5e51f8-abf3-4409-4c56-a4fb14cc9869/volume/scipy_1593104185999/work
-umap-learn @ file:///Users/runner/miniforge3/conda-bld/umap-learn_1593739709268/work
+scikit-learn
+scikit-posthocs
+scipy
+umap-learn
