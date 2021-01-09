@@ -4,7 +4,9 @@
 	import VersionRecommendations from './VersionRecommendations.svelte'
 	import VersionConstraintSolver from './VersionConstraintSolver.svelte'
 
-	let version = "constraintLearner"
+	let versionChoice = null
+
+	let version = null
 
 	let rand = -1;
 	function getRand() {
@@ -33,7 +35,10 @@
 		let result = {}
 		for (let i = 0; i < d3.keys(d).length; i++) {
 			let variableName = d3.keys(d)[i]
-			if (variableName === 'tconst' || variableName === "title" || variableName === "titleType") {}
+			if (variableName === 'tconst' || variableName === "title" || variableName === 'year') {}
+			else if (variableName === 'type' || variableName === "genre") {
+				result[variableName] = d3.values(d)[i]
+			}
 			else {
 				result[variableName] = +d3.values(d)[i]
 			}
@@ -43,6 +48,8 @@
 
 	async function loadData() {
 		const dataset = await d3.csv(`movies.csv`, dataPreprocessor)
+
+		console.log(dataset)
 
 		const firstRow = dataset[0]
 
@@ -63,7 +70,8 @@
 </script>
 
 <div style="padding: '20px'">
-	<div id="versioning">
+	
+	<!--<div id="versioning">
 		<label class="versionOption">
 			<input type=radio bind:group={version} value={"constraintSolver"}>
 			Constraint Solver
@@ -72,7 +80,7 @@
 			<input type=radio bind:group={version} value={"constraintLearner"}>
 			Constraint Learner
 		</label>
-	</div>
+	</div>-->
 	<div id="main">
 		{#await promise}
 			<p>...loading</p>
@@ -82,7 +90,7 @@
 					dataset = {dataset["dataset"]}
 					types = {dataset["types"]}
 					{selectedAttributes}/>
-			{:else}
+			{:else if version === "constraintLearner"}
 				<!-- <AttributesBar
 					on:attributeClicked={updateAttributes}
 					dataset={dataset["dataset"]}/> -->
@@ -90,6 +98,17 @@
 					dataset = {dataset["dataset"]}
 					types = {dataset["types"]}
 					{selectedAttributes}/>
+			{:else}
+				<div id="chooseVersion">
+					<label class="versionOption">
+						<input type=radio bind:group={version} value={"constraintSolver"}>
+						Constraint Solver
+					</label>
+					<label class="versionOption">
+						<input type=radio bind:group={version} value={"constraintLearner"}>
+						Constraint Learner
+					</label>
+				</div>
 			{/if}
 		{:catch error}
 			<p style="color: red">{error.message}</p>
@@ -103,8 +122,12 @@
 		flex-direction: row
 	}
 
+	#chooseVersion {
+		width: 100vw;
+		height: 100vh;
+	}
+
 	#versioning {
-		width: 100%;
 		display: flex;
 		padding: 10px 0px 20px 20px;
 	}

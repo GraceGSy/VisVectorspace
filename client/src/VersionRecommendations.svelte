@@ -57,6 +57,7 @@
 
 <style>
 	#recommendationsMain {
+		width: 100%;
 		display: flex;
 		flex-direction: column;
 	}

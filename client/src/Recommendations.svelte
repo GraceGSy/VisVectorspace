@@ -12,6 +12,9 @@
 	export let dataset = []
 	export let selectedAttributes = []
 	export let recommendationCount = 4
+
+	// true if updating recommendations from server
+	let loading = false
 	
 	let updateCount = 0
 
@@ -81,9 +84,13 @@
 
 		recommendationsClass = recommendationsClass.map(r => 'default')
 		recommendations = result
+
+		loading = false
 	}
 
 	function runClassifier() {
+		loading = true
+
 		let testingData = visVectors.map(v => v.spec)
 		let trainingData = []
 
@@ -258,6 +265,9 @@
 
 	// Update 'moreLikeThis' array
 	function updateMore(i) {
+		// Liking items is disabled if new recommendations are loading
+		if (loading) { return }
+
 		// If items already in moreLikeThis, remove
 		let current = recommendationsClass[i]
 		if (current === 'more') {
@@ -269,6 +279,9 @@
 
 	// Update 'lessLikeThis' array
 	function updateLess(i) {
+		// Disliking items is disabled if new recommendations are loading
+		if (loading) { return }
+
 		// If items already in lessLikeThis, remove
 		let current = recommendationsClass[i]
 		if (current === 'less') {
@@ -295,6 +308,9 @@
 	}
 
 	function pin(i) {
+		// Pinning is disabled if new recommendations are loading
+		if (loading) { return }
+
 		let selectedUid = recommendations[i].uid
 		let pinnedIndex = currentPinned.indexOf(selectedUid)
 		if (pinnedIndex === -1) {
@@ -325,14 +341,23 @@
 	}
 
 	function showPin() {
+		// Showing pins is disabled if new recommendations are loading
+		if (loading) { return }
+
 		document.getElementById("pinnedDrawer").style.width = "450px"
 	}
 
 	function closePin() {
+		// Hiding pins is disabled if new recommendations are loading
+		if (loading) { return }
+
 		document.getElementById("pinnedDrawer").style.width = "0px"
 	}
 
 	function exportJSON() {
+		// Downloading is disabled if new recommendations are loading
+		if (loading) { return }
+
 		var filename = "sessionData.json"
 		var element = document.createElement('a');
 		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(sessionData)))
@@ -349,6 +374,11 @@
 </script>
 
 <div id="overall">
+	<div class:showLoader="{loading}"
+		class:hideLoader="{!loading}"
+		class="loader">
+		<div class="spinner"></div>
+	</div>
 	<AttributesWeight attributes={attributesWeight}
 						allPoints={allPoints}
 						shownPoints={shownPoints}/>
@@ -371,7 +401,7 @@
 								on:click={() => updateLess(i)}>
 							Less Like This
 						</button>
-						<div class:isPinned="{currentPinned.indexOf(recommendations[i].uid) > -1}"
+						<div class:isPinned="{recommendations[i] && currentPinned.indexOf(recommendations[i].uid) > -1}"
 							 class="pinButton"
 							 on:click={() => pin(i)}>
 							<i class="material-icons-outlined md-24">push_pin</i>
@@ -398,8 +428,43 @@
 <style>
 	#overall {
 		display: flex;
-		background: #f4f4f4;
+		background: #f3f3f3;
 		padding-right: 25px;
+		width: 100%;
+	}
+
+	.showLoader {
+		display: flex;
+	}
+
+	.hideLoader {
+		display: none;
+	}
+
+	.loader {
+		width: 100vw;
+		height: 100vh;
+		position: absolute;
+		z-index: 100;
+		opacity: 0.2;
+		background-color: gray;
+	    align-items: center;
+	    justify-content: center;
+	}
+
+	.spinner {
+		border: 16px solid #f3f3f3;
+		border-radius: 50%;
+		border-top: 16px solid #3498db;
+		width: 80px;
+		height: 80px;
+		-webkit-animation: spin 2s linear infinite; /* Safari */
+		animation: spin 2s linear infinite;
+	}
+
+	@keyframes spin {
+		0% { transform: rotate(0deg); }
+		100% { transform: rotate(360deg); }
 	}
 
 	#recommendations {
@@ -416,7 +481,7 @@
 
 	#recommendationDisplay {
 		display: grid;
-		grid-template-columns: repeat(2, 500px);
+		grid-template-columns: repeat(2, 520px);
 		grid-template-rows: repeat(2, 500px);
 		grid-gap: 15px;
 		margin-top: 50px;
@@ -445,7 +510,7 @@
 		flex-direction: column;
 		gap: 30px;
 		margin-left: 30px;
-		max-width: 420px
+		max-width: 480px
 	}
 
 	#closeButton {
@@ -502,7 +567,7 @@
 	}
 
 	.vegaContainer {
-		height: 380px;
+		height: 400px;
 		overflow: scroll;
 	    background: white;
 	    display: flex;
