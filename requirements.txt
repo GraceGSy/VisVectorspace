@@ -1,5 +1,6 @@
 Flask==1.1.2
 Flask-Compress
+gunicorn
 numpy==1.18.5
 numpydoc
 pandas
