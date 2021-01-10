@@ -165,6 +165,7 @@
 		fetch(`./kneighbors`, {method:"POST", body:JSON.stringify(classifierData)})
 			.then(d => d.text())
       		.then(d => {
+      			console.log(d)
       			let result = JSON.parse(d)
 
       			// console.log("result", result)
