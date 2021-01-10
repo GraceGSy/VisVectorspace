@@ -216,11 +216,16 @@ def kneighbors():
 	X, y = m.data_label_split(df, targetCol)
 	m.build_model_knn(X)
 
+	print("knn model okay...")
+
 	predictions = []
 
 	umapCoords = getCoords(X)
 
 	dists, inds = m.knn.query(X, k=10)
+
+	print("get neighbors okay...")
+
 	for instance in range(len(df.index)):
 		dist = dists[instance].tolist()
 		ind = inds[instance].tolist()
