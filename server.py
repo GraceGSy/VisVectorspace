@@ -248,7 +248,7 @@ def kneighbors():
 
 	result = json.dumps({"newData": df.to_dict(orient="records"), "predictions":predictions})
 
-	print(result)
+	# print(result)
 
 	return result
 
