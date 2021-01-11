@@ -74,6 +74,11 @@ var app = (function () {
     function children(element) {
         return Array.from(element.childNodes);
     }
+    function set_input_value(input, value) {
+        if (value != null || input.value) {
+            input.value = value;
+        }
+    }
     function set_style(node, key, value, important) {
         node.style.setProperty(key, value, important ? 'important' : '');
     }
@@ -25334,7 +25339,7 @@ ${constraint.asp}`;
         Object.defineProperty(exports, '__esModule', { value: true });
 
     })));
-
+    //# sourceMappingURL=draco.js.map
     });
 
     var Draco = unwrapExports(draco);
@@ -29023,6 +29028,8 @@ ${constraint.asp}`;
     };
     });
 
+    //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi9zcmMvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsY0FBYyxTQUFTLENBQUM7QUFDeEIsY0FBYyxRQUFRLENBQUM7QUFDdkIsY0FBYyxZQUFZLENBQUM7QUFDM0IsT0FBTyxLQUFLLE1BQU0sU0FBUyxDQUFDO0FBQzVCLGVBQWUsS0FBSyxDQUFDIn0=
+
     /*!
      * Determine if an object is a Buffer
      *
@@ -29483,6 +29490,8 @@ ${constraint.asp}`;
     		}
     	}
 
+    	console.log(allDracoRecommendations);
+
     	return allDracoRecommendations
     }
 
@@ -29898,19 +29907,19 @@ ${constraint.asp}`;
 
     function get_each_context$2(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[33] = list[i];
-    	child_ctx[35] = i;
+    	child_ctx[35] = list[i];
+    	child_ctx[37] = i;
     	return child_ctx;
     }
 
     function get_each_context_1(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[36] = list[i];
-    	child_ctx[35] = i;
+    	child_ctx[38] = list[i];
+    	child_ctx[37] = i;
     	return child_ctx;
     }
 
-    // (393:3) {#each recommendations as c, i}
+    // (400:3) {#each recommendations as c, i}
     function create_each_block_1(ctx) {
     	let div4;
     	let div1;
@@ -29932,15 +29941,15 @@ ${constraint.asp}`;
     	let dispose;
 
     	function click_handler(...args) {
-    		return /*click_handler*/ ctx[30](/*i*/ ctx[35], ...args);
+    		return /*click_handler*/ ctx[32](/*i*/ ctx[37], ...args);
     	}
 
     	function click_handler_1(...args) {
-    		return /*click_handler_1*/ ctx[31](/*i*/ ctx[35], ...args);
+    		return /*click_handler_1*/ ctx[33](/*i*/ ctx[37], ...args);
     	}
 
     	function click_handler_2(...args) {
-    		return /*click_handler_2*/ ctx[32](/*i*/ ctx[35], ...args);
+    		return /*click_handler_2*/ ctx[34](/*i*/ ctx[37], ...args);
     	}
 
     	const block = {
@@ -29961,31 +29970,31 @@ ${constraint.asp}`;
     			div2 = element("div");
     			t6 = space();
 
-    			attr_dev(button0, "class", button0_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[2][/*i*/ ctx[35]] === "more"
+    			attr_dev(button0, "class", button0_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[2][/*i*/ ctx[37]] === "more"
     			? "more"
-    			: "default") + " svelte-1v894yw"));
+    			: "default") + " svelte-elq6qq"));
 
-    			add_location(button0, file$3, 395, 6, 10271);
+    			add_location(button0, file$3, 402, 6, 10425);
 
-    			attr_dev(button1, "class", button1_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[2][/*i*/ ctx[35]] === "less"
+    			attr_dev(button1, "class", button1_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[2][/*i*/ ctx[37]] === "less"
     			? "less"
-    			: "default") + " svelte-1v894yw"));
+    			: "default") + " svelte-elq6qq"));
 
-    			add_location(button1, file$3, 399, 6, 10429);
+    			add_location(button1, file$3, 406, 6, 10583);
     			attr_dev(i_1, "class", "material-icons-outlined md-24");
-    			add_location(i_1, file$3, 406, 7, 10750);
-    			attr_dev(div0, "class", "pinButton svelte-1v894yw");
-    			toggle_class(div0, "isPinned", /*recommendations*/ ctx[1][/*i*/ ctx[35]] && /*currentPinned*/ ctx[4].indexOf(/*recommendations*/ ctx[1][/*i*/ ctx[35]].uid) > -1);
-    			add_location(div0, file$3, 403, 6, 10587);
-    			attr_dev(div1, "class", "buttons svelte-1v894yw");
-    			add_location(div1, file$3, 394, 5, 10243);
-    			attr_dev(div2, "id", div2_id_value = "vis" + /*i*/ ctx[35]);
-    			attr_dev(div2, "class", "svelte-1v894yw");
-    			add_location(div2, file$3, 410, 6, 10868);
-    			attr_dev(div3, "class", "vegaContainer svelte-1v894yw");
-    			add_location(div3, file$3, 409, 5, 10834);
-    			attr_dev(div4, "class", "vis svelte-1v894yw");
-    			add_location(div4, file$3, 393, 4, 10220);
+    			add_location(i_1, file$3, 413, 7, 10904);
+    			attr_dev(div0, "class", "pinButton svelte-elq6qq");
+    			toggle_class(div0, "isPinned", /*recommendations*/ ctx[1][/*i*/ ctx[37]] && /*currentPinned*/ ctx[4].indexOf(/*recommendations*/ ctx[1][/*i*/ ctx[37]].uid) > -1);
+    			add_location(div0, file$3, 410, 6, 10741);
+    			attr_dev(div1, "class", "buttons svelte-elq6qq");
+    			add_location(div1, file$3, 401, 5, 10397);
+    			attr_dev(div2, "id", div2_id_value = "vis" + /*i*/ ctx[37]);
+    			attr_dev(div2, "class", "svelte-elq6qq");
+    			add_location(div2, file$3, 417, 6, 11022);
+    			attr_dev(div3, "class", "vegaContainer svelte-elq6qq");
+    			add_location(div3, file$3, 416, 5, 10988);
+    			attr_dev(div4, "class", "vis svelte-elq6qq");
+    			add_location(div4, file$3, 400, 4, 10374);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div4, anchor);
@@ -30013,20 +30022,20 @@ ${constraint.asp}`;
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
 
-    			if (dirty[0] & /*recommendationsClass*/ 4 && button0_class_value !== (button0_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[2][/*i*/ ctx[35]] === "more"
+    			if (dirty[0] & /*recommendationsClass*/ 4 && button0_class_value !== (button0_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[2][/*i*/ ctx[37]] === "more"
     			? "more"
-    			: "default") + " svelte-1v894yw"))) {
+    			: "default") + " svelte-elq6qq"))) {
     				attr_dev(button0, "class", button0_class_value);
     			}
 
-    			if (dirty[0] & /*recommendationsClass*/ 4 && button1_class_value !== (button1_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[2][/*i*/ ctx[35]] === "less"
+    			if (dirty[0] & /*recommendationsClass*/ 4 && button1_class_value !== (button1_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[2][/*i*/ ctx[37]] === "less"
     			? "less"
-    			: "default") + " svelte-1v894yw"))) {
+    			: "default") + " svelte-elq6qq"))) {
     				attr_dev(button1, "class", button1_class_value);
     			}
 
     			if (dirty[0] & /*recommendations, currentPinned*/ 18) {
-    				toggle_class(div0, "isPinned", /*recommendations*/ ctx[1][/*i*/ ctx[35]] && /*currentPinned*/ ctx[4].indexOf(/*recommendations*/ ctx[1][/*i*/ ctx[35]].uid) > -1);
+    				toggle_class(div0, "isPinned", /*recommendations*/ ctx[1][/*i*/ ctx[37]] && /*currentPinned*/ ctx[4].indexOf(/*recommendations*/ ctx[1][/*i*/ ctx[37]].uid) > -1);
     			}
     		},
     		d: function destroy(detaching) {
@@ -30039,14 +30048,14 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_1.name,
     		type: "each",
-    		source: "(393:3) {#each recommendations as c, i}",
+    		source: "(400:3) {#each recommendations as c, i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (421:3) {#each pinned as p, i}
+    // (428:3) {#each pinned as p, i}
     function create_each_block$2(ctx) {
     	let div;
     	let div_id_value;
@@ -30054,9 +30063,9 @@ ${constraint.asp}`;
     	const block = {
     		c: function create() {
     			div = element("div");
-    			attr_dev(div, "id", div_id_value = "pin" + /*i*/ ctx[35]);
-    			attr_dev(div, "class", "svelte-1v894yw");
-    			add_location(div, file$3, 421, 4, 11118);
+    			attr_dev(div, "id", div_id_value = "pin" + /*i*/ ctx[37]);
+    			attr_dev(div, "class", "svelte-elq6qq");
+    			add_location(div, file$3, 428, 4, 11272);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -30070,7 +30079,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$2.name,
     		type: "each",
-    		source: "(421:3) {#each pinned as p, i}",
+    		source: "(428:3) {#each pinned as p, i}",
     		ctx
     	});
 
@@ -30175,43 +30184,43 @@ ${constraint.asp}`;
     				each_blocks[i].c();
     			}
 
-    			attr_dev(div0, "class", "spinner svelte-1v894yw");
-    			add_location(div0, file$3, 379, 2, 9725);
-    			attr_dev(div1, "class", "loader svelte-1v894yw");
+    			attr_dev(div0, "class", "spinner svelte-elq6qq");
+    			add_location(div0, file$3, 386, 2, 9879);
+    			attr_dev(div1, "class", "loader svelte-elq6qq");
     			toggle_class(div1, "showLoader", /*loading*/ ctx[0]);
     			toggle_class(div1, "hideLoader", !/*loading*/ ctx[0]);
-    			add_location(div1, file$3, 376, 1, 9639);
-    			add_location(b0, file$3, 386, 6, 9924);
-    			add_location(p0, file$3, 386, 3, 9921);
-    			add_location(button0, file$3, 387, 3, 9954);
-    			add_location(button1, file$3, 388, 3, 10015);
+    			add_location(div1, file$3, 383, 1, 9793);
+    			add_location(b0, file$3, 393, 6, 10078);
+    			add_location(p0, file$3, 393, 3, 10075);
+    			add_location(button0, file$3, 394, 3, 10108);
+    			add_location(button1, file$3, 395, 3, 10169);
     			attr_dev(button2, "id", "exportJSON");
     			attr_dev(button2, "class", "btn");
-    			add_location(button2, file$3, 389, 3, 10061);
+    			add_location(button2, file$3, 396, 3, 10215);
     			attr_dev(div2, "id", "menu");
-    			add_location(div2, file$3, 385, 2, 9902);
+    			add_location(div2, file$3, 392, 2, 10056);
     			attr_dev(div3, "id", "recommendationDisplay");
-    			attr_dev(div3, "class", "svelte-1v894yw");
-    			add_location(div3, file$3, 391, 2, 10148);
+    			attr_dev(div3, "class", "svelte-elq6qq");
+    			add_location(div3, file$3, 398, 2, 10302);
     			attr_dev(div4, "id", "recommendations");
-    			attr_dev(div4, "class", "svelte-1v894yw");
-    			add_location(div4, file$3, 384, 1, 9873);
-    			add_location(b1, file$3, 417, 21, 10989);
+    			attr_dev(div4, "class", "svelte-elq6qq");
+    			add_location(div4, file$3, 391, 1, 10027);
+    			add_location(b1, file$3, 424, 21, 11143);
     			attr_dev(p1, "id", "pinnedText");
-    			attr_dev(p1, "class", "svelte-1v894yw");
-    			add_location(p1, file$3, 417, 2, 10970);
+    			attr_dev(p1, "class", "svelte-elq6qq");
+    			add_location(p1, file$3, 424, 2, 11124);
     			attr_dev(a, "id", "closeButton");
-    			attr_dev(a, "class", "svelte-1v894yw");
-    			add_location(a, file$3, 418, 2, 11009);
+    			attr_dev(a, "class", "svelte-elq6qq");
+    			add_location(a, file$3, 425, 2, 11163);
     			attr_dev(div5, "id", "pinnedDisplay");
-    			attr_dev(div5, "class", "svelte-1v894yw");
-    			add_location(div5, file$3, 419, 2, 11063);
+    			attr_dev(div5, "class", "svelte-elq6qq");
+    			add_location(div5, file$3, 426, 2, 11217);
     			attr_dev(div6, "id", "pinnedDrawer");
-    			attr_dev(div6, "class", "svelte-1v894yw");
-    			add_location(div6, file$3, 416, 1, 10944);
+    			attr_dev(div6, "class", "svelte-elq6qq");
+    			add_location(div6, file$3, 423, 1, 11098);
     			attr_dev(div7, "id", "overall");
-    			attr_dev(div7, "class", "svelte-1v894yw");
-    			add_location(div7, file$3, 375, 0, 9619);
+    			attr_dev(div7, "class", "svelte-elq6qq");
+    			add_location(div7, file$3, 382, 0, 9773);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -30378,6 +30387,8 @@ ${constraint.asp}`;
     }
 
     function instance$3($$self, $$props, $$invalidate) {
+    	let { participant = -1 } = $$props;
+    	let { allParticipantInfo = {} } = $$props;
     	let { vegaSpecs = [] } = $$props;
     	let { dataset = [] } = $$props;
     	let { selectedAttributes = [] } = $$props;
@@ -30510,10 +30521,11 @@ ${constraint.asp}`;
     			"testing": testingData
     		};
 
-    		fetch(`https://visvectorspace-test.herokuapp.com/`, {
+    		fetch(`./kneighbors`, {
     			method: "POST",
     			body: JSON.stringify(classifierData)
     		}).then(d => d.text()).then(d => {
+    			console.log(d);
     			let result = JSON.parse(d);
 
     			// console.log("result", result)
@@ -30639,7 +30651,7 @@ ${constraint.asp}`;
     	}
 
     	function update() {
-    		$$invalidate(19, updateCount++, updateCount);
+    		$$invalidate(21, updateCount++, updateCount);
     	}
 
     	function reset() {
@@ -30716,9 +30728,14 @@ ${constraint.asp}`;
     			return;
     		}
 
-    		var filename = "sessionData.json";
+    		let allData = {
+    			"participant": allParticipantInfo,
+    			"session": sessionData
+    		};
+
+    		var filename = `sessionData_${participant}.json`;
     		var element = document.createElement("a");
-    		element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(JSON.stringify(sessionData)));
+    		element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(JSON.stringify(allData)));
     		element.setAttribute("download", filename);
     		element.style.display = "none";
     		document.body.appendChild(element);
@@ -30726,7 +30743,14 @@ ${constraint.asp}`;
     		document.body.removeChild(element);
     	}
 
-    	const writable_props = ["vegaSpecs", "dataset", "selectedAttributes", "recommendationCount"];
+    	const writable_props = [
+    		"participant",
+    		"allParticipantInfo",
+    		"vegaSpecs",
+    		"dataset",
+    		"selectedAttributes",
+    		"recommendationCount"
+    	];
 
     	Object_1$1.keys($$props).forEach(key => {
     		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$2.warn(`<Recommendations> was created with unknown prop '${key}'`);
@@ -30739,10 +30763,12 @@ ${constraint.asp}`;
     	const click_handler_2 = i => pin(i);
 
     	$$self.$set = $$props => {
-    		if ("vegaSpecs" in $$props) $$invalidate(15, vegaSpecs = $$props.vegaSpecs);
-    		if ("dataset" in $$props) $$invalidate(16, dataset = $$props.dataset);
-    		if ("selectedAttributes" in $$props) $$invalidate(17, selectedAttributes = $$props.selectedAttributes);
-    		if ("recommendationCount" in $$props) $$invalidate(18, recommendationCount = $$props.recommendationCount);
+    		if ("participant" in $$props) $$invalidate(15, participant = $$props.participant);
+    		if ("allParticipantInfo" in $$props) $$invalidate(16, allParticipantInfo = $$props.allParticipantInfo);
+    		if ("vegaSpecs" in $$props) $$invalidate(17, vegaSpecs = $$props.vegaSpecs);
+    		if ("dataset" in $$props) $$invalidate(18, dataset = $$props.dataset);
+    		if ("selectedAttributes" in $$props) $$invalidate(19, selectedAttributes = $$props.selectedAttributes);
+    		if ("recommendationCount" in $$props) $$invalidate(20, recommendationCount = $$props.recommendationCount);
     	};
 
     	$$self.$capture_state = () => ({
@@ -30752,6 +30778,8 @@ ${constraint.asp}`;
     		defaultConstraints,
     		getRecombinations,
     		AttributesWeight,
+    		participant,
+    		allParticipantInfo,
     		vegaSpecs,
     		dataset,
     		selectedAttributes,
@@ -30786,12 +30814,14 @@ ${constraint.asp}`;
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ("vegaSpecs" in $$props) $$invalidate(15, vegaSpecs = $$props.vegaSpecs);
-    		if ("dataset" in $$props) $$invalidate(16, dataset = $$props.dataset);
-    		if ("selectedAttributes" in $$props) $$invalidate(17, selectedAttributes = $$props.selectedAttributes);
-    		if ("recommendationCount" in $$props) $$invalidate(18, recommendationCount = $$props.recommendationCount);
+    		if ("participant" in $$props) $$invalidate(15, participant = $$props.participant);
+    		if ("allParticipantInfo" in $$props) $$invalidate(16, allParticipantInfo = $$props.allParticipantInfo);
+    		if ("vegaSpecs" in $$props) $$invalidate(17, vegaSpecs = $$props.vegaSpecs);
+    		if ("dataset" in $$props) $$invalidate(18, dataset = $$props.dataset);
+    		if ("selectedAttributes" in $$props) $$invalidate(19, selectedAttributes = $$props.selectedAttributes);
+    		if ("recommendationCount" in $$props) $$invalidate(20, recommendationCount = $$props.recommendationCount);
     		if ("loading" in $$props) $$invalidate(0, loading = $$props.loading);
-    		if ("updateCount" in $$props) $$invalidate(19, updateCount = $$props.updateCount);
+    		if ("updateCount" in $$props) $$invalidate(21, updateCount = $$props.updateCount);
     		if ("moreLikeThis" in $$props) moreLikeThis = $$props.moreLikeThis;
     		if ("lessLikeThis" in $$props) lessLikeThis = $$props.lessLikeThis;
     		if ("maybeLikeThis" in $$props) maybeLikeThis = $$props.maybeLikeThis;
@@ -30813,11 +30843,11 @@ ${constraint.asp}`;
     	}
 
     	$$self.$$.update = () => {
-    		if ($$self.$$.dirty[0] & /*vegaSpecs*/ 32768) {
+    		if ($$self.$$.dirty[0] & /*vegaSpecs*/ 131072) {
     			 visVectors = vegaSpecs;
     		}
 
-    		if ($$self.$$.dirty[0] & /*updateCount, vegaSpecs, dataset*/ 622592) {
+    		if ($$self.$$.dirty[0] & /*updateCount, vegaSpecs, dataset*/ 2490368) {
     			 {
     				console.log("update count", updateCount);
 
@@ -30869,6 +30899,8 @@ ${constraint.asp}`;
     		showPin,
     		closePin,
     		exportJSON,
+    		participant,
+    		allParticipantInfo,
     		vegaSpecs,
     		dataset,
     		selectedAttributes,
@@ -30901,10 +30933,12 @@ ${constraint.asp}`;
     			create_fragment$3,
     			safe_not_equal,
     			{
-    				vegaSpecs: 15,
-    				dataset: 16,
-    				selectedAttributes: 17,
-    				recommendationCount: 18
+    				participant: 15,
+    				allParticipantInfo: 16,
+    				vegaSpecs: 17,
+    				dataset: 18,
+    				selectedAttributes: 19,
+    				recommendationCount: 20
     			},
     			[-1, -1]
     		);
@@ -30915,6 +30949,22 @@ ${constraint.asp}`;
     			options,
     			id: create_fragment$3.name
     		});
+    	}
+
+    	get participant() {
+    		throw new Error("<Recommendations>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set participant(value) {
+    		throw new Error("<Recommendations>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	get allParticipantInfo() {
+    		throw new Error("<Recommendations>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set allParticipantInfo(value) {
+    		throw new Error("<Recommendations>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
 
     	get vegaSpecs() {
@@ -30953,10 +31003,10 @@ ${constraint.asp}`;
     /* src/VersionRecommendations.svelte generated by Svelte v3.20.1 */
     const file$4 = "src/VersionRecommendations.svelte";
 
-    // (53:1) {:catch error}
+    // (58:1) {:catch error}
     function create_catch_block(ctx) {
     	let p;
-    	let t_value = /*error*/ ctx[6].message + "";
+    	let t_value = /*error*/ ctx[8].message + "";
     	let t;
 
     	const block = {
@@ -30964,7 +31014,7 @@ ${constraint.asp}`;
     			p = element("p");
     			t = text(t_value);
     			set_style(p, "color", "red");
-    			add_location(p, file$4, 53, 2, 1000);
+    			add_location(p, file$4, 58, 2, 1107);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -30982,23 +31032,25 @@ ${constraint.asp}`;
     		block,
     		id: create_catch_block.name,
     		type: "catch",
-    		source: "(53:1) {:catch error}",
+    		source: "(58:1) {:catch error}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (47:1) {:then vegaSpecs}
+    // (50:1) {:then vegaSpecs}
     function create_then_block(ctx) {
     	let current;
 
     	const recommendations = new Recommendations({
     			props: {
-    				dataset: /*dataset*/ ctx[0],
-    				vegaSpecs: /*vegaSpecs*/ ctx[5],
-    				selectedAttributes: /*selectedAttributes*/ ctx[1],
-    				updateCount: /*updateCount*/ ctx[3]
+    				participant: /*participant*/ ctx[0],
+    				allParticipantInfo: /*allParticipantInfo*/ ctx[1],
+    				dataset: /*dataset*/ ctx[2],
+    				vegaSpecs: /*vegaSpecs*/ ctx[7],
+    				selectedAttributes: /*selectedAttributes*/ ctx[3],
+    				updateCount: /*updateCount*/ ctx[5]
     			},
     			$$inline: true
     		});
@@ -31013,8 +31065,10 @@ ${constraint.asp}`;
     		},
     		p: function update(ctx, dirty) {
     			const recommendations_changes = {};
-    			if (dirty & /*dataset*/ 1) recommendations_changes.dataset = /*dataset*/ ctx[0];
-    			if (dirty & /*selectedAttributes*/ 2) recommendations_changes.selectedAttributes = /*selectedAttributes*/ ctx[1];
+    			if (dirty & /*participant*/ 1) recommendations_changes.participant = /*participant*/ ctx[0];
+    			if (dirty & /*allParticipantInfo*/ 2) recommendations_changes.allParticipantInfo = /*allParticipantInfo*/ ctx[1];
+    			if (dirty & /*dataset*/ 4) recommendations_changes.dataset = /*dataset*/ ctx[2];
+    			if (dirty & /*selectedAttributes*/ 8) recommendations_changes.selectedAttributes = /*selectedAttributes*/ ctx[3];
     			recommendations.$set(recommendations_changes);
     		},
     		i: function intro(local) {
@@ -31035,14 +31089,14 @@ ${constraint.asp}`;
     		block,
     		id: create_then_block.name,
     		type: "then",
-    		source: "(47:1) {:then vegaSpecs}",
+    		source: "(50:1) {:then vegaSpecs}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (45:17)    <p>...loading</p>  {:then vegaSpecs}
+    // (48:17)    <p>...loading</p>  {:then vegaSpecs}
     function create_pending_block(ctx) {
     	let p;
 
@@ -31050,7 +31104,7 @@ ${constraint.asp}`;
     		c: function create() {
     			p = element("p");
     			p.textContent = "...loading";
-    			add_location(p, file$4, 45, 2, 855);
+    			add_location(p, file$4, 48, 2, 921);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -31067,7 +31121,7 @@ ${constraint.asp}`;
     		block,
     		id: create_pending_block.name,
     		type: "pending",
-    		source: "(45:17)    <p>...loading</p>  {:then vegaSpecs}",
+    		source: "(48:17)    <p>...loading</p>  {:then vegaSpecs}",
     		ctx
     	});
 
@@ -31086,12 +31140,12 @@ ${constraint.asp}`;
     		pending: create_pending_block,
     		then: create_then_block,
     		catch: create_catch_block,
-    		value: 5,
-    		error: 6,
+    		value: 7,
+    		error: 8,
     		blocks: [,,,]
     	};
 
-    	handle_promise(promise_1 = /*promise*/ ctx[2], info);
+    	handle_promise(promise_1 = /*promise*/ ctx[4], info);
 
     	const block = {
     		c: function create() {
@@ -31099,7 +31153,7 @@ ${constraint.asp}`;
     			info.block.c();
     			attr_dev(div, "id", "recommendationsMain");
     			attr_dev(div, "class", "svelte-1f32qq");
-    			add_location(div, file$4, 43, 0, 804);
+    			add_location(div, file$4, 46, 0, 870);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -31116,7 +31170,7 @@ ${constraint.asp}`;
 
     			{
     				const child_ctx = ctx.slice();
-    				child_ctx[5] = info.resolved;
+    				child_ctx[7] = info.resolved;
     				info.block.p(child_ctx, dirty);
     			}
     		},
@@ -31184,12 +31238,14 @@ ${constraint.asp}`;
     }
 
     function instance$4($$self, $$props, $$invalidate) {
+    	let { participant = -1 } = $$props;
+    	let { allParticipantInfo = {} } = $$props;
     	let { dataset = [] } = $$props;
     	let { types = {} } = $$props;
     	let { selectedAttributes = [] } = $$props;
     	let promise = loadSpecs();
     	let updateCount = 0;
-    	const writable_props = ["dataset", "types", "selectedAttributes"];
+    	const writable_props = ["participant", "allParticipantInfo", "dataset", "types", "selectedAttributes"];
 
     	Object.keys($$props).forEach(key => {
     		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<VersionRecommendations> was created with unknown prop '${key}'`);
@@ -31199,14 +31255,18 @@ ${constraint.asp}`;
     	validate_slots("VersionRecommendations", $$slots, []);
 
     	$$self.$set = $$props => {
-    		if ("dataset" in $$props) $$invalidate(0, dataset = $$props.dataset);
-    		if ("types" in $$props) $$invalidate(4, types = $$props.types);
-    		if ("selectedAttributes" in $$props) $$invalidate(1, selectedAttributes = $$props.selectedAttributes);
+    		if ("participant" in $$props) $$invalidate(0, participant = $$props.participant);
+    		if ("allParticipantInfo" in $$props) $$invalidate(1, allParticipantInfo = $$props.allParticipantInfo);
+    		if ("dataset" in $$props) $$invalidate(2, dataset = $$props.dataset);
+    		if ("types" in $$props) $$invalidate(6, types = $$props.types);
+    		if ("selectedAttributes" in $$props) $$invalidate(3, selectedAttributes = $$props.selectedAttributes);
     	};
 
     	$$self.$capture_state = () => ({
     		d3,
     		Recommendations,
+    		participant,
+    		allParticipantInfo,
     		dataset,
     		types,
     		selectedAttributes,
@@ -31217,18 +31277,28 @@ ${constraint.asp}`;
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ("dataset" in $$props) $$invalidate(0, dataset = $$props.dataset);
-    		if ("types" in $$props) $$invalidate(4, types = $$props.types);
-    		if ("selectedAttributes" in $$props) $$invalidate(1, selectedAttributes = $$props.selectedAttributes);
-    		if ("promise" in $$props) $$invalidate(2, promise = $$props.promise);
-    		if ("updateCount" in $$props) $$invalidate(3, updateCount = $$props.updateCount);
+    		if ("participant" in $$props) $$invalidate(0, participant = $$props.participant);
+    		if ("allParticipantInfo" in $$props) $$invalidate(1, allParticipantInfo = $$props.allParticipantInfo);
+    		if ("dataset" in $$props) $$invalidate(2, dataset = $$props.dataset);
+    		if ("types" in $$props) $$invalidate(6, types = $$props.types);
+    		if ("selectedAttributes" in $$props) $$invalidate(3, selectedAttributes = $$props.selectedAttributes);
+    		if ("promise" in $$props) $$invalidate(4, promise = $$props.promise);
+    		if ("updateCount" in $$props) $$invalidate(5, updateCount = $$props.updateCount);
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [dataset, selectedAttributes, promise, updateCount, types];
+    	return [
+    		participant,
+    		allParticipantInfo,
+    		dataset,
+    		selectedAttributes,
+    		promise,
+    		updateCount,
+    		types
+    	];
     }
 
     class VersionRecommendations extends SvelteComponentDev {
@@ -31236,9 +31306,11 @@ ${constraint.asp}`;
     		super(options);
 
     		init(this, options, instance$4, create_fragment$4, safe_not_equal, {
-    			dataset: 0,
-    			types: 4,
-    			selectedAttributes: 1
+    			participant: 0,
+    			allParticipantInfo: 1,
+    			dataset: 2,
+    			types: 6,
+    			selectedAttributes: 3
     		});
 
     		dispatch_dev("SvelteRegisterComponent", {
@@ -31247,6 +31319,22 @@ ${constraint.asp}`;
     			options,
     			id: create_fragment$4.name
     		});
+    	}
+
+    	get participant() {
+    		throw new Error("<VersionRecommendations>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set participant(value) {
+    		throw new Error("<VersionRecommendations>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	get allParticipantInfo() {
+    		throw new Error("<VersionRecommendations>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set allParticipantInfo(value) {
+    		throw new Error("<VersionRecommendations>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
 
     	get dataset() {
@@ -32502,13 +32590,13 @@ ${constraint.asp}`;
 
     /* src/App.svelte generated by Svelte v3.20.1 */
 
-    const { Object: Object_1$4, console: console_1$4 } = globals;
+    const { Object: Object_1$4 } = globals;
     const file$7 = "src/App.svelte";
 
-    // (113:2) {:catch error}
+    // (197:2) {:catch error}
     function create_catch_block$1(ctx) {
     	let p;
-    	let t_value = /*error*/ ctx[10].message + "";
+    	let t_value = /*error*/ ctx[28].message + "";
     	let t;
 
     	const block = {
@@ -32516,7 +32604,7 @@ ${constraint.asp}`;
     			p = element("p");
     			t = text(t_value);
     			set_style(p, "color", "red");
-    			add_location(p, file$7, 113, 3, 2793);
+    			add_location(p, file$7, 197, 3, 5687);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -32534,14 +32622,14 @@ ${constraint.asp}`;
     		block,
     		id: create_catch_block$1.name,
     		type: "catch",
-    		source: "(113:2) {:catch error}",
+    		source: "(197:2) {:catch error}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (87:2) {:then dataset}
+    // (111:2) {:then dataset}
     function create_then_block$1(ctx) {
     	let current_block_type_index;
     	let if_block;
@@ -32551,8 +32639,8 @@ ${constraint.asp}`;
     	const if_blocks = [];
 
     	function select_block_type(ctx, dirty) {
-    		if (/*version*/ ctx[0] === "constraintSolver") return 0;
-    		if (/*version*/ ctx[0] === "constraintLearner") return 1;
+    		if (/*start*/ ctx[5] && /*participantOrder*/ ctx[7][/*participant*/ ctx[0] - 1] === "constraintSolver") return 0;
+    		if (/*start*/ ctx[5] && /*participantOrder*/ ctx[7][/*participant*/ ctx[0] - 1] === "constraintLearner") return 1;
     		return 2;
     	}
 
@@ -32613,88 +32701,400 @@ ${constraint.asp}`;
     		block,
     		id: create_then_block$1.name,
     		type: "then",
-    		source: "(87:2) {:then dataset}",
+    		source: "(111:2) {:then dataset}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (101:3) {:else}
+    // (128:3) {:else}
     function create_else_block(ctx) {
-    	let div;
-    	let label0;
-    	let input0;
-    	let input0_value_value;
+    	let div5;
+    	let div4;
+    	let div0;
     	let t0;
+    	let input0;
     	let t1;
-    	let label1;
+    	let div1;
+    	let p0;
+    	let t3;
+    	let label0;
     	let input1;
     	let input1_value_value;
-    	let t2;
+    	let t4;
+    	let t5;
+    	let label1;
+    	let input2;
+    	let input2_value_value;
+    	let t6;
+    	let t7;
+    	let label2;
+    	let input3;
+    	let input3_value_value;
+    	let t8;
+    	let t9;
+    	let label3;
+    	let input4;
+    	let input4_value_value;
+    	let t10;
+    	let t11;
+    	let label4;
+    	let input5;
+    	let input5_value_value;
+    	let t12;
+    	let t13;
+    	let div2;
+    	let p1;
+    	let t15;
+    	let input6;
+    	let t16;
+    	let div3;
+    	let p2;
+    	let t18;
+    	let label5;
+    	let input7;
+    	let input7_value_value;
+    	let t19;
+    	let t20;
+    	let label6;
+    	let input8;
+    	let input8_value_value;
+    	let t21;
+    	let t22;
+    	let label7;
+    	let input9;
+    	let input9_value_value;
+    	let t23;
+    	let t24;
+    	let label8;
+    	let input10;
+    	let input10_value_value;
+    	let t25;
+    	let t26;
+    	let label9;
+    	let input11;
+    	let input11_value_value;
+    	let t27;
+    	let t28;
+    	let button;
     	let dispose;
 
     	const block = {
     		c: function create() {
-    			div = element("div");
-    			label0 = element("label");
+    			div5 = element("div");
+    			div4 = element("div");
+    			div0 = element("div");
+    			t0 = text("Participant ID:\n\t\t\t\t\t\t\t");
     			input0 = element("input");
-    			t0 = text("\n\t\t\t\t\t\tConstraint Solver");
     			t1 = space();
-    			label1 = element("label");
+    			div1 = element("div");
+    			p0 = element("p");
+    			p0.textContent = "Please select your age range:";
+    			t3 = space();
+    			label0 = element("label");
     			input1 = element("input");
-    			t2 = text("\n\t\t\t\t\t\tConstraint Learner");
-    			attr_dev(input0, "type", "radio");
-    			input0.__value = input0_value_value = "constraintSolver";
-    			input0.value = input0.__value;
-    			/*$$binding_groups*/ ctx[7][0].push(input0);
-    			add_location(input0, file$7, 103, 6, 2500);
-    			attr_dev(label0, "class", "versionOption svelte-wtyngz");
-    			add_location(label0, file$7, 102, 5, 2464);
+    			t4 = text("\n\t\t\t\t\t\t\t\tLess than 18");
+    			t5 = space();
+    			label1 = element("label");
+    			input2 = element("input");
+    			t6 = text("\n\t\t\t\t\t\t\t\t18 to 24 (inclusive)");
+    			t7 = space();
+    			label2 = element("label");
+    			input3 = element("input");
+    			t8 = text("\n\t\t\t\t\t\t\t\t25 to 29 (inclusive)");
+    			t9 = space();
+    			label3 = element("label");
+    			input4 = element("input");
+    			t10 = text("\n\t\t\t\t\t\t\t\t30 to 34 (inclusive)");
+    			t11 = space();
+    			label4 = element("label");
+    			input5 = element("input");
+    			t12 = text("\n\t\t\t\t\t\t\t\t35 or greater");
+    			t13 = space();
+    			div2 = element("div");
+    			p1 = element("p");
+    			p1.textContent = "Please list the visualization tools you have used in the last 30 days (comma separated):";
+    			t15 = space();
+    			input6 = element("input");
+    			t16 = space();
+    			div3 = element("div");
+    			p2 = element("p");
+    			p2.textContent = "In the last 30 days how often have used visualization tools?";
+    			t18 = space();
+    			label5 = element("label");
+    			input7 = element("input");
+    			t19 = text("\n\t\t\t\t\t\t\t\tNever");
+    			t20 = space();
+    			label6 = element("label");
+    			input8 = element("input");
+    			t21 = text("\n\t\t\t\t\t\t\t\t1-2 times");
+    			t22 = space();
+    			label7 = element("label");
+    			input9 = element("input");
+    			t23 = text("\n\t\t\t\t\t\t\t\t3-5 times");
+    			t24 = space();
+    			label8 = element("label");
+    			input10 = element("input");
+    			t25 = text("\n\t\t\t\t\t\t\t\t5-10 times");
+    			t26 = space();
+    			label9 = element("label");
+    			input11 = element("input");
+    			t27 = text("\n\t\t\t\t\t\t\t\tMore than 10 times");
+    			t28 = space();
+    			button = element("button");
+    			button.textContent = "BEGIN";
+    			attr_dev(input0, "class", "inputBox svelte-1x7dse7");
+    			add_location(input0, file$7, 132, 7, 3351);
+    			attr_dev(div0, "id", "participantID");
+    			add_location(div0, file$7, 130, 6, 3296);
+    			attr_dev(p0, "class", "inputContent svelte-1x7dse7");
+    			add_location(p0, file$7, 135, 7, 3453);
     			attr_dev(input1, "type", "radio");
-    			input1.__value = input1_value_value = "constraintLearner";
+    			input1.__value = input1_value_value = "<18";
     			input1.value = input1.__value;
-    			/*$$binding_groups*/ ctx[7][0].push(input1);
-    			add_location(input1, file$7, 107, 6, 2646);
-    			attr_dev(label1, "class", "versionOption svelte-wtyngz");
-    			add_location(label1, file$7, 106, 5, 2610);
-    			attr_dev(div, "id", "chooseVersion");
-    			attr_dev(div, "class", "svelte-wtyngz");
-    			add_location(div, file$7, 101, 4, 2434);
+    			/*$$binding_groups*/ ctx[16][1].push(input1);
+    			add_location(input1, file$7, 137, 8, 3551);
+    			attr_dev(label0, "class", "inputBox svelte-1x7dse7");
+    			add_location(label0, file$7, 136, 7, 3518);
+    			attr_dev(input2, "type", "radio");
+    			input2.__value = input2_value_value = "18-24";
+    			input2.value = input2.__value;
+    			/*$$binding_groups*/ ctx[16][1].push(input2);
+    			add_location(input2, file$7, 141, 8, 3683);
+    			attr_dev(label1, "class", "inputBox svelte-1x7dse7");
+    			add_location(label1, file$7, 140, 7, 3650);
+    			attr_dev(input3, "type", "radio");
+    			input3.__value = input3_value_value = "25-29";
+    			input3.value = input3.__value;
+    			/*$$binding_groups*/ ctx[16][1].push(input3);
+    			add_location(input3, file$7, 145, 8, 3825);
+    			attr_dev(label2, "class", "inputBox svelte-1x7dse7");
+    			add_location(label2, file$7, 144, 7, 3792);
+    			attr_dev(input4, "type", "radio");
+    			input4.__value = input4_value_value = "30-34";
+    			input4.value = input4.__value;
+    			/*$$binding_groups*/ ctx[16][1].push(input4);
+    			add_location(input4, file$7, 149, 8, 3967);
+    			attr_dev(label3, "class", "inputBox svelte-1x7dse7");
+    			add_location(label3, file$7, 148, 7, 3934);
+    			attr_dev(input5, "type", "radio");
+    			input5.__value = input5_value_value = ">=35";
+    			input5.value = input5.__value;
+    			/*$$binding_groups*/ ctx[16][1].push(input5);
+    			add_location(input5, file$7, 153, 8, 4109);
+    			attr_dev(label4, "class", "inputBox svelte-1x7dse7");
+    			add_location(label4, file$7, 152, 7, 4076);
+    			attr_dev(div1, "id", "participantAge");
+    			add_location(div1, file$7, 134, 6, 3420);
+    			attr_dev(p1, "class", "inputContent svelte-1x7dse7");
+    			add_location(p1, file$7, 158, 7, 4257);
+    			attr_dev(input6, "id", "toolsInput");
+    			attr_dev(input6, "class", "inputBox svelte-1x7dse7");
+    			add_location(input6, file$7, 159, 7, 4381);
+    			attr_dev(div2, "id", "participantTools");
+    			add_location(div2, file$7, 157, 6, 4222);
+    			attr_dev(p2, "class", "inputContent svelte-1x7dse7");
+    			add_location(p2, file$7, 162, 7, 4500);
+    			attr_dev(input7, "type", "radio");
+    			input7.__value = input7_value_value = "0";
+    			input7.value = input7.__value;
+    			/*$$binding_groups*/ ctx[16][0].push(input7);
+    			add_location(input7, file$7, 164, 8, 4629);
+    			attr_dev(label5, "class", "inputBox svelte-1x7dse7");
+    			add_location(label5, file$7, 163, 7, 4596);
+    			attr_dev(input8, "type", "radio");
+    			input8.__value = input8_value_value = "1-2";
+    			input8.value = input8.__value;
+    			/*$$binding_groups*/ ctx[16][0].push(input8);
+    			add_location(input8, file$7, 168, 8, 4754);
+    			attr_dev(label6, "class", "inputBox svelte-1x7dse7");
+    			add_location(label6, file$7, 167, 7, 4721);
+    			attr_dev(input9, "type", "radio");
+    			input9.__value = input9_value_value = "3-5";
+    			input9.value = input9.__value;
+    			/*$$binding_groups*/ ctx[16][0].push(input9);
+    			add_location(input9, file$7, 172, 8, 4885);
+    			attr_dev(label7, "class", "inputBox svelte-1x7dse7");
+    			add_location(label7, file$7, 171, 7, 4852);
+    			attr_dev(input10, "type", "radio");
+    			input10.__value = input10_value_value = "5-10";
+    			input10.value = input10.__value;
+    			/*$$binding_groups*/ ctx[16][0].push(input10);
+    			add_location(input10, file$7, 176, 8, 5016);
+    			attr_dev(label8, "class", "inputBox svelte-1x7dse7");
+    			add_location(label8, file$7, 175, 7, 4983);
+    			attr_dev(input11, "type", "radio");
+    			input11.__value = input11_value_value = ">10";
+    			input11.value = input11.__value;
+    			/*$$binding_groups*/ ctx[16][0].push(input11);
+    			add_location(input11, file$7, 180, 8, 5149);
+    			attr_dev(label9, "class", "inputBox svelte-1x7dse7");
+    			add_location(label9, file$7, 179, 7, 5116);
+    			attr_dev(div3, "id", "participantExperience");
+    			add_location(div3, file$7, 161, 6, 4460);
+    			attr_dev(button, "id", "beginButton");
+    			attr_dev(button, "class", "svelte-1x7dse7");
+    			add_location(button, file$7, 192, 6, 5579);
+    			attr_dev(div4, "id", "demographics");
+    			attr_dev(div4, "class", "svelte-1x7dse7");
+    			add_location(div4, file$7, 129, 5, 3266);
+    			attr_dev(div5, "id", "chooseVersion");
+    			attr_dev(div5, "class", "svelte-1x7dse7");
+    			add_location(div5, file$7, 128, 4, 3236);
     		},
     		m: function mount(target, anchor, remount) {
-    			insert_dev(target, div, anchor);
-    			append_dev(div, label0);
-    			append_dev(label0, input0);
-    			input0.checked = input0.__value === /*version*/ ctx[0];
-    			append_dev(label0, t0);
-    			append_dev(div, t1);
-    			append_dev(div, label1);
-    			append_dev(label1, input1);
-    			input1.checked = input1.__value === /*version*/ ctx[0];
-    			append_dev(label1, t2);
+    			insert_dev(target, div5, anchor);
+    			append_dev(div5, div4);
+    			append_dev(div4, div0);
+    			append_dev(div0, t0);
+    			append_dev(div0, input0);
+    			set_input_value(input0, /*participant*/ ctx[0]);
+    			append_dev(div4, t1);
+    			append_dev(div4, div1);
+    			append_dev(div1, p0);
+    			append_dev(div1, t3);
+    			append_dev(div1, label0);
+    			append_dev(label0, input1);
+    			input1.checked = input1.__value === /*ageRange*/ ctx[1];
+    			append_dev(label0, t4);
+    			append_dev(div1, t5);
+    			append_dev(div1, label1);
+    			append_dev(label1, input2);
+    			input2.checked = input2.__value === /*ageRange*/ ctx[1];
+    			append_dev(label1, t6);
+    			append_dev(div1, t7);
+    			append_dev(div1, label2);
+    			append_dev(label2, input3);
+    			input3.checked = input3.__value === /*ageRange*/ ctx[1];
+    			append_dev(label2, t8);
+    			append_dev(div1, t9);
+    			append_dev(div1, label3);
+    			append_dev(label3, input4);
+    			input4.checked = input4.__value === /*ageRange*/ ctx[1];
+    			append_dev(label3, t10);
+    			append_dev(div1, t11);
+    			append_dev(div1, label4);
+    			append_dev(label4, input5);
+    			input5.checked = input5.__value === /*ageRange*/ ctx[1];
+    			append_dev(label4, t12);
+    			append_dev(div4, t13);
+    			append_dev(div4, div2);
+    			append_dev(div2, p1);
+    			append_dev(div2, t15);
+    			append_dev(div2, input6);
+    			set_input_value(input6, /*tools*/ ctx[2]);
+    			append_dev(div4, t16);
+    			append_dev(div4, div3);
+    			append_dev(div3, p2);
+    			append_dev(div3, t18);
+    			append_dev(div3, label5);
+    			append_dev(label5, input7);
+    			input7.checked = input7.__value === /*experience*/ ctx[3];
+    			append_dev(label5, t19);
+    			append_dev(div3, t20);
+    			append_dev(div3, label6);
+    			append_dev(label6, input8);
+    			input8.checked = input8.__value === /*experience*/ ctx[3];
+    			append_dev(label6, t21);
+    			append_dev(div3, t22);
+    			append_dev(div3, label7);
+    			append_dev(label7, input9);
+    			input9.checked = input9.__value === /*experience*/ ctx[3];
+    			append_dev(label7, t23);
+    			append_dev(div3, t24);
+    			append_dev(div3, label8);
+    			append_dev(label8, input10);
+    			input10.checked = input10.__value === /*experience*/ ctx[3];
+    			append_dev(label8, t25);
+    			append_dev(div3, t26);
+    			append_dev(div3, label9);
+    			append_dev(label9, input11);
+    			input11.checked = input11.__value === /*experience*/ ctx[3];
+    			append_dev(label9, t27);
+    			append_dev(div4, t28);
+    			append_dev(div4, button);
     			if (remount) run_all(dispose);
 
     			dispose = [
-    				listen_dev(input0, "change", /*input0_change_handler*/ ctx[6]),
-    				listen_dev(input1, "change", /*input1_change_handler*/ ctx[8])
+    				listen_dev(input0, "input", /*input0_input_handler*/ ctx[14]),
+    				listen_dev(input1, "change", /*input1_change_handler*/ ctx[15]),
+    				listen_dev(input2, "change", /*input2_change_handler*/ ctx[17]),
+    				listen_dev(input3, "change", /*input3_change_handler*/ ctx[18]),
+    				listen_dev(input4, "change", /*input4_change_handler*/ ctx[19]),
+    				listen_dev(input5, "change", /*input5_change_handler*/ ctx[20]),
+    				listen_dev(input6, "input", /*input6_input_handler*/ ctx[21]),
+    				listen_dev(input7, "change", /*input7_change_handler*/ ctx[22]),
+    				listen_dev(input8, "change", /*input8_change_handler*/ ctx[23]),
+    				listen_dev(input9, "change", /*input9_change_handler*/ ctx[24]),
+    				listen_dev(input10, "change", /*input10_change_handler*/ ctx[25]),
+    				listen_dev(input11, "change", /*input11_change_handler*/ ctx[26]),
+    				listen_dev(button, "click", /*load*/ ctx[9], false, false, false)
     			];
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty & /*version*/ 1) {
-    				input0.checked = input0.__value === /*version*/ ctx[0];
+    			if (dirty & /*participant*/ 1 && input0.value !== /*participant*/ ctx[0]) {
+    				set_input_value(input0, /*participant*/ ctx[0]);
     			}
 
-    			if (dirty & /*version*/ 1) {
-    				input1.checked = input1.__value === /*version*/ ctx[0];
+    			if (dirty & /*ageRange*/ 2) {
+    				input1.checked = input1.__value === /*ageRange*/ ctx[1];
+    			}
+
+    			if (dirty & /*ageRange*/ 2) {
+    				input2.checked = input2.__value === /*ageRange*/ ctx[1];
+    			}
+
+    			if (dirty & /*ageRange*/ 2) {
+    				input3.checked = input3.__value === /*ageRange*/ ctx[1];
+    			}
+
+    			if (dirty & /*ageRange*/ 2) {
+    				input4.checked = input4.__value === /*ageRange*/ ctx[1];
+    			}
+
+    			if (dirty & /*ageRange*/ 2) {
+    				input5.checked = input5.__value === /*ageRange*/ ctx[1];
+    			}
+
+    			if (dirty & /*tools*/ 4 && input6.value !== /*tools*/ ctx[2]) {
+    				set_input_value(input6, /*tools*/ ctx[2]);
+    			}
+
+    			if (dirty & /*experience*/ 8) {
+    				input7.checked = input7.__value === /*experience*/ ctx[3];
+    			}
+
+    			if (dirty & /*experience*/ 8) {
+    				input8.checked = input8.__value === /*experience*/ ctx[3];
+    			}
+
+    			if (dirty & /*experience*/ 8) {
+    				input9.checked = input9.__value === /*experience*/ ctx[3];
+    			}
+
+    			if (dirty & /*experience*/ 8) {
+    				input10.checked = input10.__value === /*experience*/ ctx[3];
+    			}
+
+    			if (dirty & /*experience*/ 8) {
+    				input11.checked = input11.__value === /*experience*/ ctx[3];
     			}
     		},
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div);
-    			/*$$binding_groups*/ ctx[7][0].splice(/*$$binding_groups*/ ctx[7][0].indexOf(input0), 1);
-    			/*$$binding_groups*/ ctx[7][0].splice(/*$$binding_groups*/ ctx[7][0].indexOf(input1), 1);
+    			if (detaching) detach_dev(div5);
+    			/*$$binding_groups*/ ctx[16][1].splice(/*$$binding_groups*/ ctx[16][1].indexOf(input1), 1);
+    			/*$$binding_groups*/ ctx[16][1].splice(/*$$binding_groups*/ ctx[16][1].indexOf(input2), 1);
+    			/*$$binding_groups*/ ctx[16][1].splice(/*$$binding_groups*/ ctx[16][1].indexOf(input3), 1);
+    			/*$$binding_groups*/ ctx[16][1].splice(/*$$binding_groups*/ ctx[16][1].indexOf(input4), 1);
+    			/*$$binding_groups*/ ctx[16][1].splice(/*$$binding_groups*/ ctx[16][1].indexOf(input5), 1);
+    			/*$$binding_groups*/ ctx[16][0].splice(/*$$binding_groups*/ ctx[16][0].indexOf(input7), 1);
+    			/*$$binding_groups*/ ctx[16][0].splice(/*$$binding_groups*/ ctx[16][0].indexOf(input8), 1);
+    			/*$$binding_groups*/ ctx[16][0].splice(/*$$binding_groups*/ ctx[16][0].indexOf(input9), 1);
+    			/*$$binding_groups*/ ctx[16][0].splice(/*$$binding_groups*/ ctx[16][0].indexOf(input10), 1);
+    			/*$$binding_groups*/ ctx[16][0].splice(/*$$binding_groups*/ ctx[16][0].indexOf(input11), 1);
     			run_all(dispose);
     		}
     	};
@@ -32703,22 +33103,24 @@ ${constraint.asp}`;
     		block,
     		id: create_else_block.name,
     		type: "else",
-    		source: "(101:3) {:else}",
+    		source: "(128:3) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (93:45) 
+    // (118:80) 
     function create_if_block_1(ctx) {
     	let current;
 
     	const versionrecommendations = new VersionRecommendations({
     			props: {
-    				dataset: /*dataset*/ ctx[9]["dataset"],
-    				types: /*dataset*/ ctx[9]["types"],
-    				selectedAttributes: /*selectedAttributes*/ ctx[1]
+    				dataset: /*dataset*/ ctx[27]["dataset"],
+    				types: /*dataset*/ ctx[27]["types"],
+    				selectedAttributes: /*selectedAttributes*/ ctx[6],
+    				participant: /*participant*/ ctx[0],
+    				allParticipantInfo: /*allParticipantInfo*/ ctx[4]
     			},
     			$$inline: true
     		});
@@ -32733,7 +33135,9 @@ ${constraint.asp}`;
     		},
     		p: function update(ctx, dirty) {
     			const versionrecommendations_changes = {};
-    			if (dirty & /*selectedAttributes*/ 2) versionrecommendations_changes.selectedAttributes = /*selectedAttributes*/ ctx[1];
+    			if (dirty & /*selectedAttributes*/ 64) versionrecommendations_changes.selectedAttributes = /*selectedAttributes*/ ctx[6];
+    			if (dirty & /*participant*/ 1) versionrecommendations_changes.participant = /*participant*/ ctx[0];
+    			if (dirty & /*allParticipantInfo*/ 16) versionrecommendations_changes.allParticipantInfo = /*allParticipantInfo*/ ctx[4];
     			versionrecommendations.$set(versionrecommendations_changes);
     		},
     		i: function intro(local) {
@@ -32754,22 +33158,23 @@ ${constraint.asp}`;
     		block,
     		id: create_if_block_1.name,
     		type: "if",
-    		source: "(93:45) ",
+    		source: "(118:80) ",
     		ctx
     	});
 
     	return block;
     }
 
-    // (88:3) {#if version === "constraintSolver"}
+    // (112:3) {#if start && participantOrder[participant - 1] === "constraintSolver"}
     function create_if_block(ctx) {
     	let current;
 
     	const versionconstraintsolver = new VersionConstraintSolver({
     			props: {
-    				dataset: /*dataset*/ ctx[9]["dataset"],
-    				types: /*dataset*/ ctx[9]["types"],
-    				selectedAttributes: /*selectedAttributes*/ ctx[1]
+    				dataset: /*dataset*/ ctx[27]["dataset"],
+    				types: /*dataset*/ ctx[27]["types"],
+    				selectedAttributes: /*selectedAttributes*/ ctx[6],
+    				allParticipantInfo: /*allParticipantInfo*/ ctx[4]
     			},
     			$$inline: true
     		});
@@ -32784,7 +33189,8 @@ ${constraint.asp}`;
     		},
     		p: function update(ctx, dirty) {
     			const versionconstraintsolver_changes = {};
-    			if (dirty & /*selectedAttributes*/ 2) versionconstraintsolver_changes.selectedAttributes = /*selectedAttributes*/ ctx[1];
+    			if (dirty & /*selectedAttributes*/ 64) versionconstraintsolver_changes.selectedAttributes = /*selectedAttributes*/ ctx[6];
+    			if (dirty & /*allParticipantInfo*/ 16) versionconstraintsolver_changes.allParticipantInfo = /*allParticipantInfo*/ ctx[4];
     			versionconstraintsolver.$set(versionconstraintsolver_changes);
     		},
     		i: function intro(local) {
@@ -32805,14 +33211,14 @@ ${constraint.asp}`;
     		block,
     		id: create_if_block.name,
     		type: "if",
-    		source: "(88:3) {#if version === \\\"constraintSolver\\\"}",
+    		source: "(112:3) {#if start && participantOrder[participant - 1] === \\\"constraintSolver\\\"}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (85:18)     <p>...loading</p>   {:then dataset}
+    // (109:18)     <p>...loading</p>   {:then dataset}
     function create_pending_block$1(ctx) {
     	let p;
 
@@ -32820,7 +33226,7 @@ ${constraint.asp}`;
     		c: function create() {
     			p = element("p");
     			p.textContent = "...loading";
-    			add_location(p, file$7, 85, 3, 1940);
+    			add_location(p, file$7, 109, 3, 2601);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -32837,7 +33243,7 @@ ${constraint.asp}`;
     		block,
     		id: create_pending_block$1.name,
     		type: "pending",
-    		source: "(85:18)     <p>...loading</p>   {:then dataset}",
+    		source: "(109:18)     <p>...loading</p>   {:then dataset}",
     		ctx
     	});
 
@@ -32857,12 +33263,12 @@ ${constraint.asp}`;
     		pending: create_pending_block$1,
     		then: create_then_block$1,
     		catch: create_catch_block$1,
-    		value: 9,
-    		error: 10,
+    		value: 27,
+    		error: 28,
     		blocks: [,,,]
     	};
 
-    	handle_promise(promise_1 = /*promise*/ ctx[2], info);
+    	handle_promise(promise_1 = /*promise*/ ctx[8], info);
 
     	const block = {
     		c: function create() {
@@ -32870,10 +33276,10 @@ ${constraint.asp}`;
     			div0 = element("div");
     			info.block.c();
     			attr_dev(div0, "id", "main");
-    			attr_dev(div0, "class", "svelte-wtyngz");
-    			add_location(div0, file$7, 83, 1, 1902);
+    			attr_dev(div0, "class", "svelte-1x7dse7");
+    			add_location(div0, file$7, 107, 1, 2563);
     			set_style(div1, "padding", "'20px'");
-    			add_location(div1, file$7, 71, 0, 1561);
+    			add_location(div1, file$7, 95, 0, 2222);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -32891,7 +33297,7 @@ ${constraint.asp}`;
 
     			{
     				const child_ctx = ctx.slice();
-    				child_ctx[9] = info.resolved;
+    				child_ctx[27] = info.resolved;
     				info.block.p(child_ctx, dirty);
     			}
     		},
@@ -32965,8 +33371,10 @@ ${constraint.asp}`;
 
     async function loadData() {
     	const dataset = await csv$1(`movies.csv`, dataPreprocessor$1);
-    	console.log(dataset);
+
+    	// console.log(dataset)
     	const firstRow = dataset[0];
+
     	const types = getType$1(firstRow);
     	return { dataset, types };
     }
@@ -32974,6 +33382,28 @@ ${constraint.asp}`;
     function instance$7($$self, $$props, $$invalidate) {
     	let versionChoice = null;
     	let version = null;
+    	let participant = null;
+
+    	let participantOrder = [
+    		"constraintSolver",
+    		"constraintLearner",
+    		"constraintSolver",
+    		"constraintSolver",
+    		"constraintSolver",
+    		"constraintLearner",
+    		"constraintSolver",
+    		"constraintLearner",
+    		"constraintLearner",
+    		"constraintSolver",
+    		"constraintLearner",
+    		"constraintLearner"
+    	];
+
+    	let ageRange = null;
+    	let tools = null;
+    	let experience = null;
+    	let allParticipantInfo = {};
+    	let start = false;
     	let rand = -1;
     	let selectedAttributes = [];
     	let promise = loadData();
@@ -32983,28 +33413,85 @@ ${constraint.asp}`;
 
     		if (selectedAttributes.includes(attribute)) ; else {
     			selectedAttributes.push(attribute);
-    			$$invalidate(1, selectedAttributes);
+    			$$invalidate(6, selectedAttributes);
+    		}
+    	}
+
+    	function load() {
+    		if (participant && ageRange && ageRange != "<18" && experience) {
+    			$$invalidate(4, allParticipantInfo = { "age": ageRange, tools, experience });
+    			$$invalidate(5, start = true);
     		}
     	}
 
     	const writable_props = [];
 
     	Object_1$4.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$4.warn(`<App> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<App> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
     	validate_slots("App", $$slots, []);
-    	const $$binding_groups = [[]];
+    	const $$binding_groups = [[], []];
 
-    	function input0_change_handler() {
-    		version = this.__value;
-    		$$invalidate(0, version);
+    	function input0_input_handler() {
+    		participant = this.value;
+    		$$invalidate(0, participant);
     	}
 
     	function input1_change_handler() {
-    		version = this.__value;
-    		$$invalidate(0, version);
+    		ageRange = this.__value;
+    		$$invalidate(1, ageRange);
+    	}
+
+    	function input2_change_handler() {
+    		ageRange = this.__value;
+    		$$invalidate(1, ageRange);
+    	}
+
+    	function input3_change_handler() {
+    		ageRange = this.__value;
+    		$$invalidate(1, ageRange);
+    	}
+
+    	function input4_change_handler() {
+    		ageRange = this.__value;
+    		$$invalidate(1, ageRange);
+    	}
+
+    	function input5_change_handler() {
+    		ageRange = this.__value;
+    		$$invalidate(1, ageRange);
+    	}
+
+    	function input6_input_handler() {
+    		tools = this.value;
+    		$$invalidate(2, tools);
+    	}
+
+    	function input7_change_handler() {
+    		experience = this.__value;
+    		$$invalidate(3, experience);
+    	}
+
+    	function input8_change_handler() {
+    		experience = this.__value;
+    		$$invalidate(3, experience);
+    	}
+
+    	function input9_change_handler() {
+    		experience = this.__value;
+    		$$invalidate(3, experience);
+    	}
+
+    	function input10_change_handler() {
+    		experience = this.__value;
+    		$$invalidate(3, experience);
+    	}
+
+    	function input11_change_handler() {
+    		experience = this.__value;
+    		$$invalidate(3, experience);
     	}
 
     	$$self.$capture_state = () => ({
@@ -33014,6 +33501,13 @@ ${constraint.asp}`;
     		VersionConstraintSolver,
     		versionChoice,
     		version,
+    		participant,
+    		participantOrder,
+    		ageRange,
+    		tools,
+    		experience,
+    		allParticipantInfo,
+    		start,
     		rand,
     		getRand,
     		selectedAttributes,
@@ -33021,15 +33515,23 @@ ${constraint.asp}`;
     		getType: getType$1,
     		dataPreprocessor: dataPreprocessor$1,
     		loadData,
-    		updateAttributes
+    		updateAttributes,
+    		load
     	});
 
     	$$self.$inject_state = $$props => {
     		if ("versionChoice" in $$props) versionChoice = $$props.versionChoice;
-    		if ("version" in $$props) $$invalidate(0, version = $$props.version);
+    		if ("version" in $$props) version = $$props.version;
+    		if ("participant" in $$props) $$invalidate(0, participant = $$props.participant);
+    		if ("participantOrder" in $$props) $$invalidate(7, participantOrder = $$props.participantOrder);
+    		if ("ageRange" in $$props) $$invalidate(1, ageRange = $$props.ageRange);
+    		if ("tools" in $$props) $$invalidate(2, tools = $$props.tools);
+    		if ("experience" in $$props) $$invalidate(3, experience = $$props.experience);
+    		if ("allParticipantInfo" in $$props) $$invalidate(4, allParticipantInfo = $$props.allParticipantInfo);
+    		if ("start" in $$props) $$invalidate(5, start = $$props.start);
     		if ("rand" in $$props) rand = $$props.rand;
-    		if ("selectedAttributes" in $$props) $$invalidate(1, selectedAttributes = $$props.selectedAttributes);
-    		if ("promise" in $$props) $$invalidate(2, promise = $$props.promise);
+    		if ("selectedAttributes" in $$props) $$invalidate(6, selectedAttributes = $$props.selectedAttributes);
+    		if ("promise" in $$props) $$invalidate(8, promise = $$props.promise);
     	};
 
     	if ($$props && "$$inject" in $$props) {
@@ -33037,15 +33539,33 @@ ${constraint.asp}`;
     	}
 
     	return [
-    		version,
+    		participant,
+    		ageRange,
+    		tools,
+    		experience,
+    		allParticipantInfo,
+    		start,
     		selectedAttributes,
+    		participantOrder,
     		promise,
+    		load,
     		versionChoice,
+    		version,
     		rand,
     		updateAttributes,
-    		input0_change_handler,
+    		input0_input_handler,
+    		input1_change_handler,
     		$$binding_groups,
-    		input1_change_handler
+    		input2_change_handler,
+    		input3_change_handler,
+    		input4_change_handler,
+    		input5_change_handler,
+    		input6_input_handler,
+    		input7_change_handler,
+    		input8_change_handler,
+    		input9_change_handler,
+    		input10_change_handler,
+    		input11_change_handler
     	];
     }
 

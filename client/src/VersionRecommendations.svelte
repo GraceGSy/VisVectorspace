@@ -2,6 +2,9 @@
 	import * as d3 from 'd3'
 	import Recommendations from './Recommendations.svelte'
 
+	export let participant = -1
+	export let allParticipantInfo = {}
+
 	export let dataset = []
 	export let types = {}
 	export let selectedAttributes = []
@@ -46,6 +49,8 @@
 		<p>...loading</p>
 	{:then vegaSpecs}
 		<Recommendations
+			{participant}
+			{allParticipantInfo}
 			{dataset}
 			{vegaSpecs}
 			{selectedAttributes}

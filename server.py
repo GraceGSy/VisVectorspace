@@ -15,7 +15,7 @@ app = Flask(__name__)
 # Path for our main Svelte page
 @app.route("/")
 def base():
-	return send_from_directory('client/public', 'index.html')
+	return send_from_directory('client/public/', 'index.html')
 
 # Path for all the static files (compiled JS/CSS, etc.)
 @app.route("/<path:path>")
@@ -216,11 +216,16 @@ def kneighbors():
 	X, y = m.data_label_split(df, targetCol)
 	m.build_model_knn(X)
 
+	print("knn model okay...")
+
 	predictions = []
 
 	umapCoords = getCoords(X)
 
 	dists, inds = m.knn.query(X, k=10)
+
+	print("get neighbors okay...")
+
 	for instance in range(len(df.index)):
 		dist = dists[instance].tolist()
 		ind = inds[instance].tolist()
@@ -242,8 +247,12 @@ def kneighbors():
 	# 	print(X[i], y[i])
 
 	result = json.dumps({"newData": df.to_dict(orient="records"), "predictions":predictions})
+
+	# print(result)
+
 	return result
 
 
 if __name__ == "__main__":
-	app.run(debug=True)
+	port = int(os.environ.get("PORT", 5000))
+	app.run(debug=True, host='0.0.0.0', port=port)

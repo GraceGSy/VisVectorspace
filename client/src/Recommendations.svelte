@@ -8,6 +8,9 @@
 
 	import AttributesWeight from './AttributesWeight.svelte'
 
+	export let participant = -1
+	export let allParticipantInfo = {}
+
 	export let vegaSpecs = []
 	export let dataset = []
 	export let selectedAttributes = []
@@ -165,6 +168,7 @@
 		fetch(`./kneighbors`, {method:"POST", body:JSON.stringify(classifierData)})
 			.then(d => d.text())
       		.then(d => {
+      			console.log(d)
       			let result = JSON.parse(d)
 
       			// console.log("result", result)
@@ -358,9 +362,12 @@
 		// Downloading is disabled if new recommendations are loading
 		if (loading) { return }
 
-		var filename = "sessionData.json"
+		let allData = {"participant": allParticipantInfo,
+						"session": sessionData}
+
+		var filename = `sessionData_${participant}.json`
 		var element = document.createElement('a');
-		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(sessionData)))
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(allData)))
 		element.setAttribute('download', filename)
 
 		element.style.display = 'none'
@@ -431,6 +438,7 @@
 		background: #f3f3f3;
 		padding-right: 25px;
 		width: 100%;
+		overflow: scroll;
 	}
 
 	.showLoader {
@@ -443,8 +451,8 @@
 
 	.loader {
 		width: 100vw;
-		height: 100vh;
-		position: absolute;
+		height: 100%;
+		position: fixed;
 		z-index: 100;
 		opacity: 0.2;
 		background-color: gray;
