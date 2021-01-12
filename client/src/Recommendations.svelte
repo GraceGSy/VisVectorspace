@@ -168,7 +168,7 @@
 		fetch(`./kneighbors`, {method:"POST", body:JSON.stringify(classifierData)})
 			.then(d => d.text())
       		.then(d => {
-      			console.log(d)
+      			// console.log(d)
       			let result = JSON.parse(d)
 
       			// console.log("result", result)
@@ -391,7 +391,7 @@
 						shownPoints={shownPoints}/>
 	<div id="recommendations">
 		<div id="menu">
-			<p><b>RECOMMENDATIONS</b></p>
+			<p class="title1"><b>RECOMMENDATIONS</b></p>
 			<button on:click={update}>UPDATE RECOMMENDATIONS</button>
 			<button on:click={showPin}>PINNED</button>
 			<button id="exportJSON" on:click={exportJSON} class="btn">DOWNLOAD</button>
@@ -436,7 +436,6 @@
 	#overall {
 		display: flex;
 		background: #f3f3f3;
-		padding-right: 25px;
 		width: 100%;
 		overflow: scroll;
 	}
@@ -476,6 +475,7 @@
 	}
 
 	#recommendations {
+		padding-top: 20px;
 		margin-bottom: 20px
 	}
 
@@ -489,8 +489,8 @@
 
 	#recommendationDisplay {
 		display: grid;
-		grid-template-columns: repeat(2, 520px);
-		grid-template-rows: repeat(2, 500px);
+		grid-template-columns: repeat(2, 480px);
+		grid-template-rows: repeat(2, 460px);
 		grid-gap: 15px;
 		margin-top: 50px;
 	}
