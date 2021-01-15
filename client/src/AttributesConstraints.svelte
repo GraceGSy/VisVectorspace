@@ -7,6 +7,7 @@
 
 	export let selectedMark
 	export let channelSelections
+	export let updateCount
 
 	let shouldIgnoreDndEvents = false;
 	let dropFromOthersDisabled = true
@@ -59,6 +60,8 @@
         items = e.detail.items;
     }
 
+    $: if (selectedMark) {updateCount++}
+
 </script>
 
 <div id="attributesInfo">
@@ -89,7 +92,7 @@
 		<p>Encoding</p>
 		
 		{#each channels as c}
-			<Constraint attributeType={c} bind:setValue={channelSelections[c]} />
+			<Constraint attributeType={c} bind:items={channelSelections[c]} bind:updateCount={updateCount} />
 		{/each}
 	</div>	
 </div>

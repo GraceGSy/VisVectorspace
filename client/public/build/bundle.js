@@ -33701,7 +33701,7 @@ ${constraint.asp}`;
     	return child_ctx;
     }
 
-    // (38:2) {#each items as item(item.id)}
+    // (40:2) {#each items as item(item.id)}
     function create_each_block$3(key_1, ctx) {
     	let div;
     	let t_value = (/*item*/ ctx[6].name ? /*item*/ ctx[6].name : "") + "";
@@ -33713,7 +33713,7 @@ ${constraint.asp}`;
     		c: function create() {
     			div = element("div");
     			t = text(t_value);
-    			add_location(div, file$5, 38, 3, 805);
+    			add_location(div, file$5, 40, 3, 856);
     			this.first = div;
     		},
     		m: function mount(target, anchor) {
@@ -33732,7 +33732,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$3.name,
     		type: "each",
-    		source: "(38:2) {#each items as item(item.id)}",
+    		source: "(40:2) {#each items as item(item.id)}",
     		ctx
     	});
 
@@ -33773,11 +33773,11 @@ ${constraint.asp}`;
     			}
 
     			attr_dev(div0, "class", "attributeLeft svelte-1qpg6o2");
-    			add_location(div0, file$5, 32, 1, 588);
+    			add_location(div0, file$5, 34, 1, 639);
     			attr_dev(div1, "class", "attributeRight svelte-1qpg6o2");
-    			add_location(div1, file$5, 33, 1, 638);
+    			add_location(div1, file$5, 35, 1, 689);
     			attr_dev(div2, "class", "attribute svelte-1qpg6o2");
-    			add_location(div2, file$5, 31, 0, 563);
+    			add_location(div2, file$5, 33, 0, 614);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -33842,7 +33842,9 @@ ${constraint.asp}`;
     function instance$5($$self, $$props, $$invalidate) {
     	let { items = [] } = $$props;
     	let { attributeType } = $$props;
-    	let { setValue } = $$props;
+    	let { updateCount } = $$props;
+
+    	// export let setValue
     	let shouldIgnoreDndEvents = false;
 
     	function handleConsider(e) {
@@ -33855,12 +33857,12 @@ ${constraint.asp}`;
     		for (let i of e.detail.items) {
     			if (i.id == mostRecent) {
     				$$invalidate(0, items = [i]);
-    				$$invalidate(4, setValue = i.id);
-    			}
+    				$$invalidate(4, updateCount++, updateCount);
+    			} // setValue = i.id
     		}
     	}
 
-    	const writable_props = ["items", "attributeType", "setValue"];
+    	const writable_props = ["items", "attributeType", "updateCount"];
 
     	Object.keys($$props).forEach(key => {
     		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<Constraint> was created with unknown prop '${key}'`);
@@ -33872,7 +33874,7 @@ ${constraint.asp}`;
     	$$self.$set = $$props => {
     		if ("items" in $$props) $$invalidate(0, items = $$props.items);
     		if ("attributeType" in $$props) $$invalidate(1, attributeType = $$props.attributeType);
-    		if ("setValue" in $$props) $$invalidate(4, setValue = $$props.setValue);
+    		if ("updateCount" in $$props) $$invalidate(4, updateCount = $$props.updateCount);
     	};
 
     	$$self.$capture_state = () => ({
@@ -33882,7 +33884,7 @@ ${constraint.asp}`;
     		flip,
     		items,
     		attributeType,
-    		setValue,
+    		updateCount,
     		shouldIgnoreDndEvents,
     		flipDurationMs,
     		handleConsider,
@@ -33892,7 +33894,7 @@ ${constraint.asp}`;
     	$$self.$inject_state = $$props => {
     		if ("items" in $$props) $$invalidate(0, items = $$props.items);
     		if ("attributeType" in $$props) $$invalidate(1, attributeType = $$props.attributeType);
-    		if ("setValue" in $$props) $$invalidate(4, setValue = $$props.setValue);
+    		if ("updateCount" in $$props) $$invalidate(4, updateCount = $$props.updateCount);
     		if ("shouldIgnoreDndEvents" in $$props) shouldIgnoreDndEvents = $$props.shouldIgnoreDndEvents;
     	};
 
@@ -33900,13 +33902,18 @@ ${constraint.asp}`;
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [items, attributeType, handleConsider, handleFinalize, setValue];
+    	return [items, attributeType, handleConsider, handleFinalize, updateCount];
     }
 
     class Constraint extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$5, create_fragment$5, safe_not_equal, { items: 0, attributeType: 1, setValue: 4 });
+
+    		init(this, options, instance$5, create_fragment$5, safe_not_equal, {
+    			items: 0,
+    			attributeType: 1,
+    			updateCount: 4
+    		});
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
@@ -33922,8 +33929,8 @@ ${constraint.asp}`;
     			console.warn("<Constraint> was created without expected prop 'attributeType'");
     		}
 
-    		if (/*setValue*/ ctx[4] === undefined && !("setValue" in props)) {
-    			console.warn("<Constraint> was created without expected prop 'setValue'");
+    		if (/*updateCount*/ ctx[4] === undefined && !("updateCount" in props)) {
+    			console.warn("<Constraint> was created without expected prop 'updateCount'");
     		}
     	}
 
@@ -33943,11 +33950,11 @@ ${constraint.asp}`;
     		throw new Error("<Constraint>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
 
-    	get setValue() {
+    	get updateCount() {
     		throw new Error("<Constraint>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
 
-    	set setValue(value) {
+    	set updateCount(value) {
     		throw new Error("<Constraint>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
     }
@@ -34219,20 +34226,20 @@ ${constraint.asp}`;
 
     function get_each_context$5(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[11] = list[i];
+    	child_ctx[13] = list[i];
     	return child_ctx;
     }
 
     function get_each_context_1$2(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[14] = list[i];
+    	child_ctx[16] = list[i];
     	return child_ctx;
     }
 
-    // (84:4) {#each marks as m}
+    // (87:4) {#each marks as m}
     function create_each_block_1$2(ctx) {
     	let option;
-    	let t_value = /*m*/ ctx[14] + "";
+    	let t_value = /*m*/ ctx[16] + "";
     	let t;
     	let option_value_value;
 
@@ -34240,9 +34247,9 @@ ${constraint.asp}`;
     		c: function create() {
     			option = element("option");
     			t = text(t_value);
-    			option.__value = option_value_value = /*m*/ ctx[14];
+    			option.__value = option_value_value = /*m*/ ctx[16];
     			option.value = option.__value;
-    			add_location(option, file$7, 84, 5, 3005);
+    			add_location(option, file$7, 87, 5, 3071);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, option, anchor);
@@ -34258,30 +34265,40 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_1$2.name,
     		type: "each",
-    		source: "(84:4) {#each marks as m}",
+    		source: "(87:4) {#each marks as m}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (91:2) {#each channels as c}
+    // (94:2) {#each channels as c}
     function create_each_block$5(ctx) {
-    	let updating_setValue;
+    	let updating_items;
+    	let updating_updateCount;
     	let current;
 
-    	function constraint_setValue_binding(value) {
-    		/*constraint_setValue_binding*/ ctx[10].call(null, value, /*c*/ ctx[11]);
+    	function constraint_items_binding(value) {
+    		/*constraint_items_binding*/ ctx[11].call(null, value, /*c*/ ctx[13]);
     	}
 
-    	let constraint_props = { attributeType: /*c*/ ctx[11] };
+    	function constraint_updateCount_binding(value) {
+    		/*constraint_updateCount_binding*/ ctx[12].call(null, value);
+    	}
 
-    	if (/*channelSelections*/ ctx[1][/*c*/ ctx[11]] !== void 0) {
-    		constraint_props.setValue = /*channelSelections*/ ctx[1][/*c*/ ctx[11]];
+    	let constraint_props = { attributeType: /*c*/ ctx[13] };
+
+    	if (/*channelSelections*/ ctx[1][/*c*/ ctx[13]] !== void 0) {
+    		constraint_props.items = /*channelSelections*/ ctx[1][/*c*/ ctx[13]];
+    	}
+
+    	if (/*updateCount*/ ctx[2] !== void 0) {
+    		constraint_props.updateCount = /*updateCount*/ ctx[2];
     	}
 
     	const constraint = new Constraint({ props: constraint_props, $$inline: true });
-    	binding_callbacks.push(() => bind(constraint, "setValue", constraint_setValue_binding));
+    	binding_callbacks.push(() => bind(constraint, "items", constraint_items_binding));
+    	binding_callbacks.push(() => bind(constraint, "updateCount", constraint_updateCount_binding));
 
     	const block = {
     		c: function create() {
@@ -34295,10 +34312,16 @@ ${constraint.asp}`;
     			ctx = new_ctx;
     			const constraint_changes = {};
 
-    			if (!updating_setValue && dirty & /*channelSelections, channels*/ 10) {
-    				updating_setValue = true;
-    				constraint_changes.setValue = /*channelSelections*/ ctx[1][/*c*/ ctx[11]];
-    				add_flush_callback(() => updating_setValue = false);
+    			if (!updating_items && dirty & /*channelSelections, channels*/ 18) {
+    				updating_items = true;
+    				constraint_changes.items = /*channelSelections*/ ctx[1][/*c*/ ctx[13]];
+    				add_flush_callback(() => updating_items = false);
+    			}
+
+    			if (!updating_updateCount && dirty & /*updateCount*/ 4) {
+    				updating_updateCount = true;
+    				constraint_changes.updateCount = /*updateCount*/ ctx[2];
+    				add_flush_callback(() => updating_updateCount = false);
     			}
 
     			constraint.$set(constraint_changes);
@@ -34321,7 +34344,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$5.name,
     		type: "each",
-    		source: "(91:2) {#each channels as c}",
+    		source: "(94:2) {#each channels as c}",
     		ctx
     	});
 
@@ -34362,16 +34385,16 @@ ${constraint.asp}`;
     	let dispose;
 
     	const datafields0 = new DataFields({
-    			props: { items: /*dataOptions*/ ctx[5] },
+    			props: { items: /*dataOptions*/ ctx[6] },
     			$$inline: true
     		});
 
     	const datafields1 = new DataFields({
-    			props: { items: /*wildcards*/ ctx[4] },
+    			props: { items: /*wildcards*/ ctx[5] },
     			$$inline: true
     		});
 
-    	let each_value_1 = /*marks*/ ctx[2];
+    	let each_value_1 = /*marks*/ ctx[3];
     	validate_each_argument(each_value_1);
     	let each_blocks_1 = [];
 
@@ -34379,7 +34402,7 @@ ${constraint.asp}`;
     		each_blocks_1[i] = create_each_block_1$2(get_each_context_1$2(ctx, each_value_1, i));
     	}
 
-    	let each_value = /*channels*/ ctx[3];
+    	let each_value = /*channels*/ ctx[4];
     	validate_each_argument(each_value);
     	let each_blocks = [];
 
@@ -34443,38 +34466,38 @@ ${constraint.asp}`;
     				each_blocks[i].c();
     			}
 
-    			add_location(b0, file$7, 65, 5, 2495);
-    			add_location(p0, file$7, 65, 2, 2492);
+    			add_location(b0, file$7, 68, 5, 2561);
+    			add_location(p0, file$7, 68, 2, 2558);
     			attr_dev(i, "class", "material-icons md-24 svelte-x9t7p3");
     			attr_dev(i, "id", "listIcon");
-    			add_location(i, file$7, 67, 3, 2539);
-    			add_location(p1, file$7, 68, 3, 2602);
+    			add_location(i, file$7, 70, 3, 2605);
+    			add_location(p1, file$7, 71, 3, 2668);
     			attr_dev(div0, "id", "datasetName");
     			attr_dev(div0, "class", "svelte-x9t7p3");
-    			add_location(div0, file$7, 66, 2, 2513);
-    			add_location(p2, file$7, 70, 2, 2635);
-    			add_location(p3, file$7, 72, 2, 2688);
+    			add_location(div0, file$7, 69, 2, 2579);
+    			add_location(p2, file$7, 73, 2, 2701);
+    			add_location(p3, file$7, 75, 2, 2754);
     			attr_dev(div1, "id", "attributesList");
     			attr_dev(div1, "class", "svelte-x9t7p3");
-    			add_location(div1, file$7, 64, 1, 2464);
-    			add_location(b1, file$7, 76, 5, 2787);
-    			add_location(p4, file$7, 76, 2, 2784);
-    			add_location(p5, file$7, 77, 2, 2810);
+    			add_location(div1, file$7, 67, 1, 2530);
+    			add_location(b1, file$7, 79, 5, 2853);
+    			add_location(p4, file$7, 79, 2, 2850);
+    			add_location(p5, file$7, 80, 2, 2876);
     			attr_dev(div2, "class", "attributeLeft svelte-x9t7p3");
-    			add_location(div2, file$7, 79, 3, 2851);
+    			add_location(div2, file$7, 82, 3, 2917);
     			attr_dev(select, "id", "mark-dropdown");
     			attr_dev(select, "class", "attributeRight svelte-x9t7p3");
-    			if (/*selectedMark*/ ctx[0] === void 0) add_render_callback(() => /*select_change_handler*/ ctx[9].call(select));
-    			add_location(select, file$7, 80, 3, 2892);
+    			if (/*selectedMark*/ ctx[0] === void 0) add_render_callback(() => /*select_change_handler*/ ctx[10].call(select));
+    			add_location(select, file$7, 83, 3, 2958);
     			attr_dev(div3, "class", "attribute svelte-x9t7p3");
-    			add_location(div3, file$7, 78, 2, 2824);
-    			add_location(p6, file$7, 88, 2, 3072);
+    			add_location(div3, file$7, 81, 2, 2890);
+    			add_location(p6, file$7, 91, 2, 3138);
     			attr_dev(div4, "id", "attributesConstraints");
     			attr_dev(div4, "class", "svelte-x9t7p3");
-    			add_location(div4, file$7, 75, 1, 2749);
+    			add_location(div4, file$7, 78, 1, 2815);
     			attr_dev(div5, "id", "attributesInfo");
     			attr_dev(div5, "class", "svelte-x9t7p3");
-    			add_location(div5, file$7, 63, 0, 2437);
+    			add_location(div5, file$7, 66, 0, 2503);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -34524,11 +34547,11 @@ ${constraint.asp}`;
 
     			current = true;
     			if (remount) dispose();
-    			dispose = listen_dev(select, "change", /*select_change_handler*/ ctx[9]);
+    			dispose = listen_dev(select, "change", /*select_change_handler*/ ctx[10]);
     		},
     		p: function update(ctx, [dirty]) {
-    			if (dirty & /*marks*/ 4) {
-    				each_value_1 = /*marks*/ ctx[2];
+    			if (dirty & /*marks*/ 8) {
+    				each_value_1 = /*marks*/ ctx[3];
     				validate_each_argument(each_value_1);
     				let i;
 
@@ -34555,8 +34578,8 @@ ${constraint.asp}`;
     				select_option(select, /*selectedMark*/ ctx[0]);
     			}
 
-    			if (dirty & /*channels, channelSelections*/ 10) {
-    				each_value = /*channels*/ ctx[3];
+    			if (dirty & /*channels, channelSelections, updateCount*/ 22) {
+    				each_value = /*channels*/ ctx[4];
     				validate_each_argument(each_value);
     				let i;
 
@@ -34635,6 +34658,7 @@ ${constraint.asp}`;
     function instance$7($$self, $$props, $$invalidate) {
     	let { selectedMark } = $$props;
     	let { channelSelections } = $$props;
+    	let { updateCount } = $$props;
     	let shouldIgnoreDndEvents = false;
     	let dropFromOthersDisabled = true;
     	let marks = ["", "area", "bar", "point", "line", "rect", "tick"];
@@ -34678,7 +34702,7 @@ ${constraint.asp}`;
     		}
     	}
 
-    	const writable_props = ["selectedMark", "channelSelections"];
+    	const writable_props = ["selectedMark", "channelSelections", "updateCount"];
 
     	Object.keys($$props).forEach(key => {
     		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$3.warn(`<AttributesConstraints> was created with unknown prop '${key}'`);
@@ -34690,17 +34714,23 @@ ${constraint.asp}`;
     	function select_change_handler() {
     		selectedMark = select_value(this);
     		$$invalidate(0, selectedMark);
-    		$$invalidate(2, marks);
+    		$$invalidate(3, marks);
     	}
 
-    	function constraint_setValue_binding(value, c) {
+    	function constraint_items_binding(value, c) {
     		channelSelections[c] = value;
     		$$invalidate(1, channelSelections);
+    	}
+
+    	function constraint_updateCount_binding(value) {
+    		updateCount = value;
+    		($$invalidate(2, updateCount), $$invalidate(0, selectedMark));
     	}
 
     	$$self.$set = $$props => {
     		if ("selectedMark" in $$props) $$invalidate(0, selectedMark = $$props.selectedMark);
     		if ("channelSelections" in $$props) $$invalidate(1, channelSelections = $$props.channelSelections);
+    		if ("updateCount" in $$props) $$invalidate(2, updateCount = $$props.updateCount);
     	};
 
     	$$self.$capture_state = () => ({
@@ -34713,6 +34743,7 @@ ${constraint.asp}`;
     		DataFields,
     		selectedMark,
     		channelSelections,
+    		updateCount,
     		shouldIgnoreDndEvents,
     		dropFromOthersDisabled,
     		marks,
@@ -34727,21 +34758,31 @@ ${constraint.asp}`;
     	$$self.$inject_state = $$props => {
     		if ("selectedMark" in $$props) $$invalidate(0, selectedMark = $$props.selectedMark);
     		if ("channelSelections" in $$props) $$invalidate(1, channelSelections = $$props.channelSelections);
+    		if ("updateCount" in $$props) $$invalidate(2, updateCount = $$props.updateCount);
     		if ("shouldIgnoreDndEvents" in $$props) shouldIgnoreDndEvents = $$props.shouldIgnoreDndEvents;
     		if ("dropFromOthersDisabled" in $$props) dropFromOthersDisabled = $$props.dropFromOthersDisabled;
-    		if ("marks" in $$props) $$invalidate(2, marks = $$props.marks);
-    		if ("channels" in $$props) $$invalidate(3, channels = $$props.channels);
-    		if ("wildcards" in $$props) $$invalidate(4, wildcards = $$props.wildcards);
-    		if ("dataOptions" in $$props) $$invalidate(5, dataOptions = $$props.dataOptions);
+    		if ("marks" in $$props) $$invalidate(3, marks = $$props.marks);
+    		if ("channels" in $$props) $$invalidate(4, channels = $$props.channels);
+    		if ("wildcards" in $$props) $$invalidate(5, wildcards = $$props.wildcards);
+    		if ("dataOptions" in $$props) $$invalidate(6, dataOptions = $$props.dataOptions);
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
+    	$$self.$$.update = () => {
+    		if ($$self.$$.dirty & /*selectedMark, updateCount*/ 5) {
+    			 if (selectedMark) {
+    				$$invalidate(2, updateCount++, updateCount);
+    			}
+    		}
+    	};
+
     	return [
     		selectedMark,
     		channelSelections,
+    		updateCount,
     		marks,
     		channels,
     		wildcards,
@@ -34750,14 +34791,20 @@ ${constraint.asp}`;
     		dropFromOthersDisabled,
     		handleConsider,
     		select_change_handler,
-    		constraint_setValue_binding
+    		constraint_items_binding,
+    		constraint_updateCount_binding
     	];
     }
 
     class AttributesConstraints extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$7, create_fragment$7, safe_not_equal, { selectedMark: 0, channelSelections: 1 });
+
+    		init(this, options, instance$7, create_fragment$7, safe_not_equal, {
+    			selectedMark: 0,
+    			channelSelections: 1,
+    			updateCount: 2
+    		});
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
@@ -34776,6 +34823,10 @@ ${constraint.asp}`;
     		if (/*channelSelections*/ ctx[1] === undefined && !("channelSelections" in props)) {
     			console_1$3.warn("<AttributesConstraints> was created without expected prop 'channelSelections'");
     		}
+
+    		if (/*updateCount*/ ctx[2] === undefined && !("updateCount" in props)) {
+    			console_1$3.warn("<AttributesConstraints> was created without expected prop 'updateCount'");
+    		}
     	}
 
     	get selectedMark() {
@@ -34793,6 +34844,14 @@ ${constraint.asp}`;
     	set channelSelections(value) {
     		throw new Error("<AttributesConstraints>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
+
+    	get updateCount() {
+    		throw new Error("<AttributesConstraints>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set updateCount(value) {
+    		throw new Error("<AttributesConstraints>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
     }
 
     /* src/VersionConstraintSolver.svelte generated by Svelte v3.20.1 */
@@ -34802,19 +34861,19 @@ ${constraint.asp}`;
 
     function get_each_context$6(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[18] = list[i];
-    	child_ctx[20] = i;
+    	child_ctx[20] = list[i];
+    	child_ctx[22] = i;
     	return child_ctx;
     }
 
     function get_each_context_1$3(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[21] = list[i];
-    	child_ctx[20] = i;
+    	child_ctx[23] = list[i];
+    	child_ctx[22] = i;
     	return child_ctx;
     }
 
-    // (186:3) {#each recommendations as c, i}
+    // (193:3) {#each recommendations as c, i}
     function create_each_block_1$3(ctx) {
     	let div3;
     	let div0;
@@ -34827,7 +34886,7 @@ ${constraint.asp}`;
     	let dispose;
 
     	function click_handler(...args) {
-    		return /*click_handler*/ ctx[17](/*i*/ ctx[20], ...args);
+    		return /*click_handler*/ ctx[19](/*i*/ ctx[22], ...args);
     	}
 
     	const block = {
@@ -34841,16 +34900,16 @@ ${constraint.asp}`;
     			div1 = element("div");
     			t2 = space();
     			attr_dev(i_1, "class", "material-icons-outlined md-24");
-    			add_location(i_1, file$8, 188, 6, 4642);
+    			add_location(i_1, file$8, 195, 6, 4995);
     			attr_dev(div0, "class", "pinButton svelte-ptb5k7");
-    			add_location(div0, file$8, 187, 5, 4588);
-    			attr_dev(div1, "id", div1_id_value = "vis" + /*i*/ ctx[20]);
+    			add_location(div0, file$8, 194, 5, 4941);
+    			attr_dev(div1, "id", div1_id_value = "vis" + /*i*/ ctx[22]);
     			attr_dev(div1, "class", "svelte-ptb5k7");
-    			add_location(div1, file$8, 191, 6, 4747);
+    			add_location(div1, file$8, 198, 6, 5100);
     			attr_dev(div2, "class", "vegaContainer svelte-ptb5k7");
-    			add_location(div2, file$8, 190, 5, 4713);
+    			add_location(div2, file$8, 197, 5, 5066);
     			attr_dev(div3, "class", "vis svelte-ptb5k7");
-    			add_location(div3, file$8, 186, 4, 4565);
+    			add_location(div3, file$8, 193, 4, 4918);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div3, anchor);
@@ -34876,14 +34935,14 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_1$3.name,
     		type: "each",
-    		source: "(186:3) {#each recommendations as c, i}",
+    		source: "(193:3) {#each recommendations as c, i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (202:3) {#each pinned as p, i}
+    // (209:3) {#each pinned as p, i}
     function create_each_block$6(ctx) {
     	let div;
     	let div_id_value;
@@ -34891,9 +34950,9 @@ ${constraint.asp}`;
     	const block = {
     		c: function create() {
     			div = element("div");
-    			attr_dev(div, "id", div_id_value = "pin" + /*i*/ ctx[20]);
+    			attr_dev(div, "id", div_id_value = "pin" + /*i*/ ctx[22]);
     			attr_dev(div, "class", "svelte-ptb5k7");
-    			add_location(div, file$8, 202, 4, 4997);
+    			add_location(div, file$8, 209, 4, 5350);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -34907,7 +34966,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$6.name,
     		type: "each",
-    		source: "(202:3) {#each pinned as p, i}",
+    		source: "(209:3) {#each pinned as p, i}",
     		ctx
     	});
 
@@ -34918,6 +34977,7 @@ ${constraint.asp}`;
     	let div5;
     	let updating_selectedMark;
     	let updating_channelSelections;
+    	let updating_updateCount;
     	let t0;
     	let div2;
     	let div0;
@@ -34943,21 +35003,29 @@ ${constraint.asp}`;
     	let dispose;
 
     	function attributesconstraints_selectedMark_binding(value) {
-    		/*attributesconstraints_selectedMark_binding*/ ctx[15].call(null, value);
+    		/*attributesconstraints_selectedMark_binding*/ ctx[16].call(null, value);
     	}
 
     	function attributesconstraints_channelSelections_binding(value) {
-    		/*attributesconstraints_channelSelections_binding*/ ctx[16].call(null, value);
+    		/*attributesconstraints_channelSelections_binding*/ ctx[17].call(null, value);
+    	}
+
+    	function attributesconstraints_updateCount_binding(value) {
+    		/*attributesconstraints_updateCount_binding*/ ctx[18].call(null, value);
     	}
 
     	let attributesconstraints_props = {};
 
-    	if (/*selectedMark*/ ctx[2] !== void 0) {
-    		attributesconstraints_props.selectedMark = /*selectedMark*/ ctx[2];
+    	if (/*selectedMark*/ ctx[3] !== void 0) {
+    		attributesconstraints_props.selectedMark = /*selectedMark*/ ctx[3];
     	}
 
-    	if (/*channelSelections*/ ctx[3] !== void 0) {
-    		attributesconstraints_props.channelSelections = /*channelSelections*/ ctx[3];
+    	if (/*channelSelections*/ ctx[4] !== void 0) {
+    		attributesconstraints_props.channelSelections = /*channelSelections*/ ctx[4];
+    	}
+
+    	if (/*updateCount*/ ctx[0] !== void 0) {
+    		attributesconstraints_props.updateCount = /*updateCount*/ ctx[0];
     	}
 
     	const attributesconstraints = new AttributesConstraints({
@@ -34967,7 +35035,8 @@ ${constraint.asp}`;
 
     	binding_callbacks.push(() => bind(attributesconstraints, "selectedMark", attributesconstraints_selectedMark_binding));
     	binding_callbacks.push(() => bind(attributesconstraints, "channelSelections", attributesconstraints_channelSelections_binding));
-    	let each_value_1 = /*recommendations*/ ctx[1];
+    	binding_callbacks.push(() => bind(attributesconstraints, "updateCount", attributesconstraints_updateCount_binding));
+    	let each_value_1 = /*recommendations*/ ctx[2];
     	validate_each_argument(each_value_1);
     	let each_blocks_1 = [];
 
@@ -34975,7 +35044,7 @@ ${constraint.asp}`;
     		each_blocks_1[i] = create_each_block_1$3(get_each_context_1$3(ctx, each_value_1, i));
     	}
 
-    	let each_value = /*pinned*/ ctx[0];
+    	let each_value = /*pinned*/ ctx[1];
     	validate_each_argument(each_value);
     	let each_blocks = [];
 
@@ -35024,37 +35093,37 @@ ${constraint.asp}`;
     				each_blocks[i].c();
     			}
 
-    			add_location(b0, file$8, 178, 6, 4235);
-    			add_location(p0, file$8, 178, 3, 4232);
-    			add_location(button0, file$8, 180, 3, 4317);
-    			add_location(button1, file$8, 181, 3, 4360);
+    			add_location(b0, file$8, 185, 6, 4588);
+    			add_location(p0, file$8, 185, 3, 4585);
+    			add_location(button0, file$8, 187, 3, 4670);
+    			add_location(button1, file$8, 188, 3, 4713);
     			attr_dev(button2, "id", "exportJSON");
     			attr_dev(button2, "class", "btn");
-    			add_location(button2, file$8, 182, 3, 4406);
+    			add_location(button2, file$8, 189, 3, 4759);
     			attr_dev(div0, "id", "menu");
-    			add_location(div0, file$8, 177, 2, 4213);
+    			add_location(div0, file$8, 184, 2, 4566);
     			attr_dev(div1, "id", "recommendationDisplay");
     			attr_dev(div1, "class", "svelte-ptb5k7");
-    			add_location(div1, file$8, 184, 2, 4493);
+    			add_location(div1, file$8, 191, 2, 4846);
     			attr_dev(div2, "id", "recommendations");
     			attr_dev(div2, "class", "svelte-ptb5k7");
-    			add_location(div2, file$8, 176, 1, 4184);
-    			add_location(b1, file$8, 198, 21, 4868);
+    			add_location(div2, file$8, 183, 1, 4537);
+    			add_location(b1, file$8, 205, 21, 5221);
     			attr_dev(p1, "id", "pinnedText");
     			attr_dev(p1, "class", "svelte-ptb5k7");
-    			add_location(p1, file$8, 198, 2, 4849);
+    			add_location(p1, file$8, 205, 2, 5202);
     			attr_dev(a, "id", "closeButton");
     			attr_dev(a, "class", "svelte-ptb5k7");
-    			add_location(a, file$8, 199, 2, 4888);
+    			add_location(a, file$8, 206, 2, 5241);
     			attr_dev(div3, "id", "pinnedDisplay");
     			attr_dev(div3, "class", "svelte-ptb5k7");
-    			add_location(div3, file$8, 200, 2, 4942);
+    			add_location(div3, file$8, 207, 2, 5295);
     			attr_dev(div4, "id", "pinnedDrawer");
     			attr_dev(div4, "class", "svelte-ptb5k7");
-    			add_location(div4, file$8, 197, 1, 4823);
+    			add_location(div4, file$8, 204, 1, 5176);
     			attr_dev(div5, "id", "overall");
     			attr_dev(div5, "class", "svelte-ptb5k7");
-    			add_location(div5, file$8, 174, 0, 4061);
+    			add_location(div5, file$8, 179, 0, 4369);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -35097,31 +35166,37 @@ ${constraint.asp}`;
     			if (remount) run_all(dispose);
 
     			dispose = [
-    				listen_dev(button0, "click", /*reset*/ ctx[4], false, false, false),
+    				listen_dev(button0, "click", /*reset*/ ctx[5], false, false, false),
     				listen_dev(button1, "click", showPin, false, false, false),
-    				listen_dev(button2, "click", /*exportJSON*/ ctx[6], false, false, false),
+    				listen_dev(button2, "click", /*exportJSON*/ ctx[7], false, false, false),
     				listen_dev(a, "click", closePin, false, false, false)
     			];
     		},
     		p: function update(ctx, [dirty]) {
     			const attributesconstraints_changes = {};
 
-    			if (!updating_selectedMark && dirty & /*selectedMark*/ 4) {
+    			if (!updating_selectedMark && dirty & /*selectedMark*/ 8) {
     				updating_selectedMark = true;
-    				attributesconstraints_changes.selectedMark = /*selectedMark*/ ctx[2];
+    				attributesconstraints_changes.selectedMark = /*selectedMark*/ ctx[3];
     				add_flush_callback(() => updating_selectedMark = false);
     			}
 
-    			if (!updating_channelSelections && dirty & /*channelSelections*/ 8) {
+    			if (!updating_channelSelections && dirty & /*channelSelections*/ 16) {
     				updating_channelSelections = true;
-    				attributesconstraints_changes.channelSelections = /*channelSelections*/ ctx[3];
+    				attributesconstraints_changes.channelSelections = /*channelSelections*/ ctx[4];
     				add_flush_callback(() => updating_channelSelections = false);
+    			}
+
+    			if (!updating_updateCount && dirty & /*updateCount*/ 1) {
+    				updating_updateCount = true;
+    				attributesconstraints_changes.updateCount = /*updateCount*/ ctx[0];
+    				add_flush_callback(() => updating_updateCount = false);
     			}
 
     			attributesconstraints.$set(attributesconstraints_changes);
 
-    			if (dirty & /*pin, recommendations*/ 34) {
-    				each_value_1 = /*recommendations*/ ctx[1];
+    			if (dirty & /*pin, recommendations*/ 68) {
+    				each_value_1 = /*recommendations*/ ctx[2];
     				validate_each_argument(each_value_1);
     				let i;
 
@@ -35144,9 +35219,9 @@ ${constraint.asp}`;
     				each_blocks_1.length = each_value_1.length;
     			}
 
-    			if (dirty & /*pinned*/ 1) {
+    			if (dirty & /*pinned*/ 2) {
     				const old_length = each_value.length;
-    				each_value = /*pinned*/ ctx[0];
+    				each_value = /*pinned*/ ctx[1];
     				validate_each_argument(each_value);
     				let i;
 
@@ -35217,7 +35292,15 @@ ${constraint.asp}`;
     	// Track user constraints
     	let selectedMark;
 
-    	let channelSelections = {};
+    	const channelDefaults = {
+    		"x": [],
+    		"y": [],
+    		"color": [],
+    		"size": [],
+    		"shape": []
+    	};
+
+    	let channelSelections = JSON.parse(JSON.stringify(channelDefaults));
 
     	function solveDraco(markConstraints, visConstraints, dataset) {
     		// console.log(newConstraints)
@@ -35248,10 +35331,11 @@ ${constraint.asp}`;
 
     			console.log(inputConstraints);
     			const solution = draco.solve(inputConstraints, { models: 4 });
-    			console.log("solution", solution);
 
+    			// console.log("solution", solution)
     			if (!solution) {
     				console.log("no solution");
+    				$$invalidate(2, recommendations = []);
     				return [];
     			}
 
@@ -35266,7 +35350,7 @@ ${constraint.asp}`;
     				});
     			}
 
-    			$$invalidate(1, recommendations = recs);
+    			$$invalidate(2, recommendations = recs);
 
     			sessionData.push({
     				"markConstraints": selectedMark,
@@ -35274,9 +35358,7 @@ ${constraint.asp}`;
     				"recommendations": recs,
     				"date": new Date()
     			});
-
-    			console.log(recommendations);
-    		});
+    		}); // console.log(recommendations)
     	}
 
     	function getRecommendations() {
@@ -35285,7 +35367,11 @@ ${constraint.asp}`;
     		let encodingCount = 0;
 
     		for (let c of Object.keys(channelSelections)) {
-    			let channelValue = channelSelections[c];
+    			if (channelSelections[c].length == 0) {
+    				continue;
+    			}
+
+    			let channelValue = channelSelections[c][0].id;
     			console.log(c, channelValue);
 
     			if (channelValue && channelValue != "") {
@@ -35308,17 +35394,21 @@ ${constraint.asp}`;
     		solveDraco(markConstraints, visConstraints, dataset);
     	}
 
+    	// $: if (channelSelections || selectedMark) {
+    	// 	console.log(channelSelections, selectedMark)
+    	// 	updateCount++
+    	// }
     	// function update() {
     	// 	updateCount++
     	// }
     	function reset() {
-    		$$invalidate(2, selectedMark = "");
-    		$$invalidate(3, channelSelections = {});
-    		$$invalidate(10, updateCount++, updateCount);
+    		$$invalidate(3, selectedMark = "");
+    		$$invalidate(4, channelSelections = JSON.parse(JSON.stringify(channelDefaults)));
+    		$$invalidate(0, updateCount++, updateCount);
     	}
 
     	function pin(i) {
-    		$$invalidate(0, pinned = pinned.concat([recommendations[i]]));
+    		$$invalidate(1, pinned = pinned.concat([recommendations[i]]));
     		let date = new Date();
 
     		sessionData = sessionData.concat({
@@ -35350,20 +35440,25 @@ ${constraint.asp}`;
 
     	function attributesconstraints_selectedMark_binding(value) {
     		selectedMark = value;
-    		$$invalidate(2, selectedMark);
+    		$$invalidate(3, selectedMark);
     	}
 
     	function attributesconstraints_channelSelections_binding(value) {
     		channelSelections = value;
-    		$$invalidate(3, channelSelections);
+    		$$invalidate(4, channelSelections);
+    	}
+
+    	function attributesconstraints_updateCount_binding(value) {
+    		updateCount = value;
+    		$$invalidate(0, updateCount);
     	}
 
     	const click_handler = i => pin(i);
 
     	$$self.$set = $$props => {
-    		if ("dataset" in $$props) $$invalidate(7, dataset = $$props.dataset);
-    		if ("types" in $$props) $$invalidate(8, types = $$props.types);
-    		if ("selectedAttributes" in $$props) $$invalidate(9, selectedAttributes = $$props.selectedAttributes);
+    		if ("dataset" in $$props) $$invalidate(8, dataset = $$props.dataset);
+    		if ("types" in $$props) $$invalidate(9, types = $$props.types);
+    		if ("selectedAttributes" in $$props) $$invalidate(10, selectedAttributes = $$props.selectedAttributes);
     	};
 
     	$$self.$capture_state = () => ({
@@ -35380,6 +35475,7 @@ ${constraint.asp}`;
     		recommendations,
     		sessionData,
     		selectedMark,
+    		channelDefaults,
     		channelSelections,
     		solveDraco,
     		getRecommendations,
@@ -35391,16 +35487,16 @@ ${constraint.asp}`;
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ("dataset" in $$props) $$invalidate(7, dataset = $$props.dataset);
-    		if ("types" in $$props) $$invalidate(8, types = $$props.types);
-    		if ("selectedAttributes" in $$props) $$invalidate(9, selectedAttributes = $$props.selectedAttributes);
-    		if ("updateCount" in $$props) $$invalidate(10, updateCount = $$props.updateCount);
-    		if ("pinned" in $$props) $$invalidate(0, pinned = $$props.pinned);
+    		if ("dataset" in $$props) $$invalidate(8, dataset = $$props.dataset);
+    		if ("types" in $$props) $$invalidate(9, types = $$props.types);
+    		if ("selectedAttributes" in $$props) $$invalidate(10, selectedAttributes = $$props.selectedAttributes);
+    		if ("updateCount" in $$props) $$invalidate(0, updateCount = $$props.updateCount);
+    		if ("pinned" in $$props) $$invalidate(1, pinned = $$props.pinned);
     		if ("attributesConstraints" in $$props) attributesConstraints = $$props.attributesConstraints;
-    		if ("recommendations" in $$props) $$invalidate(1, recommendations = $$props.recommendations);
+    		if ("recommendations" in $$props) $$invalidate(2, recommendations = $$props.recommendations);
     		if ("sessionData" in $$props) sessionData = $$props.sessionData;
-    		if ("selectedMark" in $$props) $$invalidate(2, selectedMark = $$props.selectedMark);
-    		if ("channelSelections" in $$props) $$invalidate(3, channelSelections = $$props.channelSelections);
+    		if ("selectedMark" in $$props) $$invalidate(3, selectedMark = $$props.selectedMark);
+    		if ("channelSelections" in $$props) $$invalidate(4, channelSelections = $$props.channelSelections);
     	};
 
     	if ($$props && "$$inject" in $$props) {
@@ -35408,13 +35504,7 @@ ${constraint.asp}`;
     	}
 
     	$$self.$$.update = () => {
-    		if ($$self.$$.dirty & /*channelSelections, selectedMark, updateCount*/ 1036) {
-    			 if (channelSelections || selectedMark) {
-    				$$invalidate(10, updateCount++, updateCount);
-    			}
-    		}
-
-    		if ($$self.$$.dirty & /*updateCount*/ 1024) {
+    		if ($$self.$$.dirty & /*updateCount*/ 1) {
     			 {
     				console.log("update count", updateCount);
 
@@ -35424,7 +35514,7 @@ ${constraint.asp}`;
     			}
     		}
 
-    		if ($$self.$$.dirty & /*recommendations*/ 2) {
+    		if ($$self.$$.dirty & /*recommendations*/ 4) {
     			 for (let rec = 0; rec < recommendations.length; rec++) {
     				if (!recommendations[rec]) {
     					continue;
@@ -35434,7 +35524,7 @@ ${constraint.asp}`;
     			}
     		}
 
-    		if ($$self.$$.dirty & /*pinned*/ 1) {
+    		if ($$self.$$.dirty & /*pinned*/ 2) {
     			 for (let p = 0; p < pinned.length; p++) {
     				if (!pinned[p]) {
     					continue;
@@ -35446,6 +35536,7 @@ ${constraint.asp}`;
     	};
 
     	return [
+    		updateCount,
     		pinned,
     		recommendations,
     		selectedMark,
@@ -35456,13 +35547,14 @@ ${constraint.asp}`;
     		dataset,
     		types,
     		selectedAttributes,
-    		updateCount,
     		sessionData,
     		attributesConstraints,
+    		channelDefaults,
     		solveDraco,
     		getRecommendations,
     		attributesconstraints_selectedMark_binding,
     		attributesconstraints_channelSelections_binding,
+    		attributesconstraints_updateCount_binding,
     		click_handler
     	];
     }
@@ -35472,9 +35564,9 @@ ${constraint.asp}`;
     		super(options);
 
     		init(this, options, instance$8, create_fragment$8, safe_not_equal, {
-    			dataset: 7,
-    			types: 8,
-    			selectedAttributes: 9
+    			dataset: 8,
+    			types: 9,
+    			selectedAttributes: 10
     		});
 
     		dispatch_dev("SvelteRegisterComponent", {

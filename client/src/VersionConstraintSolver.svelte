@@ -21,7 +21,8 @@
 
 	// Track user constraints
 	let selectedMark
-	let channelSelections = {}
+	const channelDefaults = {"x":[], "y":[], "color":[], "size":[], "shape":[]}
+	let channelSelections = JSON.parse(JSON.stringify(channelDefaults))
 
 	function solveDraco(markConstraints, visConstraints, dataset) {
 		// console.log(newConstraints)
@@ -53,10 +54,11 @@
 
 			const solution = draco.solve(inputConstraints, { models: 4 });
 			
-			console.log("solution", solution)
+			// console.log("solution", solution)
 			
 			if (!solution) {
 				console.log('no solution')
+				recommendations = []
 				return []
 			}
 
@@ -75,7 +77,7 @@
 							  "recommendations": recs,
 							  "date": new Date()})
 
-			console.log(recommendations)
+			// console.log(recommendations)
 		})
 	}
 
@@ -86,7 +88,9 @@
 
 		let encodingCount = 0
 		for (let c of Object.keys(channelSelections)) {
-			let channelValue = channelSelections[c]
+			if (channelSelections[c].length == 0) {continue}
+
+			let channelValue = channelSelections[c][0].id
 
 			console.log(c, channelValue)
 
@@ -123,9 +127,10 @@
 		vegaEmbed(`#vis${rec}`, recommendations[rec]['vega'], {actions:false})
 	}
 
-	$: if (channelSelections || selectedMark) {
-		updateCount++
-	}
+	// $: if (channelSelections || selectedMark) {
+	// 	console.log(channelSelections, selectedMark)
+	// 	updateCount++
+	// }
 
 	// function update() {
 	// 	updateCount++
@@ -133,7 +138,7 @@
 
 	function reset() {
 		selectedMark = ''
-		channelSelections = {}
+		channelSelections = JSON.parse(JSON.stringify(channelDefaults))
 		updateCount++
 	}
 
@@ -173,7 +178,9 @@
 </script>
 
 <div id="overall">
-	<AttributesConstraints bind:selectedMark={selectedMark} bind:channelSelections={channelSelections} />
+	<AttributesConstraints bind:selectedMark={selectedMark}
+							bind:channelSelections={channelSelections}
+							bind:updateCount={updateCount} />
 	<div id="recommendations">
 		<div id="menu">
 			<p><b>RECOMMENDATIONS</b></p>

@@ -4,7 +4,8 @@
 
 	export let items = []
 	export let attributeType
-	export let setValue
+	export let updateCount
+	// export let setValue
 
 	let shouldIgnoreDndEvents = false;
 
@@ -21,7 +22,8 @@
     	for (let i of e.detail.items) {
     		if (i.id == mostRecent) {
     			items = [i]
-    			setValue = i.id
+    			updateCount++
+    			// setValue = i.id
     		}
     	}
     }
