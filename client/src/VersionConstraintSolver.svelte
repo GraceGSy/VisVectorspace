@@ -51,7 +51,7 @@
 
 			console.log(inputConstraints)
 
-			const solution = draco.solve(inputConstraints, { models: 9 });
+			const solution = draco.solve(inputConstraints, { models: 4 });
 			
 			console.log("solution", solution)
 			if (!solution) {
@@ -62,7 +62,9 @@
 			console.log("solution", solution)
 
 			for (let s of solution['specs']) {
-				recs.push({'vega':s})
+				s.width = 270
+				s.height = 270
+				recs.push({'vega':s, 'uid': 'id' + (new Date()).getTime()})
 			}
 
 			recommendations = recs
@@ -88,15 +90,13 @@
 			if (channelValue && channelValue != '') {
 				let newConstraint = `encoding(e${encodingCount}).:- not channel(e${encodingCount}, ${c}).`
 				
-				if (channelValue.startsWith("type")) {
-					// Get type
-					let type = channelValue.slice(channelValue.indexOf('type')+5)
-					newConstraint = newConstraint + `:- not type(e${encodingCount}, ${type}).`
+				if (channelValue == "quantitative" || channelValue == "categorical") {
+					// Get channel
+					newConstraint = newConstraint + `:- not type(e${encodingCount}, ${channelValue}).`
 
-				} else if (channelValue.startsWith("field")) {
+				} else {
 					// Get field
-					let field = channelValue.slice(channelValue.indexOf('field')+6)
-					newConstraint = newConstraint + `:- field(e${encodingCount}, ${field}).`
+					newConstraint = newConstraint + `:- not field(e${encodingCount}, ${channelValue}).`
 				}
 
 				visConstraints.push(newConstraint)
@@ -120,9 +120,13 @@
 		vegaEmbed(`#vis${rec}`, recommendations[rec]['vega'], {actions:false})
 	}
 
-	function update() {
+	$: if (channelSelections || selectedMark) {
 		updateCount++
 	}
+
+	// function update() {
+	// 	updateCount++
+	// }
 
 	function reset() {
 		selectedMark = ''
@@ -170,7 +174,7 @@
 	<div id="recommendations">
 		<div id="menu">
 			<p><b>RECOMMENDATIONS</b></p>
-			<button on:click={update}>UPDATE RECOMMENDATIONS</button>
+			<!-- <button>UPDATE RECOMMENDATIONS</button> -->
 			<button on:click={reset}>RESET</button>
 			<button on:click={showPin}>PINNED</button>
 			<button id="exportJSON" on:click={exportJSON} class="btn">DOWNLOAD</button>
@@ -202,14 +206,19 @@
 <style>
 	#overall {
 		display: flex;
-		background: #f4f4f4;
-		padding-right: 25px;
+		background: #f3f3f3;
+		width: 100%;
+	}
+
+	#recommendations {
+		padding-top: 20px;
+		margin-bottom: 20px
 	}
 
 	#recommendationDisplay {
 		display: grid;
-		grid-template-columns: repeat(3, 350px);
-		grid-template-rows: repeat(3, 350px);
+		grid-template-columns: repeat(2, 480px);
+		grid-template-rows: repeat(2, 460px);
 		grid-gap: 15px;
 		margin-top: 50px
 	}
@@ -273,7 +282,7 @@
 	}
 
 	.vegaContainer {
-		height: 322px;
+		height: 400px;
 		overflow: scroll;
 	    background: white;
 	    display: flex;

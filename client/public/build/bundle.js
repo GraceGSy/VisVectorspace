@@ -4,6 +4,7 @@ var app = (function () {
     'use strict';
 
     function noop() { }
+    const identity = x => x;
     function is_promise(value) {
         return value && typeof value === 'object' && typeof value.then === 'function';
     }
@@ -29,6 +30,44 @@ var app = (function () {
     }
     function null_to_empty(value) {
         return value == null ? '' : value;
+    }
+    function action_destroyer(action_result) {
+        return action_result && is_function(action_result.destroy) ? action_result.destroy : noop;
+    }
+
+    const is_client = typeof window !== 'undefined';
+    let now = is_client
+        ? () => window.performance.now()
+        : () => Date.now();
+    let raf = is_client ? cb => requestAnimationFrame(cb) : noop;
+
+    const tasks = new Set();
+    function run_tasks(now) {
+        tasks.forEach(task => {
+            if (!task.c(now)) {
+                tasks.delete(task);
+                task.f();
+            }
+        });
+        if (tasks.size !== 0)
+            raf(run_tasks);
+    }
+    /**
+     * Creates a new task that runs on each raf frame
+     * until it returns a falsy value or is aborted
+     */
+    function loop(callback) {
+        let task;
+        if (tasks.size === 0)
+            raf(run_tasks);
+        return {
+            promise: new Promise(fulfill => {
+                tasks.add(task = { c: callback, f: fulfill });
+            }),
+            abort() {
+                tasks.delete(task);
+            }
+        };
     }
 
     function append(target, node) {
@@ -102,6 +141,136 @@ var app = (function () {
         const e = document.createEvent('CustomEvent');
         e.initCustomEvent(type, false, false, detail);
         return e;
+    }
+
+    const active_docs = new Set();
+    let active = 0;
+    // https://github.com/darkskyapp/string-hash/blob/master/index.js
+    function hash(str) {
+        let hash = 5381;
+        let i = str.length;
+        while (i--)
+            hash = ((hash << 5) - hash) ^ str.charCodeAt(i);
+        return hash >>> 0;
+    }
+    function create_rule(node, a, b, duration, delay, ease, fn, uid = 0) {
+        const step = 16.666 / duration;
+        let keyframes = '{\n';
+        for (let p = 0; p <= 1; p += step) {
+            const t = a + (b - a) * ease(p);
+            keyframes += p * 100 + `%{${fn(t, 1 - t)}}\n`;
+        }
+        const rule = keyframes + `100% {${fn(b, 1 - b)}}\n}`;
+        const name = `__svelte_${hash(rule)}_${uid}`;
+        const doc = node.ownerDocument;
+        active_docs.add(doc);
+        const stylesheet = doc.__svelte_stylesheet || (doc.__svelte_stylesheet = doc.head.appendChild(element('style')).sheet);
+        const current_rules = doc.__svelte_rules || (doc.__svelte_rules = {});
+        if (!current_rules[name]) {
+            current_rules[name] = true;
+            stylesheet.insertRule(`@keyframes ${name} ${rule}`, stylesheet.cssRules.length);
+        }
+        const animation = node.style.animation || '';
+        node.style.animation = `${animation ? `${animation}, ` : ``}${name} ${duration}ms linear ${delay}ms 1 both`;
+        active += 1;
+        return name;
+    }
+    function delete_rule(node, name) {
+        const previous = (node.style.animation || '').split(', ');
+        const next = previous.filter(name
+            ? anim => anim.indexOf(name) < 0 // remove specific animation
+            : anim => anim.indexOf('__svelte') === -1 // remove all Svelte animations
+        );
+        const deleted = previous.length - next.length;
+        if (deleted) {
+            node.style.animation = next.join(', ');
+            active -= deleted;
+            if (!active)
+                clear_rules();
+        }
+    }
+    function clear_rules() {
+        raf(() => {
+            if (active)
+                return;
+            active_docs.forEach(doc => {
+                const stylesheet = doc.__svelte_stylesheet;
+                let i = stylesheet.cssRules.length;
+                while (i--)
+                    stylesheet.deleteRule(i);
+                doc.__svelte_rules = {};
+            });
+            active_docs.clear();
+        });
+    }
+
+    function create_animation(node, from, fn, params) {
+        if (!from)
+            return noop;
+        const to = node.getBoundingClientRect();
+        if (from.left === to.left && from.right === to.right && from.top === to.top && from.bottom === to.bottom)
+            return noop;
+        const { delay = 0, duration = 300, easing = identity, 
+        // @ts-ignore todo: should this be separated from destructuring? Or start/end added to public api and documentation?
+        start: start_time = now() + delay, 
+        // @ts-ignore todo:
+        end = start_time + duration, tick = noop, css } = fn(node, { from, to }, params);
+        let running = true;
+        let started = false;
+        let name;
+        function start() {
+            if (css) {
+                name = create_rule(node, 0, 1, duration, delay, easing, css);
+            }
+            if (!delay) {
+                started = true;
+            }
+        }
+        function stop() {
+            if (css)
+                delete_rule(node, name);
+            running = false;
+        }
+        loop(now => {
+            if (!started && now >= start_time) {
+                started = true;
+            }
+            if (started && now >= end) {
+                tick(1, 0);
+                stop();
+            }
+            if (!running) {
+                return false;
+            }
+            if (started) {
+                const p = now - start_time;
+                const t = 0 + 1 * easing(p / duration);
+                tick(t, 1 - t);
+            }
+            return true;
+        });
+        start();
+        tick(0, 1);
+        return stop;
+    }
+    function fix_position(node) {
+        const style = getComputedStyle(node);
+        if (style.position !== 'absolute' && style.position !== 'fixed') {
+            const { width, height } = style;
+            const a = node.getBoundingClientRect();
+            node.style.position = 'absolute';
+            node.style.width = width;
+            node.style.height = height;
+            add_transform(node, a);
+        }
+    }
+    function add_transform(node, a) {
+        const b = node.getBoundingClientRect();
+        if (a.left !== b.left || a.top !== b.top) {
+            const style = getComputedStyle(node);
+            const transform = style.transform === 'none' ? '' : style.transform;
+            node.style.transform = `${transform} translate(${a.left - b.left}px, ${a.top - b.top}px)`;
+        }
     }
 
     let current_component;
@@ -298,6 +467,100 @@ var app = (function () {
     }
 
     const globals = (typeof window !== 'undefined' ? window : global);
+
+    function destroy_block(block, lookup) {
+        block.d(1);
+        lookup.delete(block.key);
+    }
+    function fix_and_destroy_block(block, lookup) {
+        block.f();
+        destroy_block(block, lookup);
+    }
+    function update_keyed_each(old_blocks, dirty, get_key, dynamic, ctx, list, lookup, node, destroy, create_each_block, next, get_context) {
+        let o = old_blocks.length;
+        let n = list.length;
+        let i = o;
+        const old_indexes = {};
+        while (i--)
+            old_indexes[old_blocks[i].key] = i;
+        const new_blocks = [];
+        const new_lookup = new Map();
+        const deltas = new Map();
+        i = n;
+        while (i--) {
+            const child_ctx = get_context(ctx, list, i);
+            const key = get_key(child_ctx);
+            let block = lookup.get(key);
+            if (!block) {
+                block = create_each_block(key, child_ctx);
+                block.c();
+            }
+            else if (dynamic) {
+                block.p(child_ctx, dirty);
+            }
+            new_lookup.set(key, new_blocks[i] = block);
+            if (key in old_indexes)
+                deltas.set(key, Math.abs(i - old_indexes[key]));
+        }
+        const will_move = new Set();
+        const did_move = new Set();
+        function insert(block) {
+            transition_in(block, 1);
+            block.m(node, next, lookup.has(block.key));
+            lookup.set(block.key, block);
+            next = block.first;
+            n--;
+        }
+        while (o && n) {
+            const new_block = new_blocks[n - 1];
+            const old_block = old_blocks[o - 1];
+            const new_key = new_block.key;
+            const old_key = old_block.key;
+            if (new_block === old_block) {
+                // do nothing
+                next = new_block.first;
+                o--;
+                n--;
+            }
+            else if (!new_lookup.has(old_key)) {
+                // remove old block
+                destroy(old_block, lookup);
+                o--;
+            }
+            else if (!lookup.has(new_key) || will_move.has(new_key)) {
+                insert(new_block);
+            }
+            else if (did_move.has(old_key)) {
+                o--;
+            }
+            else if (deltas.get(new_key) > deltas.get(old_key)) {
+                did_move.add(new_key);
+                insert(new_block);
+            }
+            else {
+                will_move.add(old_key);
+                o--;
+            }
+        }
+        while (o--) {
+            const old_block = old_blocks[o];
+            if (!new_lookup.has(old_block.key))
+                destroy(old_block, lookup);
+        }
+        while (n)
+            insert(new_blocks[n - 1]);
+        return new_blocks;
+    }
+    function validate_each_keys(ctx, list, get_context, get_key) {
+        const keys = new Set();
+        for (let i = 0; i < list.length; i++) {
+            const key = get_key(get_context(ctx, list, i));
+            if (keys.has(key)) {
+                throw new Error(`Cannot have duplicate keys in a keyed each`);
+            }
+            keys.add(key);
+        }
+    }
 
     function bind(component, name, callback) {
         const index = component.$$.props[name];
@@ -665,7 +928,7 @@ var app = (function () {
       };
     }
 
-    function identity(x) {
+    function identity$1(x) {
       return x;
     }
 
@@ -740,7 +1003,7 @@ var app = (function () {
     }
 
     function histogram() {
-      var value = identity,
+      var value = identity$1,
           domain = extent,
           threshold = thresholdSturges;
 
@@ -1050,7 +1313,7 @@ var app = (function () {
 
     var slice$1 = Array.prototype.slice;
 
-    function identity$1(x) {
+    function identity$2(x) {
       return x;
     }
 
@@ -1099,7 +1362,7 @@ var app = (function () {
 
       function axis(context) {
         var values = tickValues == null ? (scale.ticks ? scale.ticks.apply(scale, tickArguments) : scale.domain()) : tickValues,
-            format = tickFormat == null ? (scale.tickFormat ? scale.tickFormat.apply(scale, tickArguments) : identity$1) : tickFormat,
+            format = tickFormat == null ? (scale.tickFormat ? scale.tickFormat.apply(scale, tickArguments) : identity$2) : tickFormat,
             spacing = Math.max(tickSizeInner, 0) + tickPadding,
             range = scale.range(),
             range0 = +range[0] + 0.5,
@@ -3337,7 +3600,7 @@ var app = (function () {
 
     var degrees = 180 / Math.PI;
 
-    var identity$2 = {
+    var identity$3 = {
       translateX: 0,
       translateY: 0,
       rotate: 0,
@@ -3368,7 +3631,7 @@ var app = (function () {
         svgNode;
 
     function parseCss(value) {
-      if (value === "none") return identity$2;
+      if (value === "none") return identity$3;
       if (!cssNode) cssNode = document.createElement("DIV"), cssRoot = document.documentElement, cssView = document.defaultView;
       cssNode.style.transform = value;
       value = cssView.getComputedStyle(cssRoot.appendChild(cssNode), null).getPropertyValue("transform");
@@ -3378,10 +3641,10 @@ var app = (function () {
     }
 
     function parseSvg(value) {
-      if (value == null) return identity$2;
+      if (value == null) return identity$3;
       if (!svgNode) svgNode = document.createElementNS("http://www.w3.org/2000/svg", "g");
       svgNode.setAttribute("transform", value);
-      if (!(value = svgNode.transform.baseVal.consolidate())) return identity$2;
+      if (!(value = svgNode.transform.baseVal.consolidate())) return identity$3;
       value = value.matrix;
       return decompose(value.a, value.b, value.c, value.d, value.e, value.f);
     }
@@ -3618,7 +3881,7 @@ var app = (function () {
         clock = typeof performance === "object" && performance.now ? performance : Date,
         setFrame = typeof window === "object" && window.requestAnimationFrame ? window.requestAnimationFrame.bind(window) : function(f) { setTimeout(f, 17); };
 
-    function now() {
+    function now$1() {
       return clockNow || (setFrame(clearNow), clockNow = clock.now() + clockSkew);
     }
 
@@ -3636,7 +3899,7 @@ var app = (function () {
       constructor: Timer,
       restart: function(callback, delay, time) {
         if (typeof callback !== "function") throw new TypeError("callback is not a function");
-        time = (time == null ? now() : +time) + (delay == null ? 0 : +delay);
+        time = (time == null ? now$1() : +time) + (delay == null ? 0 : +delay);
         if (!this._next && taskTail !== this) {
           if (taskTail) taskTail._next = this;
           else taskHead = this;
@@ -3662,7 +3925,7 @@ var app = (function () {
     }
 
     function timerFlush() {
-      now(); // Get the current time, if not already set.
+      now$1(); // Get the current time, if not already set.
       ++frame; // Pretend we’ve set an alarm, if we haven’t already.
       var t = taskHead, e;
       while (t) {
@@ -3730,7 +3993,7 @@ var app = (function () {
     function interval$1(callback, delay, time) {
       var t = new Timer, total = delay;
       if (delay == null) return t.restart(callback, delay, time), t;
-      delay = +delay, time = time == null ? now() : +time;
+      delay = +delay, time = time == null ? now$1() : +time;
       t.restart(function tick(elapsed) {
         elapsed += total;
         t.restart(tick, total += delay, time);
@@ -4772,7 +5035,7 @@ var app = (function () {
       var timing;
       while (!(timing = node.__transition) || !(timing = timing[id])) {
         if (!(node = node.parentNode)) {
-          return defaultTiming.time = now(), defaultTiming;
+          return defaultTiming.time = now$1(), defaultTiming;
         }
       }
       return timing;
@@ -4785,7 +5048,7 @@ var app = (function () {
       if (name instanceof Transition) {
         id = name._id, name = name._name;
       } else {
-        id = newId(), (timing = defaultTiming).time = now(), name = name == null ? null : name + "";
+        id = newId(), (timing = defaultTiming).time = now$1(), name = name == null ? null : name + "";
       }
 
       for (var groups = this._groups, m = groups.length, j = 0; j < m; ++j) {
@@ -4804,7 +5067,7 @@ var app = (function () {
 
     var root$1 = [null];
 
-    function active(node, name) {
+    function active$1(node, name) {
       var schedules = node.__transition,
           schedule,
           i;
@@ -7879,7 +8142,7 @@ var app = (function () {
       "x": function(x) { return Math.round(x).toString(16); }
     };
 
-    function identity$3(x) {
+    function identity$4(x) {
       return x;
     }
 
@@ -7887,11 +8150,11 @@ var app = (function () {
         prefixes = ["y","z","a","f","p","n","µ","m","","k","M","G","T","P","E","Z","Y"];
 
     function formatLocale(locale) {
-      var group = locale.grouping === undefined || locale.thousands === undefined ? identity$3 : formatGroup(map$2.call(locale.grouping, Number), locale.thousands + ""),
+      var group = locale.grouping === undefined || locale.thousands === undefined ? identity$4 : formatGroup(map$2.call(locale.grouping, Number), locale.thousands + ""),
           currencyPrefix = locale.currency === undefined ? "" : locale.currency[0] + "",
           currencySuffix = locale.currency === undefined ? "" : locale.currency[1] + "",
           decimal = locale.decimal === undefined ? "." : locale.decimal + "",
-          numerals = locale.numerals === undefined ? identity$3 : formatNumerals(map$2.call(locale.numerals, String)),
+          numerals = locale.numerals === undefined ? identity$4 : formatNumerals(map$2.call(locale.numerals, String)),
           percent = locale.percent === undefined ? "%" : locale.percent + "",
           minus = locale.minus === undefined ? "-" : locale.minus + "",
           nan = locale.nan === undefined ? "NaN" : locale.nan + "";
@@ -9905,7 +10168,7 @@ var app = (function () {
       return interpolate;
     }
 
-    function identity$4(x) {
+    function identity$5(x) {
       return x;
     }
 
@@ -10253,7 +10516,7 @@ var app = (function () {
       };
 
       path.projection = function(_) {
-        return arguments.length ? (projectionStream = _ == null ? (projection = null, identity$4) : (projection = _).stream, path) : projection;
+        return arguments.length ? (projectionStream = _ == null ? (projection = null, identity$5) : (projection = _).stream, path) : projection;
       };
 
       path.context = function(_) {
@@ -10498,7 +10761,7 @@ var app = (function () {
           deltaLambda = 0, deltaPhi = 0, deltaGamma = 0, rotate, // pre-rotate
           alpha = 0, // post-rotate
           theta = null, preclip = clipAntimeridian, // pre-clip angle
-          x0 = null, y0, x1, y1, postclip = identity$4, // post-clip extent
+          x0 = null, y0, x1, y1, postclip = identity$5, // post-clip extent
           delta2 = 0.5, // precision
           projectResample,
           projectTransform,
@@ -10532,7 +10795,7 @@ var app = (function () {
       };
 
       projection.clipExtent = function(_) {
-        return arguments.length ? (postclip = _ == null ? (x0 = y0 = x1 = y1 = null, identity$4) : clipRectangle(x0 = +_[0][0], y0 = +_[0][1], x1 = +_[1][0], y1 = +_[1][1]), reset()) : x0 == null ? null : [[x0, y0], [x1, y1]];
+        return arguments.length ? (postclip = _ == null ? (x0 = y0 = x1 = y1 = null, identity$5) : clipRectangle(x0 = +_[0][0], y0 = +_[0][1], x1 = +_[1][0], y1 = +_[1][1]), reset()) : x0 == null ? null : [[x0, y0], [x1, y1]];
       };
 
       projection.scale = function(_) {
@@ -10986,17 +11249,17 @@ var app = (function () {
     }
 
     function scaleTranslate$1(kx, ky, tx, ty) {
-      return kx === 1 && ky === 1 && tx === 0 && ty === 0 ? identity$4 : transformer({
+      return kx === 1 && ky === 1 && tx === 0 && ty === 0 ? identity$5 : transformer({
         point: function(x, y) {
           this.stream.point(x * kx + tx, y * ky + ty);
         }
       });
     }
 
-    function identity$5() {
-      var k = 1, tx = 0, ty = 0, sx = 1, sy = 1, transform = identity$4, // scale, translate and reflect
+    function identity$6() {
+      var k = 1, tx = 0, ty = 0, sx = 1, sy = 1, transform = identity$5, // scale, translate and reflect
           x0 = null, y0, x1, y1, // clip extent
-          postclip = identity$4,
+          postclip = identity$5,
           cache,
           cacheStream,
           projection;
@@ -11014,7 +11277,7 @@ var app = (function () {
           return arguments.length ? (postclip = _, x0 = y0 = x1 = y1 = null, reset()) : postclip;
         },
         clipExtent: function(_) {
-          return arguments.length ? (postclip = _ == null ? (x0 = y0 = x1 = y1 = null, identity$4) : clipRectangle(x0 = +_[0][0], y0 = +_[0][1], x1 = +_[1][0], y1 = +_[1][1]), reset()) : x0 == null ? null : [[x0, y0], [x1, y1]];
+          return arguments.length ? (postclip = _ == null ? (x0 = y0 = x1 = y1 = null, identity$5) : clipRectangle(x0 = +_[0][0], y0 = +_[0][1], x1 = +_[1][0], y1 = +_[1][1]), reset()) : x0 == null ? null : [[x0, y0], [x1, y1]];
         },
         scale: function(_) {
           return arguments.length ? (transform = scaleTranslate$1((k = +_) * sx, k * sy, tx, ty), reset()) : k;
@@ -12791,7 +13054,7 @@ var app = (function () {
 
     var unit = [0, 1];
 
-    function identity$6(x) {
+    function identity$7(x) {
       return x;
     }
 
@@ -12855,7 +13118,7 @@ var app = (function () {
           transform,
           untransform,
           unknown,
-          clamp = identity$6,
+          clamp = identity$7,
           piecewise,
           output,
           input;
@@ -12875,7 +13138,7 @@ var app = (function () {
       };
 
       scale.domain = function(_) {
-        return arguments.length ? (domain = map$3.call(_, number$2), clamp === identity$6 || (clamp = clamper(domain)), rescale()) : domain.slice();
+        return arguments.length ? (domain = map$3.call(_, number$2), clamp === identity$7 || (clamp = clamper(domain)), rescale()) : domain.slice();
       };
 
       scale.range = function(_) {
@@ -12887,7 +13150,7 @@ var app = (function () {
       };
 
       scale.clamp = function(_) {
-        return arguments.length ? (clamp = _ ? clamper(domain) : identity$6, scale) : clamp !== identity$6;
+        return arguments.length ? (clamp = _ ? clamper(domain) : identity$7, scale) : clamp !== identity$7;
       };
 
       scale.interpolate = function(_) {
@@ -12992,7 +13255,7 @@ var app = (function () {
     }
 
     function linear$2() {
-      var scale = continuous(identity$6, identity$6);
+      var scale = continuous(identity$7, identity$7);
 
       scale.copy = function() {
         return copy(scale, linear$2());
@@ -13003,7 +13266,7 @@ var app = (function () {
       return linearish(scale);
     }
 
-    function identity$7(domain) {
+    function identity$8(domain) {
       var unknown;
 
       function scale(x) {
@@ -13021,7 +13284,7 @@ var app = (function () {
       };
 
       scale.copy = function() {
-        return identity$7(domain).unknown(unknown);
+        return identity$8(domain).unknown(unknown);
       };
 
       domain = arguments.length ? map$3.call(domain, number$2) : [0, 1];
@@ -13235,11 +13498,11 @@ var app = (function () {
     }
 
     function powish(transform) {
-      var scale = transform(identity$6, identity$6),
+      var scale = transform(identity$7, identity$7),
           exponent = 1;
 
       function rescale() {
-        return exponent === 1 ? transform(identity$6, identity$6)
+        return exponent === 1 ? transform(identity$7, identity$7)
             : exponent === 0.5 ? transform(transformSqrt, transformSquare)
             : transform(transformPow(exponent), transformPow(1 / exponent));
       }
@@ -14426,7 +14689,7 @@ var app = (function () {
     }
 
     function calendar(year, month, week, day, hour, minute, second, millisecond, format) {
-      var scale = continuous(identity$6, identity$6),
+      var scale = continuous(identity$7, identity$7),
           invert = scale.invert,
           domain = scale.domain;
 
@@ -14548,7 +14811,7 @@ var app = (function () {
           t1,
           k10,
           transform,
-          interpolator = identity$6,
+          interpolator = identity$7,
           clamp = false,
           unknown;
 
@@ -14587,7 +14850,7 @@ var app = (function () {
     }
 
     function sequential() {
-      var scale = linearish(transformer$2()(identity$6));
+      var scale = linearish(transformer$2()(identity$7));
 
       scale.copy = function() {
         return copy$1(scale, sequential());
@@ -14632,7 +14895,7 @@ var app = (function () {
 
     function sequentialQuantile() {
       var domain = [],
-          interpolator = identity$6;
+          interpolator = identity$7;
 
       function scale(x) {
         if (!isNaN(x = +x)) return interpolator((bisectRight(domain, x) - 1) / (domain.length - 1));
@@ -14666,7 +14929,7 @@ var app = (function () {
           t2,
           k10,
           k21,
-          interpolator = identity$6,
+          interpolator = identity$7,
           transform,
           clamp = false,
           unknown;
@@ -14698,7 +14961,7 @@ var app = (function () {
     }
 
     function diverging() {
-      var scale = linearish(transformer$3()(identity$6));
+      var scale = linearish(transformer$3()(identity$7));
 
       scale.copy = function() {
         return copy$1(scale, diverging());
@@ -15660,12 +15923,12 @@ var app = (function () {
       return b < a ? -1 : b > a ? 1 : b >= a ? 0 : NaN;
     }
 
-    function identity$8(d) {
+    function identity$9(d) {
       return d;
     }
 
     function pie() {
-      var value = identity$8,
+      var value = identity$9,
           sortValues = descending$1,
           sort = null,
           startAngle = constant$b(0),
@@ -18105,12 +18368,12 @@ var app = (function () {
       }
     };
 
-    var identity$9 = new Transform(1, 0, 0);
+    var identity$a = new Transform(1, 0, 0);
 
     transform$1.prototype = Transform.prototype;
 
     function transform$1(node) {
-      while (!node.__zoom) if (!(node = node.parentNode)) return identity$9;
+      while (!node.__zoom) if (!(node = node.parentNode)) return identity$a;
       return node.__zoom;
     }
 
@@ -18142,7 +18405,7 @@ var app = (function () {
     }
 
     function defaultTransform() {
-      return this.__zoom || identity$9;
+      return this.__zoom || identity$a;
     }
 
     function defaultWheelDelta() {
@@ -18243,7 +18506,7 @@ var app = (function () {
           var e = extent.apply(this, arguments),
               t = this.__zoom,
               p0 = p == null ? centroid(e) : typeof p === "function" ? p.apply(this, arguments) : p;
-          return constrain(identity$9.translate(p0[0], p0[1]).scale(t.k).translate(
+          return constrain(identity$a.translate(p0[0], p0[1]).scale(t.k).translate(
             typeof x === "function" ? -x.apply(this, arguments) : -x,
             typeof y === "function" ? -y.apply(this, arguments) : -y
           ), e, translateExtent);
@@ -18713,7 +18976,7 @@ var app = (function () {
         geoEquirectangularRaw: equirectangularRaw,
         geoGnomonic: gnomonic,
         geoGnomonicRaw: gnomonicRaw,
-        geoIdentity: identity$5,
+        geoIdentity: identity$6,
         geoProjection: projection,
         geoProjectionMutator: projectionMutator,
         geoMercator: mercator,
@@ -18786,7 +19049,7 @@ var app = (function () {
         randomExponential: exponential$1,
         scaleBand: band,
         scalePoint: point$1,
-        scaleIdentity: identity$7,
+        scaleIdentity: identity$8,
         scaleLinear: linear$2,
         scaleLog: log$1,
         scaleSymlog: symlog,
@@ -19025,18 +19288,18 @@ var app = (function () {
         timeFormatLocale: formatLocale$1,
         isoFormat: formatIso,
         isoParse: parseIso,
-        now: now,
+        now: now$1,
         timer: timer,
         timerFlush: timerFlush,
         timeout: timeout$1,
         interval: interval$1,
         transition: transition,
-        active: active,
+        active: active$1,
         interrupt: interrupt,
         voronoi: voronoi,
         zoom: zoom,
         zoomTransform: transform$1,
-        zoomIdentity: identity$9
+        zoomIdentity: identity$a
     });
 
     /* src/AttributesBar.svelte generated by Svelte v3.20.1 */
@@ -25919,12 +26182,12 @@ ${constraint.asp}`;
       return d;
     };
 
-    function identity$a(x) {
+    function identity$b(x) {
       return x;
     }
 
     function transform$2(transform) {
-      if (transform == null) return identity$a;
+      if (transform == null) return identity$b;
       var x0,
           y0,
           kx = transform.scale[0],
@@ -26333,7 +26596,7 @@ ${constraint.asp}`;
     }
 
     function untransform(transform) {
-      if (transform == null) return identity$a;
+      if (transform == null) return identity$b;
       var x0,
           y0,
           kx = transform.scale[0],
@@ -31634,51 +31897,2113 @@ ${constraint.asp}`;
     	}
     }
 
-    /* src/AttributesConstraints.svelte generated by Svelte v3.20.1 */
+    // external events
+    const FINALIZE_EVENT_NAME = "finalize";
+    const CONSIDER_EVENT_NAME = "consider";
 
-    const { Object: Object_1$2 } = globals;
-    const file$5 = "src/AttributesConstraints.svelte";
-
-    function get_each_context_1$2(ctx, list, i) {
-    	const child_ctx = ctx.slice();
-    	child_ctx[12] = list[i];
-    	return child_ctx;
+    /**
+     * @typedef {Object} Info
+     * @property {string} trigger
+     * @property {string} id
+     * @property {string} source
+     * @param {Node} el
+     * @param {Array} items
+     * @param {Info} info
+     */
+    function dispatchFinalizeEvent(el, items, info) {
+        el.dispatchEvent(
+            new CustomEvent(FINALIZE_EVENT_NAME, {
+                detail: {items, info}
+            })
+        );
     }
+
+    /**
+     * Dispatches a consider event
+     * @param {Node} el
+     * @param {Array} items
+     * @param {Info} info
+     */
+    function dispatchConsiderEvent(el, items, info) {
+        el.dispatchEvent(
+            new CustomEvent(CONSIDER_EVENT_NAME, {
+                detail: {items, info}
+            })
+        );
+    }
+
+    // internal events
+    const DRAGGED_ENTERED_EVENT_NAME = "draggedEntered";
+    const DRAGGED_LEFT_EVENT_NAME = "draggedLeft";
+    const DRAGGED_OVER_INDEX_EVENT_NAME = "draggedOverIndex";
+    const DRAGGED_LEFT_DOCUMENT_EVENT_NAME = "draggedLeftDocument";
+
+    const DRAGGED_LEFT_TYPES = {
+        LEFT_FOR_ANOTHER: "leftForAnother",
+        OUTSIDE_OF_ANY: "outsideOfAny"
+    };
+
+    function dispatchDraggedElementEnteredContainer(containerEl, indexObj, draggedEl) {
+        containerEl.dispatchEvent(
+            new CustomEvent(DRAGGED_ENTERED_EVENT_NAME, {
+                detail: {indexObj, draggedEl}
+            })
+        );
+    }
+
+    function dispatchDraggedElementLeftContainerForAnother(containerEl, draggedEl) {
+        containerEl.dispatchEvent(
+            new CustomEvent(DRAGGED_LEFT_EVENT_NAME, {
+                detail: {draggedEl, type: DRAGGED_LEFT_TYPES.LEFT_FOR_ANOTHER}
+            })
+        );
+    }
+
+    function dispatchDraggedElementLeftContainerForNone(containerEl, draggedEl) {
+        containerEl.dispatchEvent(
+            new CustomEvent(DRAGGED_LEFT_EVENT_NAME, {
+                detail: {draggedEl, type: DRAGGED_LEFT_TYPES.OUTSIDE_OF_ANY}
+            })
+        );
+    }
+    function dispatchDraggedElementIsOverIndex(containerEl, indexObj, draggedEl) {
+        containerEl.dispatchEvent(
+            new CustomEvent(DRAGGED_OVER_INDEX_EVENT_NAME, {
+                detail: {indexObj, draggedEl}
+            })
+        );
+    }
+    function dispatchDraggedLeftDocument(draggedEl) {
+        window.dispatchEvent(
+            new CustomEvent(DRAGGED_LEFT_DOCUMENT_EVENT_NAME, {
+                detail: {draggedEl}
+            })
+        );
+    }
+
+    const TRIGGERS = {
+        DRAG_STARTED: "dragStarted",
+        DRAGGED_ENTERED: DRAGGED_ENTERED_EVENT_NAME,
+        DRAGGED_ENTERED_ANOTHER: "dragEnteredAnother",
+        DRAGGED_OVER_INDEX: DRAGGED_OVER_INDEX_EVENT_NAME,
+        DRAGGED_LEFT: DRAGGED_LEFT_EVENT_NAME,
+        DRAGGED_LEFT_ALL: "draggedLeftAll",
+        DROPPED_INTO_ZONE: "droppedIntoZone",
+        DROPPED_INTO_ANOTHER: "droppedIntoAnother",
+        DROPPED_OUTSIDE_OF_ANY: "droppedOutsideOfAny",
+        DRAG_STOPPED: "dragStopped"
+    };
+
+    const SOURCES = {
+        POINTER: "pointer",
+        KEYBOARD: "keyboard"
+    };
+
+    const SHADOW_ITEM_MARKER_PROPERTY_NAME = "isDndShadowItem";
+    const SHADOW_ELEMENT_ATTRIBUTE_NAME = "data-is-dnd-shadow-item";
+    const SHADOW_PLACEHOLDER_ITEM_ID = "id:dnd-shadow-placeholder-0000";
+
+    let ITEM_ID_KEY = "id";
+    let activeDndZoneCount = 0;
+    function incrementActiveDropZoneCount() {
+        activeDndZoneCount++;
+    }
+    function decrementActiveDropZoneCount() {
+        if (activeDndZoneCount === 0) {
+            throw new Error("Bug! trying to decrement when there are no dropzones");
+        }
+        activeDndZoneCount--;
+    }
+
+    const isOnServer = typeof window === "undefined";
+
+    // This is based off https://stackoverflow.com/questions/27745438/how-to-compute-getboundingclientrect-without-considering-transforms/57876601#57876601
+    // It removes the transforms that are potentially applied by the flip animations
+    /**
+     * Gets the bounding rect but removes transforms (ex: flip animation)
+     * @param {HTMLElement} el
+     * @return {{top: number, left: number, bottom: number, right: number}}
+     */
+    function getBoundingRectNoTransforms(el) {
+        let ta;
+        const rect = el.getBoundingClientRect();
+        const style = getComputedStyle(el);
+        const tx = style.transform;
+
+        if (tx) {
+            let sx, sy, dx, dy;
+            if (tx.startsWith("matrix3d(")) {
+                ta = tx.slice(9, -1).split(/, /);
+                sx = +ta[0];
+                sy = +ta[5];
+                dx = +ta[12];
+                dy = +ta[13];
+            } else if (tx.startsWith("matrix(")) {
+                ta = tx.slice(7, -1).split(/, /);
+                sx = +ta[0];
+                sy = +ta[3];
+                dx = +ta[4];
+                dy = +ta[5];
+            } else {
+                return rect;
+            }
+
+            const to = style.transformOrigin;
+            const x = rect.x - dx - (1 - sx) * parseFloat(to);
+            const y = rect.y - dy - (1 - sy) * parseFloat(to.slice(to.indexOf(" ") + 1));
+            const w = sx ? rect.width / sx : el.offsetWidth;
+            const h = sy ? rect.height / sy : el.offsetHeight;
+            return {
+                x: x,
+                y: y,
+                width: w,
+                height: h,
+                top: y,
+                right: x + w,
+                bottom: y + h,
+                left: x
+            };
+        } else {
+            return rect;
+        }
+    }
+
+    /**
+     * Gets the absolute bounding rect (accounts for the window's scroll position and removes transforms)
+     * @param {HTMLElement} el
+     * @return {{top: number, left: number, bottom: number, right: number}}
+     */
+    function getAbsoluteRectNoTransforms(el) {
+        const rect = getBoundingRectNoTransforms(el);
+        return {
+            top: rect.top + window.scrollY,
+            bottom: rect.bottom + window.scrollY,
+            left: rect.left + window.scrollX,
+            right: rect.right + window.scrollX
+        };
+    }
+
+    /**
+     * Gets the absolute bounding rect (accounts for the window's scroll position)
+     * @param {HTMLElement} el
+     * @return {{top: number, left: number, bottom: number, right: number}}
+     */
+    function getAbsoluteRect(el) {
+        const rect = el.getBoundingClientRect();
+        return {
+            top: rect.top + window.scrollY,
+            bottom: rect.bottom + window.scrollY,
+            left: rect.left + window.scrollX,
+            right: rect.right + window.scrollX
+        };
+    }
+
+    /**
+     * finds the center :)
+     * @typedef {Object} Rect
+     * @property {number} top
+     * @property {number} bottom
+     * @property {number} left
+     * @property {number} right
+     * @param {Rect} rect
+     * @return {{x: number, y: number}}
+     */
+    function findCenter(rect) {
+        return {
+            x: (rect.left + rect.right) / 2,
+            y: (rect.top + rect.bottom) / 2
+        };
+    }
+
+    /**
+     * @typedef {Object} Point
+     * @property {number} x
+     * @property {number} y
+     * @param {Point} pointA
+     * @param {Point} pointB
+     * @return {number}
+     */
+    function calcDistance(pointA, pointB) {
+        return Math.sqrt(Math.pow(pointA.x - pointB.x, 2) + Math.pow(pointA.y - pointB.y, 2));
+    }
+
+    /**
+     * @param {Point} point
+     * @param {Rect} rect
+     * @return {boolean|boolean}
+     */
+    function isPointInsideRect(point, rect) {
+        return point.y <= rect.bottom && point.y >= rect.top && point.x >= rect.left && point.x <= rect.right;
+    }
+
+    /**
+     * find the absolute coordinates of the center of a dom element
+     * @param el {HTMLElement}
+     * @returns {{x: number, y: number}}
+     */
+    function findCenterOfElement(el) {
+        return findCenter(getAbsoluteRect(el));
+    }
+
+    /**
+     * @param {HTMLElement} elA
+     * @param {HTMLElement} elB
+     * @return {boolean}
+     */
+    function isCenterOfAInsideB(elA, elB) {
+        const centerOfA = findCenterOfElement(elA);
+        const rectOfB = getAbsoluteRectNoTransforms(elB);
+        return isPointInsideRect(centerOfA, rectOfB);
+    }
+
+    /**
+     * @param {HTMLElement|ChildNode} elA
+     * @param {HTMLElement|ChildNode} elB
+     * @return {number}
+     */
+    function calcDistanceBetweenCenters(elA, elB) {
+        const centerOfA = findCenterOfElement(elA);
+        const centerOfB = findCenterOfElement(elB);
+        return calcDistance(centerOfA, centerOfB);
+    }
+
+    /**
+     * @param {HTMLElement} el - the element to check
+     * @returns {boolean} - true if the element in its entirety is off screen including the scrollable area (the normal dom events look at the mouse rather than the element)
+     */
+    function isElementOffDocument(el) {
+        const rect = getAbsoluteRect(el);
+        return rect.right < 0 || rect.left > document.documentElement.scrollWidth || rect.bottom < 0 || rect.top > document.documentElement.scrollHeight;
+    }
+
+    /**
+     * If the point is inside the element returns its distances from the sides, otherwise returns null
+     * @param {Point} point
+     * @param {HTMLElement} el
+     * @return {null|{top: number, left: number, bottom: number, right: number}}
+     */
+    function calcInnerDistancesBetweenPointAndSidesOfElement(point, el) {
+        const rect = getAbsoluteRect(el);
+        if (!isPointInsideRect(point, rect)) {
+            return null;
+        }
+        return {
+            top: point.y - rect.top,
+            bottom: rect.bottom - point.y,
+            left: point.x - rect.left,
+            // TODO - figure out what is so special about right (why the rect is too big)
+            right: Math.min(rect.right, document.documentElement.clientWidth) - point.x
+        };
+    }
+
+    let dzToShadowIndexToRect;
+
+    /**
+     * Resets the cache that allows for smarter "would be index" resolution. Should be called after every drag operation
+     */
+    function resetIndexesCache() {
+        dzToShadowIndexToRect = new Map();
+    }
+    resetIndexesCache();
+
+    /**
+     * Caches the coordinates of the shadow element when it's in a certain index in a certain dropzone.
+     * Helpful in order to determine "would be index" more effectively
+     * @param {HTMLElement} dz
+     * @return {number} - the shadow element index
+     */
+    function cacheShadowRect(dz) {
+        const shadowElIndex = Array.from(dz.children).findIndex(child => child.getAttribute(SHADOW_ELEMENT_ATTRIBUTE_NAME));
+        if (shadowElIndex >= 0) {
+            if (!dzToShadowIndexToRect.has(dz)) {
+                dzToShadowIndexToRect.set(dz, new Map());
+            }
+            dzToShadowIndexToRect.get(dz).set(shadowElIndex, getAbsoluteRectNoTransforms(dz.children[shadowElIndex]));
+            return shadowElIndex;
+        }
+        return undefined;
+    }
+
+    /**
+     * @typedef {Object} Index
+     * @property {number} index - the would be index
+     * @property {boolean} isProximityBased - false if the element is actually over the index, true if it is not over it but this index is the closest
+     */
+    /**
+     * Find the index for the dragged element in the list it is dragged over
+     * @param {HTMLElement} floatingAboveEl
+     * @param {HTMLElement} collectionBelowEl
+     * @returns {Index|null} -  if the element is over the container the Index object otherwise null
+     */
+    function findWouldBeIndex(floatingAboveEl, collectionBelowEl) {
+        if (!isCenterOfAInsideB(floatingAboveEl, collectionBelowEl)) {
+            return null;
+        }
+        const children = collectionBelowEl.children;
+        // the container is empty, floating element should be the first
+        if (children.length === 0) {
+            return {index: 0, isProximityBased: true};
+        }
+        const shadowElIndex = cacheShadowRect(collectionBelowEl);
+
+        // the search could be more efficient but keeping it simple for now
+        // a possible improvement: pass in the lastIndex it was found in and check there first, then expand from there
+        for (let i = 0; i < children.length; i++) {
+            if (isCenterOfAInsideB(floatingAboveEl, children[i])) {
+                const cachedShadowRect = dzToShadowIndexToRect.has(collectionBelowEl) && dzToShadowIndexToRect.get(collectionBelowEl).get(i);
+                if (cachedShadowRect) {
+                    if (!isPointInsideRect(findCenterOfElement(floatingAboveEl), cachedShadowRect)) {
+                        return {index: shadowElIndex, isProximityBased: false};
+                    }
+                }
+                return {index: i, isProximityBased: false};
+            }
+        }
+        // this can happen if there is space around the children so the floating element has
+        //entered the container but not any of the children, in this case we will find the nearest child
+        let minDistanceSoFar = Number.MAX_VALUE;
+        let indexOfMin = undefined;
+        // we are checking all of them because we don't know whether we are dealing with a horizontal or vertical container and where the floating element entered from
+        for (let i = 0; i < children.length; i++) {
+            const distance = calcDistanceBetweenCenters(floatingAboveEl, children[i]);
+            if (distance < minDistanceSoFar) {
+                minDistanceSoFar = distance;
+                indexOfMin = i;
+            }
+        }
+        return {index: indexOfMin, isProximityBased: true};
+    }
+
+    const SCROLL_ZONE_PX = 25;
+
+    function makeScroller() {
+        let scrollingInfo;
+        function resetScrolling() {
+            scrollingInfo = {directionObj: undefined, stepPx: 0};
+        }
+        resetScrolling();
+        // directionObj {x: 0|1|-1, y:0|1|-1} - 1 means down in y and right in x
+        function scrollContainer(containerEl) {
+            const {directionObj, stepPx} = scrollingInfo;
+            if (directionObj) {
+                containerEl.scrollBy(directionObj.x * stepPx, directionObj.y * stepPx);
+                window.requestAnimationFrame(() => scrollContainer(containerEl));
+            }
+        }
+        function calcScrollStepPx(distancePx) {
+            return SCROLL_ZONE_PX - distancePx;
+        }
+
+        /**
+         * If the pointer is next to the sides of the element to scroll, will trigger scrolling
+         * Can be called repeatedly with updated pointer and elementToScroll values without issues
+         * @return {boolean} - true if scrolling was needed
+         */
+        function scrollIfNeeded(pointer, elementToScroll) {
+            if (!elementToScroll) {
+                return false;
+            }
+            const distances = calcInnerDistancesBetweenPointAndSidesOfElement(pointer, elementToScroll);
+            if (distances === null) {
+                resetScrolling();
+                return false;
+            }
+            const isAlreadyScrolling = !!scrollingInfo.directionObj;
+            let [scrollingVertically, scrollingHorizontally] = [false, false];
+            // vertical
+            if (elementToScroll.scrollHeight > elementToScroll.clientHeight) {
+                if (distances.bottom < SCROLL_ZONE_PX) {
+                    scrollingVertically = true;
+                    scrollingInfo.directionObj = {x: 0, y: 1};
+                    scrollingInfo.stepPx = calcScrollStepPx(distances.bottom);
+                } else if (distances.top < SCROLL_ZONE_PX) {
+                    scrollingVertically = true;
+                    scrollingInfo.directionObj = {x: 0, y: -1};
+                    scrollingInfo.stepPx = calcScrollStepPx(distances.top);
+                }
+                if (!isAlreadyScrolling && scrollingVertically) {
+                    scrollContainer(elementToScroll);
+                    return true;
+                }
+            }
+            // horizontal
+            if (elementToScroll.scrollWidth > elementToScroll.clientWidth) {
+                if (distances.right < SCROLL_ZONE_PX) {
+                    scrollingHorizontally = true;
+                    scrollingInfo.directionObj = {x: 1, y: 0};
+                    scrollingInfo.stepPx = calcScrollStepPx(distances.right);
+                } else if (distances.left < SCROLL_ZONE_PX) {
+                    scrollingHorizontally = true;
+                    scrollingInfo.directionObj = {x: -1, y: 0};
+                    scrollingInfo.stepPx = calcScrollStepPx(distances.left);
+                }
+                if (!isAlreadyScrolling && scrollingHorizontally) {
+                    scrollContainer(elementToScroll);
+                    return true;
+                }
+            }
+            resetScrolling();
+            return false;
+        }
+
+        return {
+            scrollIfNeeded,
+            resetScrolling
+        };
+    }
+
+    /**
+     * @param {Object} object
+     * @return {string}
+     */
+    function toString(object) {
+        return JSON.stringify(object, null, 2);
+    }
+
+    /**
+     * Finds the depth of the given node in the DOM tree
+     * @param {HTMLElement} node
+     * @return {number} - the depth of the node
+     */
+    function getDepth(node) {
+        if (!node) {
+            throw new Error("cannot get depth of a falsy node");
+        }
+        return _getDepth(node, 0);
+    }
+    function _getDepth(node, countSoFar = 0) {
+        if (!node.parentElement) {
+            return countSoFar - 1;
+        }
+        return _getDepth(node.parentElement, countSoFar + 1);
+    }
+
+    /**
+     * A simple util to shallow compare objects quickly, it doesn't validate the arguments so pass objects in
+     * @param {Object} objA
+     * @param {Object} objB
+     * @return {boolean} - true if objA and objB are shallow equal
+     */
+    function areObjectsShallowEqual(objA, objB) {
+        if (Object.keys(objA).length !== Object.keys(objB).length) {
+            return false;
+        }
+        for (const keyA in objA) {
+            if (!{}.hasOwnProperty.call(objB, keyA) || objB[keyA] !== objA[keyA]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Shallow compares two arrays
+     * @param arrA
+     * @param arrB
+     * @return {boolean} - whether the arrays are shallow equal
+     */
+    function areArraysShallowEqualSameOrder(arrA, arrB) {
+        if (arrA.length !== arrB.length) {
+            return false;
+        }
+        for (let i = 0; i < arrA.length; i++) {
+            if (arrA[i] !== arrB[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    const INTERVAL_MS = 200;
+    const TOLERANCE_PX = 10;
+    const {scrollIfNeeded, resetScrolling} = makeScroller();
+    let next;
+
+    /**
+     * Tracks the dragged elements and performs the side effects when it is dragged over a drop zone (basically dispatching custom-events scrolling)
+     * @param {Set<HTMLElement>} dropZones
+     * @param {HTMLElement} draggedEl
+     * @param {number} [intervalMs = INTERVAL_MS]
+     */
+    function observe(draggedEl, dropZones, intervalMs = INTERVAL_MS) {
+        // initialization
+        let lastDropZoneFound;
+        let lastIndexFound;
+        let lastIsDraggedInADropZone = false;
+        let lastCentrePositionOfDragged;
+        // We are sorting to make sure that in case of nested zones of the same type the one "on top" is considered first
+        const dropZonesFromDeepToShallow = Array.from(dropZones).sort((dz1, dz2) => getDepth(dz2) - getDepth(dz1));
+
+        /**
+         * The main function in this module. Tracks where everything is/ should be a take the actions
+         */
+        function andNow() {
+            const currentCenterOfDragged = findCenterOfElement(draggedEl);
+            const scrolled = scrollIfNeeded(currentCenterOfDragged, lastDropZoneFound);
+            // we only want to make a new decision after the element was moved a bit to prevent flickering
+            if (
+                !scrolled &&
+                lastCentrePositionOfDragged &&
+                Math.abs(lastCentrePositionOfDragged.x - currentCenterOfDragged.x) < TOLERANCE_PX &&
+                Math.abs(lastCentrePositionOfDragged.y - currentCenterOfDragged.y) < TOLERANCE_PX
+            ) {
+                next = window.setTimeout(andNow, intervalMs);
+                return;
+            }
+            if (isElementOffDocument(draggedEl)) {
+                dispatchDraggedLeftDocument(draggedEl);
+                return;
+            }
+
+            lastCentrePositionOfDragged = currentCenterOfDragged;
+            // this is a simple algorithm, potential improvement: first look at lastDropZoneFound
+            let isDraggedInADropZone = false;
+            for (const dz of dropZonesFromDeepToShallow) {
+                const indexObj = findWouldBeIndex(draggedEl, dz);
+                if (indexObj === null) {
+                    // it is not inside
+                    continue;
+                }
+                const {index} = indexObj;
+                isDraggedInADropZone = true;
+                // the element is over a container
+                if (dz !== lastDropZoneFound) {
+                    lastDropZoneFound && dispatchDraggedElementLeftContainerForAnother(lastDropZoneFound, draggedEl);
+                    dispatchDraggedElementEnteredContainer(dz, indexObj, draggedEl);
+                    lastDropZoneFound = dz;
+                } else if (index !== lastIndexFound) {
+                    dispatchDraggedElementIsOverIndex(dz, indexObj, draggedEl);
+                    lastIndexFound = index;
+                }
+                // we handle looping with the 'continue' statement above
+                break;
+            }
+            // the first time the dragged element is not in any dropzone we need to notify the last dropzone it was in
+            if (!isDraggedInADropZone && lastIsDraggedInADropZone && lastDropZoneFound) {
+                dispatchDraggedElementLeftContainerForNone(lastDropZoneFound, draggedEl);
+                lastDropZoneFound = undefined;
+                lastIndexFound = undefined;
+                lastIsDraggedInADropZone = false;
+            } else {
+                lastIsDraggedInADropZone = true;
+            }
+            next = window.setTimeout(andNow, intervalMs);
+        }
+        andNow();
+    }
+
+    // assumption - we can only observe one dragged element at a time, this could be changed in the future
+    function unobserve() {
+        clearTimeout(next);
+        resetScrolling();
+        resetIndexesCache();
+    }
+
+    const INTERVAL_MS$1 = 300;
+    let mousePosition;
+
+    /**
+     * Do not use this! it is visible for testing only until we get over the issue Cypress not triggering the mousemove listeners
+     * // TODO - make private (remove export)
+     * @param {{clientX: number, clientY: number}} e
+     */
+    function updateMousePosition(e) {
+        const c = e.touches ? e.touches[0] : e;
+        mousePosition = {x: c.clientX, y: c.clientY};
+    }
+    const {scrollIfNeeded: scrollIfNeeded$1, resetScrolling: resetScrolling$1} = makeScroller();
+    let next$1;
+
+    function loop$1() {
+        if (mousePosition) {
+            scrollIfNeeded$1(mousePosition, document.documentElement);
+        }
+        next$1 = window.setTimeout(loop$1, INTERVAL_MS$1);
+    }
+
+    /**
+     * will start watching the mouse pointer and scroll the window if it goes next to the edges
+     */
+    function armWindowScroller() {
+        window.addEventListener("mousemove", updateMousePosition);
+        window.addEventListener("touchmove", updateMousePosition);
+        loop$1();
+    }
+
+    /**
+     * will stop watching the mouse pointer and won't scroll the window anymore
+     */
+    function disarmWindowScroller() {
+        window.removeEventListener("mousemove", updateMousePosition);
+        window.removeEventListener("touchmove", updateMousePosition);
+        mousePosition = undefined;
+        window.clearTimeout(next$1);
+        resetScrolling$1();
+    }
+
+    const TRANSITION_DURATION_SECONDS = 0.2;
+
+    /**
+     * private helper function - creates a transition string for a property
+     * @param {string} property
+     * @return {string} - the transition string
+     */
+    function trs(property) {
+        return `${property} ${TRANSITION_DURATION_SECONDS}s ease`;
+    }
+    /**
+     * clones the given element and applies proper styles and transitions to the dragged element
+     * @param {HTMLElement} originalElement
+     * @return {Node} - the cloned, styled element
+     */
+    function createDraggedElementFrom(originalElement) {
+        const rect = originalElement.getBoundingClientRect();
+        const draggedEl = originalElement.cloneNode(true);
+        copyStylesFromTo(originalElement, draggedEl);
+        draggedEl.id = `dnd-action-dragged-el`;
+        draggedEl.style.position = "fixed";
+        draggedEl.style.top = `${rect.top}px`;
+        draggedEl.style.left = `${rect.left}px`;
+        draggedEl.style.margin = "0";
+        // we can't have relative or automatic height and width or it will break the illusion
+        draggedEl.style.boxSizing = "border-box";
+        draggedEl.style.height = `${rect.height}px`;
+        draggedEl.style.width = `${rect.width}px`;
+        draggedEl.style.transition = `${trs("width")}, ${trs("height")}, ${trs("background-color")}, ${trs("opacity")}, ${trs("color")} `;
+        // this is a workaround for a strange browser bug that causes the right border to disappear when all the transitions are added at the same time
+        window.setTimeout(() => (draggedEl.style.transition += `, ${trs("top")}, ${trs("left")}`), 0);
+        draggedEl.style.zIndex = "9999";
+        draggedEl.style.cursor = "grabbing";
+
+        return draggedEl;
+    }
+
+    /**
+     * styles the dragged element to a 'dropped' state
+     * @param {HTMLElement} draggedEl
+     */
+    function moveDraggedElementToWasDroppedState(draggedEl) {
+        draggedEl.style.cursor = "grab";
+    }
+
+    /**
+     * Morphs the dragged element style, maintains the mouse pointer within the element
+     * @param {HTMLElement} draggedEl
+     * @param {HTMLElement} copyFromEl - the element the dragged element should look like, typically the shadow element
+     * @param {number} currentMouseX
+     * @param {number} currentMouseY
+     * @param {function} transformDraggedElement - function to transform the dragged element, does nothing by default.
+     */
+    function morphDraggedElementToBeLike(draggedEl, copyFromEl, currentMouseX, currentMouseY, transformDraggedElement) {
+        const newRect = copyFromEl.getBoundingClientRect();
+        const draggedElRect = draggedEl.getBoundingClientRect();
+        const widthChange = newRect.width - draggedElRect.width;
+        const heightChange = newRect.height - draggedElRect.height;
+        if (widthChange || heightChange) {
+            const relativeDistanceOfMousePointerFromDraggedSides = {
+                left: (currentMouseX - draggedElRect.left) / draggedElRect.width,
+                top: (currentMouseY - draggedElRect.top) / draggedElRect.height
+            };
+            draggedEl.style.height = `${newRect.height}px`;
+            draggedEl.style.width = `${newRect.width}px`;
+            draggedEl.style.left = `${parseFloat(draggedEl.style.left) - relativeDistanceOfMousePointerFromDraggedSides.left * widthChange}px`;
+            draggedEl.style.top = `${parseFloat(draggedEl.style.top) - relativeDistanceOfMousePointerFromDraggedSides.top * heightChange}px`;
+        }
+
+        /// other properties
+        copyStylesFromTo(copyFromEl, draggedEl);
+        transformDraggedElement();
+    }
+
+    /**
+     * @param {HTMLElement} copyFromEl
+     * @param {HTMLElement} copyToEl
+     */
+    function copyStylesFromTo(copyFromEl, copyToEl) {
+        const computedStyle = window.getComputedStyle(copyFromEl);
+        Array.from(computedStyle)
+            .filter(
+                s =>
+                    s.startsWith("background") ||
+                    s.startsWith("padding") ||
+                    s.startsWith("font") ||
+                    s.startsWith("text") ||
+                    s.startsWith("align") ||
+                    s.startsWith("justify") ||
+                    s.startsWith("display") ||
+                    s.startsWith("flex") ||
+                    s.startsWith("border") ||
+                    s === "opacity" ||
+                    s === "color" ||
+                    s === "list-style-type"
+            )
+            .forEach(s => copyToEl.style.setProperty(s, computedStyle.getPropertyValue(s), computedStyle.getPropertyPriority(s)));
+    }
+
+    /**
+     * makes the element compatible with being draggable
+     * @param {HTMLElement} draggableEl
+     * @param {boolean} dragDisabled
+     */
+    function styleDraggable(draggableEl, dragDisabled) {
+        draggableEl.draggable = false;
+        draggableEl.ondragstart = () => false;
+        if (!dragDisabled) {
+            draggableEl.style.userSelect = "none";
+            draggableEl.style.WebkitUserSelect = "none";
+            draggableEl.style.cursor = "grab";
+        } else {
+            draggableEl.style.userSelect = "";
+            draggableEl.style.WebkitUserSelect = "";
+            draggableEl.style.cursor = "";
+        }
+    }
+
+    /**
+     * Hides the provided element so that it can stay in the dom without interrupting
+     * @param {HTMLElement} dragTarget
+     */
+    function hideOriginalDragTarget(dragTarget) {
+        dragTarget.style.display = "none";
+        dragTarget.style.position = "fixed";
+        dragTarget.style.zIndex = "-5";
+    }
+
+    /**
+     * styles the shadow element
+     * @param {HTMLElement} shadowEl
+     */
+    function decorateShadowEl(shadowEl) {
+        shadowEl.style.visibility = "hidden";
+        shadowEl.setAttribute(SHADOW_ELEMENT_ATTRIBUTE_NAME, "true");
+    }
+
+    /**
+     * undo the styles the shadow element
+     * @param {HTMLElement} shadowEl
+     */
+    function unDecorateShadowElement(shadowEl) {
+        shadowEl.style.visibility = "";
+        shadowEl.removeAttribute(SHADOW_ELEMENT_ATTRIBUTE_NAME);
+    }
+
+    /**
+     * will mark the given dropzones as visually active
+     * @param {Array<HTMLElement>} dropZones
+     * @param {Function} getStyles - maps a dropzone to a styles object (so the styles can be removed)
+     * @param {Function} getClasses - maps a dropzone to a classList
+     */
+    function styleActiveDropZones(dropZones, getStyles = () => {}, getClasses = () => []) {
+        dropZones.forEach(dz => {
+            const styles = getStyles(dz);
+            Object.keys(styles).forEach(style => {
+                dz.style[style] = styles[style];
+            });
+            getClasses(dz).forEach(c => dz.classList.add(c));
+        });
+    }
+
+    /**
+     * will remove the 'active' styling from given dropzones
+     * @param {Array<HTMLElement>} dropZones
+     * @param {Function} getStyles - maps a dropzone to a styles object
+     * @param {Function} getClasses - maps a dropzone to a classList
+     */
+    function styleInactiveDropZones(dropZones, getStyles = () => {}, getClasses = () => []) {
+        dropZones.forEach(dz => {
+            const styles = getStyles(dz);
+            Object.keys(styles).forEach(style => {
+                dz.style[style] = "";
+            });
+            getClasses(dz).forEach(c => dz.classList.contains(c) && dz.classList.remove(c));
+        });
+    }
+
+    /**
+     * will prevent the provided element from shrinking by setting its minWidth and minHeight to the current width and height values
+     * @param {HTMLElement} el
+     * @return {function(): void} - run this function to undo the operation and restore the original values
+     */
+    function preventShrinking(el) {
+        const originalMinHeight = el.style.minHeight;
+        el.style.minHeight = window.getComputedStyle(el).getPropertyValue("height");
+        const originalMinWidth = el.style.minWidth;
+        el.style.minWidth = window.getComputedStyle(el).getPropertyValue("width");
+        return function undo() {
+            el.style.minHeight = originalMinHeight;
+            el.style.minWidth = originalMinWidth;
+        };
+    }
+
+    const DEFAULT_DROP_ZONE_TYPE = "--any--";
+    const MIN_OBSERVATION_INTERVAL_MS = 100;
+    const MIN_MOVEMENT_BEFORE_DRAG_START_PX = 3;
+    const DEFAULT_DROP_TARGET_STYLE = {
+        outline: "rgba(255, 255, 102, 0.7) solid 2px"
+    };
+
+    let originalDragTarget;
+    let draggedEl;
+    let draggedElData;
+    let draggedElType;
+    let originDropZone;
+    let originIndex;
+    let shadowElData;
+    let shadowElDropZone;
+    let dragStartMousePosition;
+    let currentMousePosition;
+    let isWorkingOnPreviousDrag = false;
+    let finalizingPreviousDrag = false;
+    let unlockOriginDzMinDimensions;
+    let isDraggedOutsideOfAnyDz = false;
+
+    // a map from type to a set of drop-zones
+    const typeToDropZones = new Map();
+    // important - this is needed because otherwise the config that would be used for everyone is the config of the element that created the event listeners
+    const dzToConfig = new Map();
+    // this is needed in order to be able to cleanup old listeners and avoid stale closures issues (as the listener is defined within each zone)
+    const elToMouseDownListener = new WeakMap();
+
+    /* drop-zones registration management */
+    function registerDropZone(dropZoneEl, type) {
+        if (!typeToDropZones.has(type)) {
+            typeToDropZones.set(type, new Set());
+        }
+        if (!typeToDropZones.get(type).has(dropZoneEl)) {
+            typeToDropZones.get(type).add(dropZoneEl);
+            incrementActiveDropZoneCount();
+        }
+    }
+    function unregisterDropZone(dropZoneEl, type) {
+        typeToDropZones.get(type).delete(dropZoneEl);
+        decrementActiveDropZoneCount();
+        if (typeToDropZones.get(type).size === 0) {
+            typeToDropZones.delete(type);
+        }
+    }
+
+    /* functions to manage observing the dragged element and trigger custom drag-events */
+    function watchDraggedElement() {
+        armWindowScroller();
+        const dropZones = typeToDropZones.get(draggedElType);
+        for (const dz of dropZones) {
+            dz.addEventListener(DRAGGED_ENTERED_EVENT_NAME, handleDraggedEntered);
+            dz.addEventListener(DRAGGED_LEFT_EVENT_NAME, handleDraggedLeft);
+            dz.addEventListener(DRAGGED_OVER_INDEX_EVENT_NAME, handleDraggedIsOverIndex);
+        }
+        window.addEventListener(DRAGGED_LEFT_DOCUMENT_EVENT_NAME, handleDrop);
+        // it is important that we don't have an interval that is faster than the flip duration because it can cause elements to jump bach and forth
+        const observationIntervalMs = Math.max(
+            MIN_OBSERVATION_INTERVAL_MS,
+            ...Array.from(dropZones.keys()).map(dz => dzToConfig.get(dz).dropAnimationDurationMs)
+        );
+        observe(draggedEl, dropZones, observationIntervalMs * 1.07);
+    }
+    function unWatchDraggedElement() {
+        disarmWindowScroller();
+        const dropZones = typeToDropZones.get(draggedElType);
+        for (const dz of dropZones) {
+            dz.removeEventListener(DRAGGED_ENTERED_EVENT_NAME, handleDraggedEntered);
+            dz.removeEventListener(DRAGGED_LEFT_EVENT_NAME, handleDraggedLeft);
+            dz.removeEventListener(DRAGGED_OVER_INDEX_EVENT_NAME, handleDraggedIsOverIndex);
+        }
+        window.removeEventListener(DRAGGED_LEFT_DOCUMENT_EVENT_NAME, handleDrop);
+        unobserve();
+    }
+
+    // finds the initial placeholder that is placed there on drag start
+    function findShadowPlaceHolderIdx(items) {
+        return items.findIndex(item => item[ITEM_ID_KEY] === SHADOW_PLACEHOLDER_ITEM_ID);
+    }
+    function findShadowElementIdx(items) {
+        // checking that the id is not the placeholder's for Dragula like usecases
+        return items.findIndex(item => !!item[SHADOW_ITEM_MARKER_PROPERTY_NAME] && item[ITEM_ID_KEY] !== SHADOW_PLACEHOLDER_ITEM_ID);
+    }
+
+    /* custom drag-events handlers */
+    function handleDraggedEntered(e) {
+        isDraggedOutsideOfAnyDz = false;
+        let {items, dropFromOthersDisabled} = dzToConfig.get(e.currentTarget);
+        if (dropFromOthersDisabled && e.currentTarget !== originDropZone) {
+            return;
+        }
+        // this deals with another race condition. in rare occasions (super rapid operations) the list hasn't updated yet
+        items = items.filter(item => item[ITEM_ID_KEY] !== shadowElData[ITEM_ID_KEY]);
+
+        if (originDropZone !== e.currentTarget) {
+            const originZoneItems = dzToConfig.get(originDropZone).items;
+            const newOriginZoneItems = originZoneItems.filter(item => !item[SHADOW_ITEM_MARKER_PROPERTY_NAME]);
+            dispatchConsiderEvent(originDropZone, newOriginZoneItems, {
+                trigger: TRIGGERS.DRAGGED_ENTERED_ANOTHER,
+                id: draggedElData[ITEM_ID_KEY],
+                source: SOURCES.POINTER
+            });
+        } else {
+            const shadowPlaceHolderIdx = findShadowPlaceHolderIdx(items);
+            if (shadowPlaceHolderIdx !== -1) {
+                items.splice(shadowPlaceHolderIdx, 1);
+            }
+        }
+
+        const {index, isProximityBased} = e.detail.indexObj;
+        const shadowElIdx = isProximityBased && index === e.currentTarget.children.length - 1 ? index + 1 : index;
+        shadowElDropZone = e.currentTarget;
+        items.splice(shadowElIdx, 0, shadowElData);
+        dispatchConsiderEvent(e.currentTarget, items, {trigger: TRIGGERS.DRAGGED_ENTERED, id: draggedElData[ITEM_ID_KEY], source: SOURCES.POINTER});
+    }
+
+    function handleDraggedLeft(e) {
+        const {items, dropFromOthersDisabled} = dzToConfig.get(e.currentTarget);
+        if (dropFromOthersDisabled && e.currentTarget !== originDropZone) {
+            return;
+        }
+        const shadowElIdx = findShadowElementIdx(items);
+        const shadowItem = items.splice(shadowElIdx, 1)[0];
+        shadowElDropZone = undefined;
+        if (e.detail.type === DRAGGED_LEFT_TYPES.OUTSIDE_OF_ANY) {
+            isDraggedOutsideOfAnyDz = true;
+            shadowElDropZone = originDropZone;
+            const originZoneItems = dzToConfig.get(originDropZone).items;
+            originZoneItems.splice(originIndex, 0, shadowItem);
+            dispatchConsiderEvent(originDropZone, originZoneItems, {
+                trigger: TRIGGERS.DRAGGED_LEFT_ALL,
+                id: draggedElData[ITEM_ID_KEY],
+                source: SOURCES.POINTER
+            });
+        }
+        // for the origin dz, when the dragged is outside of any, this will be fired in addition to the previous. this is for simplicity
+        dispatchConsiderEvent(e.currentTarget, items, {
+            trigger: TRIGGERS.DRAGGED_LEFT,
+            id: draggedElData[ITEM_ID_KEY],
+            source: SOURCES.POINTER
+        });
+    }
+    function handleDraggedIsOverIndex(e) {
+        isDraggedOutsideOfAnyDz = false;
+        const {items, dropFromOthersDisabled} = dzToConfig.get(e.currentTarget);
+        if (dropFromOthersDisabled && e.currentTarget !== originDropZone) {
+            return;
+        }
+        const {index} = e.detail.indexObj;
+        const shadowElIdx = findShadowElementIdx(items);
+        items.splice(shadowElIdx, 1);
+        items.splice(index, 0, shadowElData);
+        dispatchConsiderEvent(e.currentTarget, items, {trigger: TRIGGERS.DRAGGED_OVER_INDEX, id: draggedElData[ITEM_ID_KEY], source: SOURCES.POINTER});
+    }
+
+    // Global mouse/touch-events handlers
+    function handleMouseMove(e) {
+        e.preventDefault();
+        const c = e.touches ? e.touches[0] : e;
+        currentMousePosition = {x: c.clientX, y: c.clientY};
+        draggedEl.style.transform = `translate3d(${currentMousePosition.x - dragStartMousePosition.x}px, ${
+        currentMousePosition.y - dragStartMousePosition.y
+    }px, 0)`;
+    }
+
+    function handleDrop() {
+        finalizingPreviousDrag = true;
+        // cleanup
+        window.removeEventListener("mousemove", handleMouseMove);
+        window.removeEventListener("touchmove", handleMouseMove);
+        window.removeEventListener("mouseup", handleDrop);
+        window.removeEventListener("touchend", handleDrop);
+        unWatchDraggedElement();
+        moveDraggedElementToWasDroppedState(draggedEl);
+
+        if (!shadowElDropZone) {
+            shadowElDropZone = originDropZone;
+        }
+        let {items, type} = dzToConfig.get(shadowElDropZone);
+        styleInactiveDropZones(
+            typeToDropZones.get(type),
+            dz => dzToConfig.get(dz).dropTargetStyle,
+            dz => dzToConfig.get(dz).dropTargetClasses
+        );
+        let shadowElIdx = findShadowElementIdx(items);
+        // the handler might remove the shadow element, ex: dragula like copy on drag
+        if (shadowElIdx === -1) shadowElIdx = originIndex;
+        items = items.map(item => (item[SHADOW_ITEM_MARKER_PROPERTY_NAME] ? draggedElData : item));
+        function finalizeWithinZone() {
+            unlockOriginDzMinDimensions();
+            dispatchFinalizeEvent(shadowElDropZone, items, {
+                trigger: isDraggedOutsideOfAnyDz ? TRIGGERS.DROPPED_OUTSIDE_OF_ANY : TRIGGERS.DROPPED_INTO_ZONE,
+                id: draggedElData[ITEM_ID_KEY],
+                source: SOURCES.POINTER
+            });
+            if (shadowElDropZone !== originDropZone) {
+                // letting the origin drop zone know the element was permanently taken away
+                dispatchFinalizeEvent(originDropZone, dzToConfig.get(originDropZone).items, {
+                    trigger: TRIGGERS.DROPPED_INTO_ANOTHER,
+                    id: draggedElData[ITEM_ID_KEY],
+                    source: SOURCES.POINTER
+                });
+            }
+            unDecorateShadowElement(shadowElDropZone.children[shadowElIdx]);
+            cleanupPostDrop();
+        }
+        animateDraggedToFinalPosition(shadowElIdx, finalizeWithinZone);
+    }
+
+    // helper function for handleDrop
+    function animateDraggedToFinalPosition(shadowElIdx, callback) {
+        const shadowElRect = getBoundingRectNoTransforms(shadowElDropZone.children[shadowElIdx]);
+        const newTransform = {
+            x: shadowElRect.left - parseFloat(draggedEl.style.left),
+            y: shadowElRect.top - parseFloat(draggedEl.style.top)
+        };
+        const {dropAnimationDurationMs} = dzToConfig.get(shadowElDropZone);
+        const transition = `transform ${dropAnimationDurationMs}ms ease`;
+        draggedEl.style.transition = draggedEl.style.transition ? draggedEl.style.transition + "," + transition : transition;
+        draggedEl.style.transform = `translate3d(${newTransform.x}px, ${newTransform.y}px, 0)`;
+        window.setTimeout(callback, dropAnimationDurationMs);
+    }
+
+    /* cleanup */
+    function cleanupPostDrop() {
+        draggedEl.remove();
+        originalDragTarget.remove();
+        draggedEl = undefined;
+        originalDragTarget = undefined;
+        draggedElData = undefined;
+        draggedElType = undefined;
+        originDropZone = undefined;
+        originIndex = undefined;
+        shadowElData = undefined;
+        shadowElDropZone = undefined;
+        dragStartMousePosition = undefined;
+        currentMousePosition = undefined;
+        isWorkingOnPreviousDrag = false;
+        finalizingPreviousDrag = false;
+        unlockOriginDzMinDimensions = undefined;
+        isDraggedOutsideOfAnyDz = false;
+    }
+
+    function dndzone(node, options) {
+        const config = {
+            items: undefined,
+            type: undefined,
+            flipDurationMs: 0,
+            dragDisabled: false,
+            dropFromOthersDisabled: false,
+            dropTargetStyle: DEFAULT_DROP_TARGET_STYLE,
+            dropTargetClasses: [],
+            transformDraggedElement: () => {}
+        };
+        let elToIdx = new Map();
+
+        function addMaybeListeners() {
+            window.addEventListener("mousemove", handleMouseMoveMaybeDragStart, {passive: false});
+            window.addEventListener("touchmove", handleMouseMoveMaybeDragStart, {passive: false, capture: false});
+            window.addEventListener("mouseup", handleFalseAlarm, {passive: false});
+            window.addEventListener("touchend", handleFalseAlarm, {passive: false});
+        }
+        function removeMaybeListeners() {
+            window.removeEventListener("mousemove", handleMouseMoveMaybeDragStart);
+            window.removeEventListener("touchmove", handleMouseMoveMaybeDragStart);
+            window.removeEventListener("mouseup", handleFalseAlarm);
+            window.removeEventListener("touchend", handleFalseAlarm);
+        }
+        function handleFalseAlarm() {
+            removeMaybeListeners();
+            originalDragTarget = undefined;
+            dragStartMousePosition = undefined;
+            currentMousePosition = undefined;
+        }
+
+        function handleMouseMoveMaybeDragStart(e) {
+            e.preventDefault();
+            const c = e.touches ? e.touches[0] : e;
+            currentMousePosition = {x: c.clientX, y: c.clientY};
+            if (
+                Math.abs(currentMousePosition.x - dragStartMousePosition.x) >= MIN_MOVEMENT_BEFORE_DRAG_START_PX ||
+                Math.abs(currentMousePosition.y - dragStartMousePosition.y) >= MIN_MOVEMENT_BEFORE_DRAG_START_PX
+            ) {
+                removeMaybeListeners();
+                handleDragStart();
+            }
+        }
+        function handleMouseDown(e) {
+            // on safari clicking on a select element doesn't fire mouseup at the end of the click and in general this makes more sense
+            if (e.target !== e.currentTarget && (e.target.value !== undefined || e.target.isContentEditable)) {
+                return;
+            }
+            // prevents responding to any button but left click which equals 0 (which is falsy)
+            if (e.button) {
+                return;
+            }
+            if (isWorkingOnPreviousDrag) {
+                return;
+            }
+            e.stopPropagation();
+            const c = e.touches ? e.touches[0] : e;
+            dragStartMousePosition = {x: c.clientX, y: c.clientY};
+            currentMousePosition = {...dragStartMousePosition};
+            originalDragTarget = e.currentTarget;
+            addMaybeListeners();
+        }
+
+        function handleDragStart() {
+            isWorkingOnPreviousDrag = true;
+
+            // initialising globals
+            const currentIdx = elToIdx.get(originalDragTarget);
+            originIndex = currentIdx;
+            originDropZone = originalDragTarget.parentElement;
+            const {items, type} = config;
+            draggedElData = {...items[currentIdx]};
+            draggedElType = type;
+            shadowElData = {...draggedElData, [SHADOW_ITEM_MARKER_PROPERTY_NAME]: true};
+            // The initial shadow element. We need a different id at first in order to avoid conflicts and timing issues
+            const placeHolderElData = {...shadowElData, [ITEM_ID_KEY]: SHADOW_PLACEHOLDER_ITEM_ID};
+
+            // creating the draggable element
+            draggedEl = createDraggedElementFrom(originalDragTarget);
+            // We will keep the original dom node in the dom because touch events keep firing on it, we want to re-add it after the framework removes it
+            function keepOriginalElementInDom() {
+                if (!draggedEl.parentElement) {
+                    document.body.appendChild(draggedEl);
+                    // to prevent the outline from disappearing
+                    draggedEl.focus();
+                    watchDraggedElement();
+                    hideOriginalDragTarget(originalDragTarget);
+                    document.body.appendChild(originalDragTarget);
+                } else {
+                    window.requestAnimationFrame(keepOriginalElementInDom);
+                }
+            }
+            window.requestAnimationFrame(keepOriginalElementInDom);
+
+            styleActiveDropZones(
+                Array.from(typeToDropZones.get(config.type)).filter(dz => dz === originDropZone || !dzToConfig.get(dz).dropFromOthersDisabled),
+                dz => dzToConfig.get(dz).dropTargetStyle,
+                dz => dzToConfig.get(dz).dropTargetClasses
+            );
+
+            // removing the original element by removing its data entry
+            items.splice(currentIdx, 1, placeHolderElData);
+            unlockOriginDzMinDimensions = preventShrinking(originDropZone);
+
+            dispatchConsiderEvent(originDropZone, items, {trigger: TRIGGERS.DRAG_STARTED, id: draggedElData[ITEM_ID_KEY], source: SOURCES.POINTER});
+
+            // handing over to global handlers - starting to watch the element
+            window.addEventListener("mousemove", handleMouseMove, {passive: false});
+            window.addEventListener("touchmove", handleMouseMove, {passive: false, capture: false});
+            window.addEventListener("mouseup", handleDrop, {passive: false});
+            window.addEventListener("touchend", handleDrop, {passive: false});
+        }
+
+        function configure({
+            items = undefined,
+            flipDurationMs: dropAnimationDurationMs = 0,
+            type: newType = DEFAULT_DROP_ZONE_TYPE,
+            dragDisabled = false,
+            dropFromOthersDisabled = false,
+            dropTargetStyle = DEFAULT_DROP_TARGET_STYLE,
+            dropTargetClasses = [],
+            transformDraggedElement = () => {}
+        }) {
+            config.dropAnimationDurationMs = dropAnimationDurationMs;
+            if (config.type && newType !== config.type) {
+                unregisterDropZone(node, config.type);
+            }
+            config.type = newType;
+            registerDropZone(node, newType);
+
+            config.items = [...items];
+            config.dragDisabled = dragDisabled;
+            config.transformDraggedElement = transformDraggedElement;
+
+            // realtime update for dropTargetStyle
+            if (
+                isWorkingOnPreviousDrag &&
+                !finalizingPreviousDrag &&
+                (!areObjectsShallowEqual(dropTargetStyle, config.dropTargetStyle) ||
+                    !areArraysShallowEqualSameOrder(dropTargetClasses, config.dropTargetClasses))
+            ) {
+                styleInactiveDropZones(
+                    [node],
+                    () => config.dropTargetStyle,
+                    () => dropTargetClasses
+                );
+                styleActiveDropZones(
+                    [node],
+                    () => dropTargetStyle,
+                    () => dropTargetClasses
+                );
+            }
+            config.dropTargetStyle = dropTargetStyle;
+            config.dropTargetClasses = [...dropTargetClasses];
+
+            // realtime update for dropFromOthersDisabled
+            if (isWorkingOnPreviousDrag && config.dropFromOthersDisabled !== dropFromOthersDisabled) {
+                if (dropFromOthersDisabled) {
+                    styleInactiveDropZones(
+                        [node],
+                        dz => dzToConfig.get(dz).dropTargetStyle,
+                        dz => dzToConfig.get(dz).dropTargetClasses
+                    );
+                } else {
+                    styleActiveDropZones(
+                        [node],
+                        dz => dzToConfig.get(dz).dropTargetStyle,
+                        dz => dzToConfig.get(dz).dropTargetClasses
+                    );
+                }
+            }
+            config.dropFromOthersDisabled = dropFromOthersDisabled;
+
+            dzToConfig.set(node, config);
+            const shadowElIdx = findShadowElementIdx(config.items);
+            for (let idx = 0; idx < node.children.length; idx++) {
+                const draggableEl = node.children[idx];
+                styleDraggable(draggableEl, dragDisabled);
+                if (idx === shadowElIdx) {
+                    morphDraggedElementToBeLike(draggedEl, draggableEl, currentMousePosition.x, currentMousePosition.y, () =>
+                        config.transformDraggedElement(draggedEl, draggedElData, idx)
+                    );
+                    decorateShadowEl(draggableEl);
+                    continue;
+                }
+                draggableEl.removeEventListener("mousedown", elToMouseDownListener.get(draggableEl));
+                draggableEl.removeEventListener("touchstart", elToMouseDownListener.get(draggableEl));
+                if (!dragDisabled) {
+                    draggableEl.addEventListener("mousedown", handleMouseDown);
+                    draggableEl.addEventListener("touchstart", handleMouseDown);
+                    elToMouseDownListener.set(draggableEl, handleMouseDown);
+                }
+                // updating the idx
+                elToIdx.set(draggableEl, idx);
+            }
+        }
+        configure(options);
+
+        return {
+            update: newOptions => {
+                configure(newOptions);
+            },
+            destroy: () => {
+                unregisterDropZone(node, config.type);
+                dzToConfig.delete(node);
+            }
+        };
+    }
+
+    const INSTRUCTION_IDs = {
+        DND_ZONE_ACTIVE: "dnd-zone-active",
+        DND_ZONE_DRAG_DISABLED: "dnd-zone-drag-disabled"
+    };
+    const ID_TO_INSTRUCTION = {
+        [INSTRUCTION_IDs.DND_ZONE_ACTIVE]: "Tab to one the items and press space-bar or enter to start dragging it",
+        [INSTRUCTION_IDs.DND_ZONE_DRAG_DISABLED]: "This is a disabled drag and drop list"
+    };
+
+    const ALERT_DIV_ID = "dnd-action-aria-alert";
+    let alertsDiv;
+
+    function initAriaOnBrowser() {
+        // setting the dynamic alerts
+        alertsDiv = document.createElement("div");
+        (function initAlertsDiv() {
+            alertsDiv.id = ALERT_DIV_ID;
+            // tab index -1 makes the alert be read twice on chrome for some reason
+            //alertsDiv.tabIndex = -1;
+            alertsDiv.style.position = "fixed";
+            alertsDiv.style.bottom = "0";
+            alertsDiv.style.left = "0";
+            alertsDiv.style.zIndex = "-5";
+            alertsDiv.style.opacity = "0";
+            alertsDiv.style.height = "0";
+            alertsDiv.style.width = "0";
+            alertsDiv.setAttribute("role", "alert");
+        })();
+        document.body.prepend(alertsDiv);
+
+        // setting the instructions
+        Object.entries(ID_TO_INSTRUCTION).forEach(([id, txt]) => document.body.prepend(instructionToHiddenDiv(id, txt)));
+    }
+
+    /**
+     * Initializes the static aria instructions so they can be attached to zones
+     * @return {{DND_ZONE_ACTIVE: string, DND_ZONE_DRAG_DISABLED: string} | null} - the IDs for static aria instruction (to be used via aria-describedby) or null on the server
+     */
+    function initAria() {
+        if (isOnServer) return null;
+        if (document.readyState === "complete") {
+            initAriaOnBrowser();
+        } else {
+            window.addEventListener("DOMContentLoaded", initAriaOnBrowser);
+        }
+        return {...INSTRUCTION_IDs};
+    }
+    function instructionToHiddenDiv(id, txt) {
+        const div = document.createElement("div");
+        div.id = id;
+        div.innerHTML = `<p>${txt}</p>`;
+        div.style.display = "none";
+        div.style.position = "fixed";
+        div.style.zIndex = "-5";
+        return div;
+    }
+
+    /**
+     * Will make the screen reader alert the provided text to the user
+     * @param {string} txt
+     */
+    function alertToScreenReader(txt) {
+        alertsDiv.innerHTML = "";
+        const alertText = document.createTextNode(txt);
+        alertsDiv.appendChild(alertText);
+        // this is needed for Safari
+        alertsDiv.style.display = "none";
+        alertsDiv.style.display = "inline";
+    }
+
+    const DEFAULT_DROP_ZONE_TYPE$1 = "--any--";
+    const DEFAULT_DROP_TARGET_STYLE$1 = {
+        outline: "rgba(255, 255, 102, 0.7) solid 2px"
+    };
+
+    let isDragging = false;
+    let draggedItemType;
+    let focusedDz;
+    let focusedDzLabel = "";
+    let focusedItem;
+    let focusedItemId;
+    let focusedItemLabel = "";
+    const allDragTargets = new WeakSet();
+    const elToKeyDownListeners = new WeakMap();
+    const elToFocusListeners = new WeakMap();
+    const dzToHandles = new Map();
+    const dzToConfig$1 = new Map();
+    const typeToDropZones$1 = new Map();
+
+    /* TODO (potentially)
+     * what's the deal with the black border of voice-reader not following focus?
+     * maybe keep focus on the last dragged item upon drop?
+     */
+
+    const INSTRUCTION_IDs$1 = initAria();
+
+    /* drop-zones registration management */
+    function registerDropZone$1(dropZoneEl, type) {
+        if (typeToDropZones$1.size === 0) {
+            window.addEventListener("keydown", globalKeyDownHandler);
+            window.addEventListener("click", globalClickHandler);
+        }
+        if (!typeToDropZones$1.has(type)) {
+            typeToDropZones$1.set(type, new Set());
+        }
+        if (!typeToDropZones$1.get(type).has(dropZoneEl)) {
+            typeToDropZones$1.get(type).add(dropZoneEl);
+            incrementActiveDropZoneCount();
+        }
+    }
+    function unregisterDropZone$1(dropZoneEl, type) {
+        if (focusedDz === dropZoneEl) {
+            handleDrop$1();
+        }
+        typeToDropZones$1.get(type).delete(dropZoneEl);
+        decrementActiveDropZoneCount();
+        if (typeToDropZones$1.get(type).size === 0) {
+            typeToDropZones$1.delete(type);
+        }
+        if (typeToDropZones$1.size === 0) {
+            window.removeEventListener("keydown", globalKeyDownHandler);
+            window.removeEventListener("click", globalClickHandler);
+        }
+    }
+
+    function globalKeyDownHandler(e) {
+        if (!isDragging) return;
+        switch (e.key) {
+            case "Escape": {
+                handleDrop$1();
+                break;
+            }
+        }
+    }
+
+    function globalClickHandler() {
+        if (!isDragging) return;
+        if (!allDragTargets.has(document.activeElement)) {
+            handleDrop$1();
+        }
+    }
+
+    function handleZoneFocus(e) {
+        if (!isDragging) return;
+        const newlyFocusedDz = e.currentTarget;
+        if (newlyFocusedDz === focusedDz) return;
+
+        focusedDzLabel = newlyFocusedDz.getAttribute("aria-label") || "";
+        const {items: originItems} = dzToConfig$1.get(focusedDz);
+        const originItem = originItems.find(item => item[ITEM_ID_KEY] === focusedItemId);
+        const originIdx = originItems.indexOf(originItem);
+        const itemToMove = originItems.splice(originIdx, 1)[0];
+        const {items: targetItems, autoAriaDisabled} = dzToConfig$1.get(newlyFocusedDz);
+        if (
+            newlyFocusedDz.getBoundingClientRect().top < focusedDz.getBoundingClientRect().top ||
+            newlyFocusedDz.getBoundingClientRect().left < focusedDz.getBoundingClientRect().left
+        ) {
+            targetItems.push(itemToMove);
+            if (!autoAriaDisabled) {
+                alertToScreenReader(`Moved item ${focusedItemLabel} to the end of the list ${focusedDzLabel}`);
+            }
+        } else {
+            targetItems.unshift(itemToMove);
+            if (!autoAriaDisabled) {
+                alertToScreenReader(`Moved item ${focusedItemLabel} to the beginning of the list ${focusedDzLabel}`);
+            }
+        }
+        const dzFrom = focusedDz;
+        dispatchFinalizeEvent(dzFrom, originItems, {trigger: TRIGGERS.DROPPED_INTO_ANOTHER, id: focusedItemId, source: SOURCES.KEYBOARD});
+        dispatchFinalizeEvent(newlyFocusedDz, targetItems, {trigger: TRIGGERS.DROPPED_INTO_ZONE, id: focusedItemId, source: SOURCES.KEYBOARD});
+        focusedDz = newlyFocusedDz;
+    }
+
+    function triggerAllDzsUpdate() {
+        dzToHandles.forEach(({update}, dz) => update(dzToConfig$1.get(dz)));
+    }
+
+    function handleDrop$1(dispatchConsider = true) {
+        if (!dzToConfig$1.get(focusedDz).autoAriaDisabled) {
+            alertToScreenReader(`Stopped dragging item ${focusedItemLabel}`);
+        }
+        if (allDragTargets.has(document.activeElement)) {
+            document.activeElement.blur();
+        }
+        if (dispatchConsider) {
+            dispatchConsiderEvent(focusedDz, dzToConfig$1.get(focusedDz).items, {
+                trigger: TRIGGERS.DRAG_STOPPED,
+                id: focusedItemId,
+                source: SOURCES.KEYBOARD
+            });
+        }
+        styleInactiveDropZones(
+            typeToDropZones$1.get(draggedItemType),
+            dz => dzToConfig$1.get(dz).dropTargetStyle,
+            dz => dzToConfig$1.get(dz).dropTargetClasses
+        );
+        focusedItem = null;
+        focusedItemId = null;
+        focusedItemLabel = "";
+        draggedItemType = null;
+        focusedDz = null;
+        focusedDzLabel = "";
+        isDragging = false;
+        triggerAllDzsUpdate();
+    }
+    //////
+    function dndzone$1(node, options) {
+        const config = {
+            items: undefined,
+            type: undefined,
+            dragDisabled: false,
+            dropFromOthersDisabled: false,
+            dropTargetStyle: DEFAULT_DROP_TARGET_STYLE$1,
+            dropTargetClasses: [],
+            autoAriaDisabled: false
+        };
+
+        function swap(arr, i, j) {
+            if (arr.length <= 1) return;
+            arr.splice(j, 1, arr.splice(i, 1, arr[j])[0]);
+        }
+
+        function handleKeyDown(e) {
+            switch (e.key) {
+                case "Enter":
+                case " ": {
+                    // we don't want to affect nested input elements
+                    if ((e.target.value !== undefined || e.target.isContentEditable) && !allDragTargets.has(e.target)) {
+                        return;
+                    }
+                    e.preventDefault(); // preventing scrolling on spacebar
+                    e.stopPropagation();
+                    if (isDragging) {
+                        // TODO - should this trigger a drop? only here or in general (as in when hitting space or enter outside of any zone)?
+                        handleDrop$1();
+                    } else {
+                        // drag start
+                        handleDragStart(e);
+                    }
+                    break;
+                }
+                case "ArrowDown":
+                case "ArrowRight": {
+                    if (!isDragging) return;
+                    e.preventDefault(); // prevent scrolling
+                    e.stopPropagation();
+                    const {items} = dzToConfig$1.get(node);
+                    const children = Array.from(node.children);
+                    const idx = children.indexOf(e.currentTarget);
+                    if (idx < children.length - 1) {
+                        if (!config.autoAriaDisabled) {
+                            alertToScreenReader(`Moved item ${focusedItemLabel} to position ${idx + 2} in the list ${focusedDzLabel}`);
+                        }
+                        swap(items, idx, idx + 1);
+                        dispatchFinalizeEvent(node, items, {trigger: TRIGGERS.DROPPED_INTO_ZONE, id: focusedItemId, source: SOURCES.KEYBOARD});
+                    }
+                    break;
+                }
+                case "ArrowUp":
+                case "ArrowLeft": {
+                    if (!isDragging) return;
+                    e.preventDefault(); // prevent scrolling
+                    e.stopPropagation();
+                    const {items} = dzToConfig$1.get(node);
+                    const children = Array.from(node.children);
+                    const idx = children.indexOf(e.currentTarget);
+                    if (idx > 0) {
+                        if (!config.autoAriaDisabled) {
+                            alertToScreenReader(`Moved item ${focusedItemLabel} to position ${idx} in the list ${focusedDzLabel}`);
+                        }
+                        swap(items, idx, idx - 1);
+                        dispatchFinalizeEvent(node, items, {trigger: TRIGGERS.DROPPED_INTO_ZONE, id: focusedItemId, source: SOURCES.KEYBOARD});
+                    }
+                    break;
+                }
+            }
+        }
+        function handleDragStart(e) {
+            setCurrentFocusedItem(e.currentTarget);
+            focusedDz = node;
+            draggedItemType = config.type;
+            isDragging = true;
+            const dropTargets = Array.from(typeToDropZones$1.get(config.type)).filter(dz => dz === focusedDz || !dzToConfig$1.get(dz).dropFromOthersDisabled);
+            styleActiveDropZones(
+                dropTargets,
+                dz => dzToConfig$1.get(dz).dropTargetStyle,
+                dz => dzToConfig$1.get(dz).dropTargetClasses
+            );
+            if (!config.autoAriaDisabled) {
+                let msg = `Started dragging item ${focusedItemLabel}. Use the arrow keys to move it within its list ${focusedDzLabel}`;
+                if (dropTargets.length > 1) {
+                    msg += `, or tab to another list in order to move the item into it`;
+                }
+                alertToScreenReader(msg);
+            }
+            dispatchConsiderEvent(node, dzToConfig$1.get(node).items, {trigger: TRIGGERS.DRAG_STARTED, id: focusedItemId, source: SOURCES.KEYBOARD});
+            triggerAllDzsUpdate();
+        }
+
+        function handleClick(e) {
+            if (!isDragging) return;
+            if (e.currentTarget === focusedItem) return;
+            e.stopPropagation();
+            handleDrop$1(false);
+            handleDragStart(e);
+        }
+        function setCurrentFocusedItem(draggableEl) {
+            const {items} = dzToConfig$1.get(node);
+            const children = Array.from(node.children);
+            const focusedItemIdx = children.indexOf(draggableEl);
+            focusedItem = draggableEl;
+            focusedItemId = items[focusedItemIdx][ITEM_ID_KEY];
+            focusedItemLabel = children[focusedItemIdx].getAttribute("aria-label") || "";
+        }
+
+        function configure({
+            items = [],
+            type: newType = DEFAULT_DROP_ZONE_TYPE$1,
+            dragDisabled = false,
+            dropFromOthersDisabled = false,
+            dropTargetStyle = DEFAULT_DROP_TARGET_STYLE$1,
+            dropTargetClasses = [],
+            autoAriaDisabled = false
+        }) {
+            config.items = [...items];
+            config.dragDisabled = dragDisabled;
+            config.dropFromOthersDisabled = dropFromOthersDisabled;
+            config.dropTargetStyle = dropTargetStyle;
+            config.dropTargetClasses = dropTargetClasses;
+            config.autoAriaDisabled = autoAriaDisabled;
+            if (!autoAriaDisabled) {
+                node.setAttribute("aria-disabled", dragDisabled);
+                node.setAttribute("role", "list");
+                node.setAttribute("aria-describedby", dragDisabled ? INSTRUCTION_IDs$1.DND_ZONE_DRAG_DISABLED : INSTRUCTION_IDs$1.DND_ZONE_ACTIVE);
+            }
+            if (config.type && newType !== config.type) {
+                unregisterDropZone$1(node, config.type);
+            }
+            config.type = newType;
+            registerDropZone$1(node, newType);
+            dzToConfig$1.set(node, config);
+
+            node.tabIndex =
+                isDragging &&
+                (node === focusedDz ||
+                    focusedItem.contains(node) ||
+                    config.dropFromOthersDisabled ||
+                    (focusedDz && config.type !== dzToConfig$1.get(focusedDz).type))
+                    ? -1
+                    : 0;
+            node.addEventListener("focus", handleZoneFocus);
+
+            for (let i = 0; i < node.children.length; i++) {
+                const draggableEl = node.children[i];
+                allDragTargets.add(draggableEl);
+                draggableEl.tabIndex = isDragging ? -1 : 0;
+                if (!autoAriaDisabled) {
+                    draggableEl.setAttribute("role", "listitem");
+                }
+                draggableEl.removeEventListener("keydown", elToKeyDownListeners.get(draggableEl));
+                draggableEl.removeEventListener("click", elToFocusListeners.get(draggableEl));
+                if (!dragDisabled) {
+                    draggableEl.addEventListener("keydown", handleKeyDown);
+                    elToKeyDownListeners.set(draggableEl, handleKeyDown);
+                    draggableEl.addEventListener("click", handleClick);
+                    elToFocusListeners.set(draggableEl, handleClick);
+                }
+                if (isDragging && config.items[i][ITEM_ID_KEY] === focusedItemId) {
+                    // if it is a nested dropzone, it was re-rendered and we need to refresh our pointer
+                    focusedItem = draggableEl;
+                    // without this the element loses focus if it moves backwards in the list
+                    draggableEl.focus();
+                }
+            }
+        }
+        configure(options);
+
+        const handles = {
+            update: newOptions => {
+                configure(newOptions);
+            },
+            destroy: () => {
+                unregisterDropZone$1(node, config.type);
+                dzToConfig$1.delete(node);
+                dzToHandles.delete(node);
+            }
+        };
+        dzToHandles.set(node, handles);
+        return handles;
+    }
+
+    /**
+     * A custom action to turn any container to a dnd zone and all of its direct children to draggables
+     * Supports mouse, touch and keyboard interactions.
+     * Dispatches two events that the container is expected to react to by modifying its list of items,
+     * which will then feed back in to this action via the update function
+     *
+     * @typedef {object} Options
+     * @property {array} items - the list of items that was used to generate the children of the given node (the list used in the #each block
+     * @property {string} [type] - the type of the dnd zone. children dragged from here can only be dropped in other zones of the same type, default to a base type
+     * @property {number} [flipDurationMs] - if the list animated using flip (recommended), specifies the flip duration such that everything syncs with it without conflict, defaults to zero
+     * @property {boolean} [dragDisabled]
+     * @property {boolean} [dropFromOthersDisabled]
+     * @property {object} [dropTargetStyle]
+     * @property {string[]} [dropTargetClasses]
+     * @property {function} [transformDraggedElement]
+     * @param {HTMLElement} node - the element to enhance
+     * @param {Options} options
+     * @return {{update: function, destroy: function}}
+     */
+    function dndzone$2(node, options) {
+        validateOptions(options);
+        const pointerZone = dndzone(node, options);
+        const keyboardZone = dndzone$1(node, options);
+        return {
+            update: newOptions => {
+                validateOptions(newOptions);
+                pointerZone.update(newOptions);
+                keyboardZone.update(newOptions);
+            },
+            destroy: () => {
+                pointerZone.destroy();
+                keyboardZone.destroy();
+            }
+        };
+    }
+
+    function validateOptions(options) {
+        /*eslint-disable*/
+        const {
+            items,
+            flipDurationMs,
+            type,
+            dragDisabled,
+            dropFromOthersDisabled,
+            dropTargetStyle,
+            dropTargetClasses,
+            transformDraggedElement,
+            autoAriaDisabled,
+            ...rest
+        } = options;
+        /*eslint-enable*/
+        if (Object.keys(rest).length > 0) {
+            console.warn(`dndzone will ignore unknown options`, rest);
+        }
+        if (!items) {
+            throw new Error("no 'items' key provided to dndzone");
+        }
+        const itemWithMissingId = items.find(item => !{}.hasOwnProperty.call(item, ITEM_ID_KEY));
+        if (itemWithMissingId) {
+            throw new Error(`missing '${ITEM_ID_KEY}' property for item ${toString(itemWithMissingId)}`);
+        }
+        if (dropTargetClasses && !Array.isArray(dropTargetClasses)) {
+            throw new Error(`dropTargetClasses should be an array but instead it is a ${typeof dropTargetClasses}, ${toString(dropTargetClasses)}`);
+        }
+    }
+
+    function cubicOut$1(t) {
+        const f = t - 1.0;
+        return f * f * f + 1.0;
+    }
+
+    function flip(node, animation, params) {
+        const style = getComputedStyle(node);
+        const transform = style.transform === 'none' ? '' : style.transform;
+        const scaleX = animation.from.width / node.clientWidth;
+        const scaleY = animation.from.height / node.clientHeight;
+        const dx = (animation.from.left - animation.to.left) / scaleX;
+        const dy = (animation.from.top - animation.to.top) / scaleY;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        const { delay = 0, duration = (d) => Math.sqrt(d) * 120, easing = cubicOut$1 } = params;
+        return {
+            delay,
+            duration: is_function(duration) ? duration(d) : duration,
+            easing,
+            css: (_t, u) => `transform: ${transform} translate(${u * dx}px, ${u * dy}px);`
+        };
+    }
+
+    /* src/Constraint.svelte generated by Svelte v3.20.1 */
+    const file$5 = "src/Constraint.svelte";
 
     function get_each_context$3(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[9] = list[i];
+    	child_ctx[6] = list[i];
+    	return child_ctx;
+    }
+
+    // (39:2) {#each items as item(item.id)}
+    function create_each_block$3(key_1, ctx) {
+    	let div;
+    	let t_value = (/*item*/ ctx[6].name ? /*item*/ ctx[6].name : "") + "";
+    	let t;
+
+    	const block = {
+    		key: key_1,
+    		first: null,
+    		c: function create() {
+    			div = element("div");
+    			t = text(t_value);
+    			add_location(div, file$5, 39, 3, 831);
+    			this.first = div;
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, div, anchor);
+    			append_dev(div, t);
+    		},
+    		p: function update(ctx, dirty) {
+    			if (dirty & /*items*/ 1 && t_value !== (t_value = (/*item*/ ctx[6].name ? /*item*/ ctx[6].name : "") + "")) set_data_dev(t, t_value);
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(div);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_each_block$3.name,
+    		type: "each",
+    		source: "(39:2) {#each items as item(item.id)}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    function create_fragment$5(ctx) {
+    	let div2;
+    	let div0;
+    	let t0;
+    	let t1;
+    	let div1;
+    	let each_blocks = [];
+    	let each_1_lookup = new Map();
+    	let dndzone_action;
+    	let dispose;
+    	let each_value = /*items*/ ctx[0];
+    	validate_each_argument(each_value);
+    	const get_key = ctx => /*item*/ ctx[6].id;
+    	validate_each_keys(ctx, each_value, get_each_context$3, get_key);
+
+    	for (let i = 0; i < each_value.length; i += 1) {
+    		let child_ctx = get_each_context$3(ctx, each_value, i);
+    		let key = get_key(child_ctx);
+    		each_1_lookup.set(key, each_blocks[i] = create_each_block$3(key, child_ctx));
+    	}
+
+    	const block = {
+    		c: function create() {
+    			div2 = element("div");
+    			div0 = element("div");
+    			t0 = text(/*attributeType*/ ctx[1]);
+    			t1 = space();
+    			div1 = element("div");
+
+    			for (let i = 0; i < each_blocks.length; i += 1) {
+    				each_blocks[i].c();
+    			}
+
+    			attr_dev(div0, "class", "attributeLeft svelte-1qpg6o2");
+    			add_location(div0, file$5, 33, 1, 614);
+    			attr_dev(div1, "class", "attributeRight svelte-1qpg6o2");
+    			add_location(div1, file$5, 34, 1, 664);
+    			attr_dev(div2, "class", "attribute svelte-1qpg6o2");
+    			add_location(div2, file$5, 32, 0, 589);
+    		},
+    		l: function claim(nodes) {
+    			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+    		},
+    		m: function mount(target, anchor, remount) {
+    			insert_dev(target, div2, anchor);
+    			append_dev(div2, div0);
+    			append_dev(div0, t0);
+    			append_dev(div2, t1);
+    			append_dev(div2, div1);
+
+    			for (let i = 0; i < each_blocks.length; i += 1) {
+    				each_blocks[i].m(div1, null);
+    			}
+
+    			if (remount) run_all(dispose);
+
+    			dispose = [
+    				action_destroyer(dndzone_action = dndzone$2.call(null, div1, { items: /*items*/ ctx[0], flipDurationMs })),
+    				listen_dev(div1, "consider", /*handleConsider*/ ctx[2], false, false, false),
+    				listen_dev(div1, "finalize", /*handleFinalize*/ ctx[3], false, false, false)
+    			];
+    		},
+    		p: function update(ctx, [dirty]) {
+    			if (dirty & /*attributeType*/ 2) set_data_dev(t0, /*attributeType*/ ctx[1]);
+
+    			if (dirty & /*items*/ 1) {
+    				const each_value = /*items*/ ctx[0];
+    				validate_each_argument(each_value);
+    				validate_each_keys(ctx, each_value, get_each_context$3, get_key);
+    				each_blocks = update_keyed_each(each_blocks, dirty, get_key, 1, ctx, each_value, each_1_lookup, div1, destroy_block, create_each_block$3, null, get_each_context$3);
+    			}
+
+    			if (dndzone_action && is_function(dndzone_action.update) && dirty & /*items*/ 1) dndzone_action.update.call(null, { items: /*items*/ ctx[0], flipDurationMs });
+    		},
+    		i: noop,
+    		o: noop,
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(div2);
+
+    			for (let i = 0; i < each_blocks.length; i += 1) {
+    				each_blocks[i].d();
+    			}
+
+    			run_all(dispose);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_fragment$5.name,
+    		type: "component",
+    		source: "",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    const flipDurationMs = 200;
+
+    function instance$5($$self, $$props, $$invalidate) {
+    	let { items = [] } = $$props;
+    	let { attributeType } = $$props;
+    	let { setValue } = $$props;
+    	let shouldIgnoreDndEvents = false;
+
+    	function handleConsider(e) {
+    		$$invalidate(0, items = e.detail.items);
+    	}
+
+    	function handleFinalize(e) {
+    		let mostRecent = e.detail.info.id;
+
+    		for (let i of e.detail.items) {
+    			if (i.id == mostRecent) {
+    				$$invalidate(0, items = [i]);
+    				$$invalidate(4, setValue = i.id);
+    			}
+    		}
+    	}
+
+    	const writable_props = ["items", "attributeType", "setValue"];
+
+    	Object.keys($$props).forEach(key => {
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<Constraint> was created with unknown prop '${key}'`);
+    	});
+
+    	let { $$slots = {}, $$scope } = $$props;
+    	validate_slots("Constraint", $$slots, []);
+
+    	$$self.$set = $$props => {
+    		if ("items" in $$props) $$invalidate(0, items = $$props.items);
+    		if ("attributeType" in $$props) $$invalidate(1, attributeType = $$props.attributeType);
+    		if ("setValue" in $$props) $$invalidate(4, setValue = $$props.setValue);
+    	};
+
+    	$$self.$capture_state = () => ({
+    		d3,
+    		dndzone: dndzone$2,
+    		TRIGGERS,
+    		SHADOW_ITEM_MARKER_PROPERTY_NAME,
+    		flip,
+    		items,
+    		attributeType,
+    		setValue,
+    		shouldIgnoreDndEvents,
+    		flipDurationMs,
+    		handleConsider,
+    		handleFinalize
+    	});
+
+    	$$self.$inject_state = $$props => {
+    		if ("items" in $$props) $$invalidate(0, items = $$props.items);
+    		if ("attributeType" in $$props) $$invalidate(1, attributeType = $$props.attributeType);
+    		if ("setValue" in $$props) $$invalidate(4, setValue = $$props.setValue);
+    		if ("shouldIgnoreDndEvents" in $$props) shouldIgnoreDndEvents = $$props.shouldIgnoreDndEvents;
+    	};
+
+    	if ($$props && "$$inject" in $$props) {
+    		$$self.$inject_state($$props.$$inject);
+    	}
+
+    	return [items, attributeType, handleConsider, handleFinalize, setValue];
+    }
+
+    class Constraint extends SvelteComponentDev {
+    	constructor(options) {
+    		super(options);
+    		init(this, options, instance$5, create_fragment$5, safe_not_equal, { items: 0, attributeType: 1, setValue: 4 });
+
+    		dispatch_dev("SvelteRegisterComponent", {
+    			component: this,
+    			tagName: "Constraint",
+    			options,
+    			id: create_fragment$5.name
+    		});
+
+    		const { ctx } = this.$$;
+    		const props = options.props || {};
+
+    		if (/*attributeType*/ ctx[1] === undefined && !("attributeType" in props)) {
+    			console.warn("<Constraint> was created without expected prop 'attributeType'");
+    		}
+
+    		if (/*setValue*/ ctx[4] === undefined && !("setValue" in props)) {
+    			console.warn("<Constraint> was created without expected prop 'setValue'");
+    		}
+    	}
+
+    	get items() {
+    		throw new Error("<Constraint>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set items(value) {
+    		throw new Error("<Constraint>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	get attributeType() {
+    		throw new Error("<Constraint>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set attributeType(value) {
+    		throw new Error("<Constraint>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	get setValue() {
+    		throw new Error("<Constraint>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set setValue(value) {
+    		throw new Error("<Constraint>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+    }
+
+    /* src/AttributesConstraints.svelte generated by Svelte v3.20.1 */
+
+    const { Object: Object_1$2, console: console_1$2 } = globals;
+    const file$6 = "src/AttributesConstraints.svelte";
+
+    function get_each_context$4(ctx, list, i) {
+    	const child_ctx = ctx.slice();
+    	child_ctx[14] = list[i];
+    	return child_ctx;
+    }
+
+    function get_each_context_1$2(ctx, list, i) {
+    	const child_ctx = ctx.slice();
+    	child_ctx[17] = list[i];
     	return child_ctx;
     }
 
     function get_each_context_2$1(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[15] = list[i];
+    	child_ctx[20] = list[i];
     	return child_ctx;
     }
 
-    // (27:3) {#each marks as m}
-    function create_each_block_2$1(ctx) {
-    	let option;
-    	let t_value = /*m*/ ctx[15] + "";
-    	let t;
-    	let option_value_value;
+    // (73:3) {#each items as item(item.id)}
+    function create_each_block_2$1(key_1, ctx) {
+    	let div1;
+    	let div0;
+    	let t0_value = /*item*/ ctx[20].name + "";
+    	let t0;
+    	let t1;
+    	let div1_key_value;
+    	let rect;
+    	let stop_animation = noop;
 
     	const block = {
+    		key: key_1,
+    		first: null,
     		c: function create() {
-    			option = element("option");
-    			t = text(t_value);
-    			option.__value = option_value_value = /*m*/ ctx[15];
-    			option.value = option.__value;
-    			add_location(option, file$5, 27, 4, 1095);
+    			div1 = element("div");
+    			div0 = element("div");
+    			t0 = text(t0_value);
+    			t1 = space();
+    			attr_dev(div0, "class", "field svelte-7ly4wi");
+    			add_location(div0, file$6, 74, 5, 2804);
+    			attr_dev(div1, "key", div1_key_value = /*item*/ ctx[20].name);
+    			attr_dev(div1, "class", "dataField svelte-7ly4wi");
+    			add_location(div1, file$6, 73, 4, 2718);
+    			this.first = div1;
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, option, anchor);
-    			append_dev(option, t);
+    			insert_dev(target, div1, anchor);
+    			append_dev(div1, div0);
+    			append_dev(div0, t0);
+    			append_dev(div1, t1);
     		},
-    		p: noop,
+    		p: function update(ctx, dirty) {
+    			if (dirty & /*items*/ 4 && t0_value !== (t0_value = /*item*/ ctx[20].name + "")) set_data_dev(t0, t0_value);
+
+    			if (dirty & /*items*/ 4 && div1_key_value !== (div1_key_value = /*item*/ ctx[20].name)) {
+    				attr_dev(div1, "key", div1_key_value);
+    			}
+    		},
+    		r: function measure() {
+    			rect = div1.getBoundingClientRect();
+    		},
+    		f: function fix() {
+    			fix_position(div1);
+    			stop_animation();
+    		},
+    		a: function animate() {
+    			stop_animation();
+    			stop_animation = create_animation(div1, rect, flip, { duration: flipDurationMs$1 });
+    		},
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(option);
+    			if (detaching) detach_dev(div1);
     		}
     	};
 
@@ -31686,17 +34011,17 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_2$1.name,
     		type: "each",
-    		source: "(27:3) {#each marks as m}",
+    		source: "(73:3) {#each items as item(item.id)}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (38:4) {#each variables as v}
+    // (88:4) {#each marks as m}
     function create_each_block_1$2(ctx) {
     	let option;
-    	let t_value = /*v*/ ctx[12] + "";
+    	let t_value = /*m*/ ctx[17] + "";
     	let t;
     	let option_value_value;
 
@@ -31704,9 +34029,9 @@ ${constraint.asp}`;
     		c: function create() {
     			option = element("option");
     			t = text(t_value);
-    			option.__value = option_value_value = /*v*/ ctx[12];
+    			option.__value = option_value_value = /*m*/ ctx[17];
     			option.value = option.__value;
-    			add_location(option, file$5, 38, 5, 1384);
+    			add_location(option, file$6, 88, 5, 3137);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, option, anchor);
@@ -31722,242 +34047,314 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_1$2.name,
     		type: "each",
-    		source: "(38:4) {#each variables as v}",
+    		source: "(88:4) {#each marks as m}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (34:1) {#each channels as c}
-    function create_each_block$3(ctx) {
-    	let div1;
-    	let div0;
-    	let t0_value = /*c*/ ctx[9] + "";
-    	let t0;
-    	let t1;
-    	let select;
-    	let t2;
-    	let dispose;
-    	let each_value_1 = /*variables*/ ctx[4];
-    	validate_each_argument(each_value_1);
-    	let each_blocks = [];
+    // (95:2) {#each channels as c}
+    function create_each_block$4(ctx) {
+    	let updating_setValue;
+    	let current;
 
-    	for (let i = 0; i < each_value_1.length; i += 1) {
-    		each_blocks[i] = create_each_block_1$2(get_each_context_1$2(ctx, each_value_1, i));
+    	function constraint_setValue_binding(value) {
+    		/*constraint_setValue_binding*/ ctx[13].call(null, value, /*c*/ ctx[14]);
     	}
 
-    	function select_change_handler_1() {
-    		/*select_change_handler_1*/ ctx[8].call(select, /*c*/ ctx[9]);
+    	let constraint_props = { attributeType: /*c*/ ctx[14] };
+
+    	if (/*channelSelections*/ ctx[1][/*c*/ ctx[14]] !== void 0) {
+    		constraint_props.setValue = /*channelSelections*/ ctx[1][/*c*/ ctx[14]];
     	}
+
+    	const constraint = new Constraint({ props: constraint_props, $$inline: true });
+    	binding_callbacks.push(() => bind(constraint, "setValue", constraint_setValue_binding));
 
     	const block = {
     		c: function create() {
-    			div1 = element("div");
-    			div0 = element("div");
-    			t0 = text(t0_value);
-    			t1 = space();
-    			select = element("select");
-
-    			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].c();
-    			}
-
-    			t2 = space();
-    			attr_dev(div0, "class", "attributeLeft svelte-1mu888i");
-    			add_location(div0, file$5, 35, 3, 1227);
-    			attr_dev(select, "id", "mark-dropdown");
-    			attr_dev(select, "class", "attributeRight svelte-1mu888i");
-    			if (/*channelSelections*/ ctx[1][/*c*/ ctx[9]] === void 0) add_render_callback(select_change_handler_1);
-    			add_location(select, file$5, 36, 3, 1267);
-    			attr_dev(div1, "class", "attribute svelte-1mu888i");
-    			add_location(div1, file$5, 34, 2, 1200);
+    			create_component(constraint.$$.fragment);
     		},
-    		m: function mount(target, anchor, remount) {
-    			insert_dev(target, div1, anchor);
-    			append_dev(div1, div0);
-    			append_dev(div0, t0);
-    			append_dev(div1, t1);
-    			append_dev(div1, select);
-
-    			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].m(select, null);
-    			}
-
-    			select_option(select, /*channelSelections*/ ctx[1][/*c*/ ctx[9]]);
-    			append_dev(div1, t2);
-    			if (remount) dispose();
-    			dispose = listen_dev(select, "change", select_change_handler_1);
+    		m: function mount(target, anchor) {
+    			mount_component(constraint, target, anchor);
+    			current = true;
     		},
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
+    			const constraint_changes = {};
 
-    			if (dirty & /*variables*/ 16) {
-    				each_value_1 = /*variables*/ ctx[4];
-    				validate_each_argument(each_value_1);
-    				let i;
-
-    				for (i = 0; i < each_value_1.length; i += 1) {
-    					const child_ctx = get_each_context_1$2(ctx, each_value_1, i);
-
-    					if (each_blocks[i]) {
-    						each_blocks[i].p(child_ctx, dirty);
-    					} else {
-    						each_blocks[i] = create_each_block_1$2(child_ctx);
-    						each_blocks[i].c();
-    						each_blocks[i].m(select, null);
-    					}
-    				}
-
-    				for (; i < each_blocks.length; i += 1) {
-    					each_blocks[i].d(1);
-    				}
-
-    				each_blocks.length = each_value_1.length;
+    			if (!updating_setValue && dirty & /*channelSelections, channels*/ 34) {
+    				updating_setValue = true;
+    				constraint_changes.setValue = /*channelSelections*/ ctx[1][/*c*/ ctx[14]];
+    				add_flush_callback(() => updating_setValue = false);
     			}
 
-    			if (dirty & /*channelSelections, channels*/ 10) {
-    				select_option(select, /*channelSelections*/ ctx[1][/*c*/ ctx[9]]);
-    			}
+    			constraint.$set(constraint_changes);
+    		},
+    		i: function intro(local) {
+    			if (current) return;
+    			transition_in(constraint.$$.fragment, local);
+    			current = true;
+    		},
+    		o: function outro(local) {
+    			transition_out(constraint.$$.fragment, local);
+    			current = false;
     		},
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div1);
-    			destroy_each(each_blocks, detaching);
-    			dispose();
+    			destroy_component(constraint, detaching);
     		}
     	};
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_each_block$3.name,
+    		id: create_each_block$4.name,
     		type: "each",
-    		source: "(34:1) {#each channels as c}",
+    		source: "(95:2) {#each channels as c}",
     		ctx
     	});
 
     	return block;
     }
 
-    function create_fragment$5(ctx) {
+    function create_fragment$6(ctx) {
+    	let div6;
     	let div2;
     	let p0;
-    	let b;
+    	let b0;
     	let t1;
-    	let p1;
-    	let t3;
-    	let div1;
     	let div0;
+    	let i;
+    	let t3;
+    	let p1;
     	let t5;
-    	let select;
-    	let t6;
     	let p2;
+    	let t7;
+    	let div1;
+    	let each_blocks_2 = [];
+    	let each0_lookup = new Map();
+    	let dndzone_action;
     	let t8;
+    	let div5;
+    	let p3;
+    	let b1;
+    	let t10;
+    	let p4;
+    	let t12;
+    	let div4;
+    	let div3;
+    	let t14;
+    	let select;
+    	let t15;
+    	let p5;
+    	let t17;
+    	let current;
     	let dispose;
-    	let each_value_2 = /*marks*/ ctx[2];
+    	let each_value_2 = /*items*/ ctx[2];
     	validate_each_argument(each_value_2);
-    	let each_blocks_1 = [];
+    	const get_key = ctx => /*item*/ ctx[20].id;
+    	validate_each_keys(ctx, each_value_2, get_each_context_2$1, get_key);
 
     	for (let i = 0; i < each_value_2.length; i += 1) {
-    		each_blocks_1[i] = create_each_block_2$1(get_each_context_2$1(ctx, each_value_2, i));
+    		let child_ctx = get_each_context_2$1(ctx, each_value_2, i);
+    		let key = get_key(child_ctx);
+    		each0_lookup.set(key, each_blocks_2[i] = create_each_block_2$1(key, child_ctx));
     	}
 
-    	let each_value = /*channels*/ ctx[3];
+    	let each_value_1 = /*marks*/ ctx[4];
+    	validate_each_argument(each_value_1);
+    	let each_blocks_1 = [];
+
+    	for (let i = 0; i < each_value_1.length; i += 1) {
+    		each_blocks_1[i] = create_each_block_1$2(get_each_context_1$2(ctx, each_value_1, i));
+    	}
+
+    	let each_value = /*channels*/ ctx[5];
     	validate_each_argument(each_value);
     	let each_blocks = [];
 
     	for (let i = 0; i < each_value.length; i += 1) {
-    		each_blocks[i] = create_each_block$3(get_each_context$3(ctx, each_value, i));
+    		each_blocks[i] = create_each_block$4(get_each_context$4(ctx, each_value, i));
     	}
+
+    	const out = i => transition_out(each_blocks[i], 1, 1, () => {
+    		each_blocks[i] = null;
+    	});
 
     	const block = {
     		c: function create() {
+    			div6 = element("div");
     			div2 = element("div");
     			p0 = element("p");
-    			b = element("b");
-    			b.textContent = "ENCODINGS";
+    			b0 = element("b");
+    			b0.textContent = "DATA";
     			t1 = space();
-    			p1 = element("p");
-    			p1.textContent = "mark";
-    			t3 = space();
-    			div1 = element("div");
     			div0 = element("div");
-    			div0.textContent = "mark";
+    			i = element("i");
+    			i.textContent = "view_list";
+    			t3 = space();
+    			p1 = element("p");
+    			p1.textContent = "movies90s.csv";
     			t5 = space();
+    			p2 = element("p");
+    			p2.textContent = "Fields";
+    			t7 = space();
+    			div1 = element("div");
+
+    			for (let i = 0; i < each_blocks_2.length; i += 1) {
+    				each_blocks_2[i].c();
+    			}
+
+    			t8 = space();
+    			div5 = element("div");
+    			p3 = element("p");
+    			b1 = element("b");
+    			b1.textContent = "ENCODINGS";
+    			t10 = space();
+    			p4 = element("p");
+    			p4.textContent = "Mark";
+    			t12 = space();
+    			div4 = element("div");
+    			div3 = element("div");
+    			div3.textContent = "mark";
+    			t14 = space();
     			select = element("select");
 
     			for (let i = 0; i < each_blocks_1.length; i += 1) {
     				each_blocks_1[i].c();
     			}
 
-    			t6 = space();
-    			p2 = element("p");
-    			p2.textContent = "channel";
-    			t8 = space();
+    			t15 = space();
+    			p5 = element("p");
+    			p5.textContent = "Encoding";
+    			t17 = space();
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].c();
     			}
 
-    			add_location(b, file$5, 21, 4, 891);
-    			add_location(p0, file$5, 21, 1, 888);
-    			add_location(p1, file$5, 22, 1, 913);
-    			attr_dev(div0, "class", "attributeLeft svelte-1mu888i");
-    			add_location(div0, file$5, 24, 2, 952);
+    			add_location(b0, file$6, 63, 5, 2394);
+    			add_location(p0, file$6, 63, 2, 2391);
+    			attr_dev(i, "class", "material-icons md-24 svelte-7ly4wi");
+    			attr_dev(i, "id", "listIcon");
+    			add_location(i, file$6, 65, 3, 2438);
+    			add_location(p1, file$6, 66, 3, 2501);
+    			attr_dev(div0, "id", "datasetName");
+    			attr_dev(div0, "class", "svelte-7ly4wi");
+    			add_location(div0, file$6, 64, 2, 2412);
+    			add_location(p2, file$6, 68, 2, 2534);
+    			add_location(div1, file$6, 69, 2, 2550);
+    			attr_dev(div2, "id", "attributesList");
+    			attr_dev(div2, "class", "svelte-7ly4wi");
+    			add_location(div2, file$6, 62, 1, 2363);
+    			add_location(b1, file$6, 80, 5, 2919);
+    			add_location(p3, file$6, 80, 2, 2916);
+    			add_location(p4, file$6, 81, 2, 2942);
+    			attr_dev(div3, "class", "attributeLeft svelte-7ly4wi");
+    			add_location(div3, file$6, 83, 3, 2983);
     			attr_dev(select, "id", "mark-dropdown");
-    			attr_dev(select, "class", "attributeRight svelte-1mu888i");
-    			if (/*selectedMark*/ ctx[0] === void 0) add_render_callback(() => /*select_change_handler*/ ctx[7].call(select));
-    			add_location(select, file$5, 25, 2, 992);
-    			attr_dev(div1, "class", "attribute svelte-1mu888i");
-    			add_location(div1, file$5, 23, 1, 926);
-    			add_location(p2, file$5, 31, 1, 1158);
-    			attr_dev(div2, "id", "attributesBar");
-    			attr_dev(div2, "class", "svelte-1mu888i");
-    			add_location(div2, file$5, 20, 0, 862);
+    			attr_dev(select, "class", "attributeRight svelte-7ly4wi");
+    			if (/*selectedMark*/ ctx[0] === void 0) add_render_callback(() => /*select_change_handler*/ ctx[12].call(select));
+    			add_location(select, file$6, 84, 3, 3024);
+    			attr_dev(div4, "class", "attribute svelte-7ly4wi");
+    			add_location(div4, file$6, 82, 2, 2956);
+    			add_location(p5, file$6, 92, 2, 3204);
+    			attr_dev(div5, "id", "attributesConstraints");
+    			attr_dev(div5, "class", "svelte-7ly4wi");
+    			add_location(div5, file$6, 79, 1, 2881);
+    			attr_dev(div6, "id", "attributesInfo");
+    			attr_dev(div6, "class", "svelte-7ly4wi");
+    			add_location(div6, file$6, 61, 0, 2336);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor, remount) {
-    			insert_dev(target, div2, anchor);
+    			insert_dev(target, div6, anchor);
+    			append_dev(div6, div2);
     			append_dev(div2, p0);
-    			append_dev(p0, b);
+    			append_dev(p0, b0);
     			append_dev(div2, t1);
-    			append_dev(div2, p1);
-    			append_dev(div2, t3);
+    			append_dev(div2, div0);
+    			append_dev(div0, i);
+    			append_dev(div0, t3);
+    			append_dev(div0, p1);
+    			append_dev(div2, t5);
+    			append_dev(div2, p2);
+    			append_dev(div2, t7);
     			append_dev(div2, div1);
-    			append_dev(div1, div0);
-    			append_dev(div1, t5);
-    			append_dev(div1, select);
+
+    			for (let i = 0; i < each_blocks_2.length; i += 1) {
+    				each_blocks_2[i].m(div1, null);
+    			}
+
+    			append_dev(div6, t8);
+    			append_dev(div6, div5);
+    			append_dev(div5, p3);
+    			append_dev(p3, b1);
+    			append_dev(div5, t10);
+    			append_dev(div5, p4);
+    			append_dev(div5, t12);
+    			append_dev(div5, div4);
+    			append_dev(div4, div3);
+    			append_dev(div4, t14);
+    			append_dev(div4, select);
 
     			for (let i = 0; i < each_blocks_1.length; i += 1) {
     				each_blocks_1[i].m(select, null);
     			}
 
     			select_option(select, /*selectedMark*/ ctx[0]);
-    			append_dev(div2, t6);
-    			append_dev(div2, p2);
-    			append_dev(div2, t8);
+    			append_dev(div5, t15);
+    			append_dev(div5, p5);
+    			append_dev(div5, t17);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].m(div2, null);
+    				each_blocks[i].m(div5, null);
     			}
 
-    			if (remount) dispose();
-    			dispose = listen_dev(select, "change", /*select_change_handler*/ ctx[7]);
+    			current = true;
+    			if (remount) run_all(dispose);
+
+    			dispose = [
+    				action_destroyer(dndzone_action = dndzone$2.call(null, div1, {
+    					items: /*items*/ ctx[2],
+    					flipDurationMs: flipDurationMs$1,
+    					dropFromOthersDisabled: /*dropFromOthersDisabled*/ ctx[3]
+    				})),
+    				listen_dev(div1, "consider", /*handleConsider*/ ctx[6], false, false, false),
+    				listen_dev(div1, "finalize", /*handleFinalize*/ ctx[7], false, false, false),
+    				listen_dev(select, "change", /*select_change_handler*/ ctx[12])
+    			];
     		},
     		p: function update(ctx, [dirty]) {
-    			if (dirty & /*marks*/ 4) {
-    				each_value_2 = /*marks*/ ctx[2];
+    			if (dirty & /*items*/ 4) {
+    				const each_value_2 = /*items*/ ctx[2];
     				validate_each_argument(each_value_2);
+    				for (let i = 0; i < each_blocks_2.length; i += 1) each_blocks_2[i].r();
+    				validate_each_keys(ctx, each_value_2, get_each_context_2$1, get_key);
+    				each_blocks_2 = update_keyed_each(each_blocks_2, dirty, get_key, 1, ctx, each_value_2, each0_lookup, div1, fix_and_destroy_block, create_each_block_2$1, null, get_each_context_2$1);
+    				for (let i = 0; i < each_blocks_2.length; i += 1) each_blocks_2[i].a();
+    			}
+
+    			if (dndzone_action && is_function(dndzone_action.update) && dirty & /*items*/ 4) dndzone_action.update.call(null, {
+    				items: /*items*/ ctx[2],
+    				flipDurationMs: flipDurationMs$1,
+    				dropFromOthersDisabled: /*dropFromOthersDisabled*/ ctx[3]
+    			});
+
+    			if (dirty & /*marks*/ 16) {
+    				each_value_1 = /*marks*/ ctx[4];
+    				validate_each_argument(each_value_1);
     				let i;
 
-    				for (i = 0; i < each_value_2.length; i += 1) {
-    					const child_ctx = get_each_context_2$1(ctx, each_value_2, i);
+    				for (i = 0; i < each_value_1.length; i += 1) {
+    					const child_ctx = get_each_context_1$2(ctx, each_value_1, i);
 
     					if (each_blocks_1[i]) {
     						each_blocks_1[i].p(child_ctx, dirty);
     					} else {
-    						each_blocks_1[i] = create_each_block_2$1(child_ctx);
+    						each_blocks_1[i] = create_each_block_1$2(child_ctx);
     						each_blocks_1[i].c();
     						each_blocks_1[i].m(select, null);
     					}
@@ -31967,50 +34364,75 @@ ${constraint.asp}`;
     					each_blocks_1[i].d(1);
     				}
 
-    				each_blocks_1.length = each_value_2.length;
+    				each_blocks_1.length = each_value_1.length;
     			}
 
     			if (dirty & /*selectedMark*/ 1) {
     				select_option(select, /*selectedMark*/ ctx[0]);
     			}
 
-    			if (dirty & /*channelSelections, channels, variables*/ 26) {
-    				each_value = /*channels*/ ctx[3];
+    			if (dirty & /*channels, channelSelections*/ 34) {
+    				each_value = /*channels*/ ctx[5];
     				validate_each_argument(each_value);
     				let i;
 
     				for (i = 0; i < each_value.length; i += 1) {
-    					const child_ctx = get_each_context$3(ctx, each_value, i);
+    					const child_ctx = get_each_context$4(ctx, each_value, i);
 
     					if (each_blocks[i]) {
     						each_blocks[i].p(child_ctx, dirty);
+    						transition_in(each_blocks[i], 1);
     					} else {
-    						each_blocks[i] = create_each_block$3(child_ctx);
+    						each_blocks[i] = create_each_block$4(child_ctx);
     						each_blocks[i].c();
-    						each_blocks[i].m(div2, null);
+    						transition_in(each_blocks[i], 1);
+    						each_blocks[i].m(div5, null);
     					}
     				}
 
-    				for (; i < each_blocks.length; i += 1) {
-    					each_blocks[i].d(1);
+    				group_outros();
+
+    				for (i = each_value.length; i < each_blocks.length; i += 1) {
+    					out(i);
     				}
 
-    				each_blocks.length = each_value.length;
+    				check_outros();
     			}
     		},
-    		i: noop,
-    		o: noop,
+    		i: function intro(local) {
+    			if (current) return;
+
+    			for (let i = 0; i < each_value.length; i += 1) {
+    				transition_in(each_blocks[i]);
+    			}
+
+    			current = true;
+    		},
+    		o: function outro(local) {
+    			each_blocks = each_blocks.filter(Boolean);
+
+    			for (let i = 0; i < each_blocks.length; i += 1) {
+    				transition_out(each_blocks[i]);
+    			}
+
+    			current = false;
+    		},
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div2);
+    			if (detaching) detach_dev(div6);
+
+    			for (let i = 0; i < each_blocks_2.length; i += 1) {
+    				each_blocks_2[i].d();
+    			}
+
     			destroy_each(each_blocks_1, detaching);
     			destroy_each(each_blocks, detaching);
-    			dispose();
+    			run_all(dispose);
     		}
     	};
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_fragment$5.name,
+    		id: create_fragment$6.name,
     		type: "component",
     		source: "",
     		ctx
@@ -32019,9 +34441,13 @@ ${constraint.asp}`;
     	return block;
     }
 
-    function instance$5($$self, $$props, $$invalidate) {
+    const flipDurationMs$1 = 200;
+
+    function instance$6($$self, $$props, $$invalidate) {
     	let { selectedMark } = $$props;
     	let { channelSelections } = $$props;
+    	let shouldIgnoreDndEvents = false;
+    	let dropFromOthersDisabled = true;
     	let marks = ["", "area", "bar", "point", "line", "rect", "tick"];
     	let channels = ["x", "y", "color", "size", "shape"];
     	let accepted_types = ["type_quantitative", "type_nominal"];
@@ -32035,11 +34461,47 @@ ${constraint.asp}`;
     		"numVotes": "number"
     	};
 
+    	let items = [
+    		{ id: "type", name: "type" },
+    		{ id: "minutes", name: "minutes" },
+    		{ id: "rating", name: "rating" },
+    		{ id: "votes", name: "votes" },
+    		{ id: "principals", name: "principals" },
+    		{ id: "genre", name: "genre" }
+    	];
+
     	let variables = [""].concat(accepted_types).concat(Object.keys(variable_types).map(v => "field_" + v));
+
+    	function handleConsider(e) {
+    		console.warn(`got consider ${JSON.stringify(e.detail, null, 2)}`);
+    		const { trigger, id } = e.detail.info;
+
+    		if (trigger === TRIGGERS.DRAG_STARTED) {
+    			console.warn(`copying ${id}`);
+    			const idx = items.findIndex(item => item.id === id);
+    			const newId = `${id}_copy_${Math.round(Math.random() * 100000)}`;
+
+    			// the line below was added in order to be compatible with version svelte-dnd-action 0.7.4 and above 
+    			e.detail.items = e.detail.items.filter(item => !item[SHADOW_ITEM_MARKER_PROPERTY_NAME]);
+
+    			e.detail.items.splice(idx, 0, { ...items[idx], id: newId });
+    			$$invalidate(2, items = e.detail.items);
+    			shouldIgnoreDndEvents = true;
+    		} else if (!shouldIgnoreDndEvents) {
+    			$$invalidate(2, items = e.detail.items);
+    		} else {
+    			$$invalidate(2, items = [...items]);
+    		}
+    	}
+
+    	function handleFinalize(e) {
+    		$$invalidate(2, items = e.detail.items);
+    	}
+
     	const writable_props = ["selectedMark", "channelSelections"];
 
     	Object_1$2.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<AttributesConstraints> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$2.warn(`<AttributesConstraints> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
@@ -32048,14 +34510,12 @@ ${constraint.asp}`;
     	function select_change_handler() {
     		selectedMark = select_value(this);
     		$$invalidate(0, selectedMark);
-    		$$invalidate(2, marks);
+    		$$invalidate(4, marks);
     	}
 
-    	function select_change_handler_1(c) {
-    		channelSelections[c] = select_value(this);
+    	function constraint_setValue_binding(value, c) {
+    		channelSelections[c] = value;
     		$$invalidate(1, channelSelections);
-    		$$invalidate(3, channels);
-    		$$invalidate(4, variables);
     	}
 
     	$$self.$set = $$props => {
@@ -32064,24 +34524,38 @@ ${constraint.asp}`;
     	};
 
     	$$self.$capture_state = () => ({
+    		d3,
+    		dndzone: dndzone$2,
+    		TRIGGERS,
+    		SHADOW_ITEM_MARKER_PROPERTY_NAME,
+    		flip,
+    		Constraint,
     		selectedMark,
     		channelSelections,
-    		d3,
+    		shouldIgnoreDndEvents,
+    		dropFromOthersDisabled,
     		marks,
     		channels,
     		accepted_types,
     		variable_types,
-    		variables
+    		items,
+    		variables,
+    		flipDurationMs: flipDurationMs$1,
+    		handleConsider,
+    		handleFinalize
     	});
 
     	$$self.$inject_state = $$props => {
     		if ("selectedMark" in $$props) $$invalidate(0, selectedMark = $$props.selectedMark);
     		if ("channelSelections" in $$props) $$invalidate(1, channelSelections = $$props.channelSelections);
-    		if ("marks" in $$props) $$invalidate(2, marks = $$props.marks);
-    		if ("channels" in $$props) $$invalidate(3, channels = $$props.channels);
+    		if ("shouldIgnoreDndEvents" in $$props) shouldIgnoreDndEvents = $$props.shouldIgnoreDndEvents;
+    		if ("dropFromOthersDisabled" in $$props) $$invalidate(3, dropFromOthersDisabled = $$props.dropFromOthersDisabled);
+    		if ("marks" in $$props) $$invalidate(4, marks = $$props.marks);
+    		if ("channels" in $$props) $$invalidate(5, channels = $$props.channels);
     		if ("accepted_types" in $$props) accepted_types = $$props.accepted_types;
     		if ("variable_types" in $$props) variable_types = $$props.variable_types;
-    		if ("variables" in $$props) $$invalidate(4, variables = $$props.variables);
+    		if ("items" in $$props) $$invalidate(2, items = $$props.items);
+    		if ("variables" in $$props) variables = $$props.variables;
     	};
 
     	if ($$props && "$$inject" in $$props) {
@@ -32091,37 +34565,42 @@ ${constraint.asp}`;
     	return [
     		selectedMark,
     		channelSelections,
+    		items,
+    		dropFromOthersDisabled,
     		marks,
     		channels,
-    		variables,
+    		handleConsider,
+    		handleFinalize,
+    		shouldIgnoreDndEvents,
     		accepted_types,
     		variable_types,
+    		variables,
     		select_change_handler,
-    		select_change_handler_1
+    		constraint_setValue_binding
     	];
     }
 
     class AttributesConstraints extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$5, create_fragment$5, safe_not_equal, { selectedMark: 0, channelSelections: 1 });
+    		init(this, options, instance$6, create_fragment$6, safe_not_equal, { selectedMark: 0, channelSelections: 1 });
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
     			tagName: "AttributesConstraints",
     			options,
-    			id: create_fragment$5.name
+    			id: create_fragment$6.name
     		});
 
     		const { ctx } = this.$$;
     		const props = options.props || {};
 
     		if (/*selectedMark*/ ctx[0] === undefined && !("selectedMark" in props)) {
-    			console.warn("<AttributesConstraints> was created without expected prop 'selectedMark'");
+    			console_1$2.warn("<AttributesConstraints> was created without expected prop 'selectedMark'");
     		}
 
     		if (/*channelSelections*/ ctx[1] === undefined && !("channelSelections" in props)) {
-    			console.warn("<AttributesConstraints> was created without expected prop 'channelSelections'");
+    			console_1$2.warn("<AttributesConstraints> was created without expected prop 'channelSelections'");
     		}
     	}
 
@@ -32144,24 +34623,24 @@ ${constraint.asp}`;
 
     /* src/VersionConstraintSolver.svelte generated by Svelte v3.20.1 */
 
-    const { Object: Object_1$3, console: console_1$2 } = globals;
-    const file$6 = "src/VersionConstraintSolver.svelte";
+    const { Object: Object_1$3, console: console_1$3 } = globals;
+    const file$7 = "src/VersionConstraintSolver.svelte";
 
-    function get_each_context$4(ctx, list, i) {
+    function get_each_context$5(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[19] = list[i];
-    	child_ctx[21] = i;
+    	child_ctx[18] = list[i];
+    	child_ctx[20] = i;
     	return child_ctx;
     }
 
     function get_each_context_1$3(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[22] = list[i];
-    	child_ctx[21] = i;
+    	child_ctx[21] = list[i];
+    	child_ctx[20] = i;
     	return child_ctx;
     }
 
-    // (179:3) {#each recommendations as c, i}
+    // (183:3) {#each recommendations as c, i}
     function create_each_block_1$3(ctx) {
     	let div3;
     	let div0;
@@ -32174,7 +34653,7 @@ ${constraint.asp}`;
     	let dispose;
 
     	function click_handler(...args) {
-    		return /*click_handler*/ ctx[18](/*i*/ ctx[21], ...args);
+    		return /*click_handler*/ ctx[17](/*i*/ ctx[20], ...args);
     	}
 
     	const block = {
@@ -32188,16 +34667,16 @@ ${constraint.asp}`;
     			div1 = element("div");
     			t2 = space();
     			attr_dev(i_1, "class", "material-icons-outlined md-24");
-    			add_location(i_1, file$6, 181, 6, 4586);
-    			attr_dev(div0, "class", "pinButton svelte-8fn13r");
-    			add_location(div0, file$6, 180, 5, 4532);
-    			attr_dev(div1, "id", div1_id_value = "vis" + /*i*/ ctx[21]);
-    			attr_dev(div1, "class", "svelte-8fn13r");
-    			add_location(div1, file$6, 184, 6, 4691);
-    			attr_dev(div2, "class", "vegaContainer svelte-8fn13r");
-    			add_location(div2, file$6, 183, 5, 4657);
-    			attr_dev(div3, "class", "vis svelte-8fn13r");
-    			add_location(div3, file$6, 179, 4, 4509);
+    			add_location(i_1, file$7, 185, 6, 4606);
+    			attr_dev(div0, "class", "pinButton svelte-ptb5k7");
+    			add_location(div0, file$7, 184, 5, 4552);
+    			attr_dev(div1, "id", div1_id_value = "vis" + /*i*/ ctx[20]);
+    			attr_dev(div1, "class", "svelte-ptb5k7");
+    			add_location(div1, file$7, 188, 6, 4711);
+    			attr_dev(div2, "class", "vegaContainer svelte-ptb5k7");
+    			add_location(div2, file$7, 187, 5, 4677);
+    			attr_dev(div3, "class", "vis svelte-ptb5k7");
+    			add_location(div3, file$7, 183, 4, 4529);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div3, anchor);
@@ -32223,24 +34702,24 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_1$3.name,
     		type: "each",
-    		source: "(179:3) {#each recommendations as c, i}",
+    		source: "(183:3) {#each recommendations as c, i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (195:3) {#each pinned as p, i}
-    function create_each_block$4(ctx) {
+    // (199:3) {#each pinned as p, i}
+    function create_each_block$5(ctx) {
     	let div;
     	let div_id_value;
 
     	const block = {
     		c: function create() {
     			div = element("div");
-    			attr_dev(div, "id", div_id_value = "pin" + /*i*/ ctx[21]);
-    			attr_dev(div, "class", "svelte-8fn13r");
-    			add_location(div, file$6, 195, 4, 4941);
+    			attr_dev(div, "id", div_id_value = "pin" + /*i*/ ctx[20]);
+    			attr_dev(div, "class", "svelte-ptb5k7");
+    			add_location(div, file$7, 199, 4, 4961);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -32252,16 +34731,16 @@ ${constraint.asp}`;
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_each_block$4.name,
+    		id: create_each_block$5.name,
     		type: "each",
-    		source: "(195:3) {#each pinned as p, i}",
+    		source: "(199:3) {#each pinned as p, i}",
     		ctx
     	});
 
     	return block;
     }
 
-    function create_fragment$6(ctx) {
+    function create_fragment$7(ctx) {
     	let div5;
     	let updating_selectedMark;
     	let updating_channelSelections;
@@ -32277,26 +34756,24 @@ ${constraint.asp}`;
     	let t6;
     	let button2;
     	let t8;
-    	let button3;
-    	let t10;
     	let div1;
-    	let t11;
+    	let t9;
     	let div4;
     	let p1;
     	let b1;
-    	let t13;
+    	let t11;
     	let a;
-    	let t15;
+    	let t13;
     	let div3;
     	let current;
     	let dispose;
 
     	function attributesconstraints_selectedMark_binding(value) {
-    		/*attributesconstraints_selectedMark_binding*/ ctx[16].call(null, value);
+    		/*attributesconstraints_selectedMark_binding*/ ctx[15].call(null, value);
     	}
 
     	function attributesconstraints_channelSelections_binding(value) {
-    		/*attributesconstraints_channelSelections_binding*/ ctx[17].call(null, value);
+    		/*attributesconstraints_channelSelections_binding*/ ctx[16].call(null, value);
     	}
 
     	let attributesconstraints_props = {};
@@ -32329,7 +34806,7 @@ ${constraint.asp}`;
     	let each_blocks = [];
 
     	for (let i = 0; i < each_value.length; i += 1) {
-    		each_blocks[i] = create_each_block$4(get_each_context$4(ctx, each_value, i));
+    		each_blocks[i] = create_each_block$5(get_each_context$5(ctx, each_value, i));
     	}
 
     	const block = {
@@ -32344,69 +34821,66 @@ ${constraint.asp}`;
     			b0.textContent = "RECOMMENDATIONS";
     			t2 = space();
     			button0 = element("button");
-    			button0.textContent = "UPDATE RECOMMENDATIONS";
+    			button0.textContent = "RESET";
     			t4 = space();
     			button1 = element("button");
-    			button1.textContent = "RESET";
+    			button1.textContent = "PINNED";
     			t6 = space();
     			button2 = element("button");
-    			button2.textContent = "PINNED";
+    			button2.textContent = "DOWNLOAD";
     			t8 = space();
-    			button3 = element("button");
-    			button3.textContent = "DOWNLOAD";
-    			t10 = space();
     			div1 = element("div");
 
     			for (let i = 0; i < each_blocks_1.length; i += 1) {
     				each_blocks_1[i].c();
     			}
 
-    			t11 = space();
+    			t9 = space();
     			div4 = element("div");
     			p1 = element("p");
     			b1 = element("b");
     			b1.textContent = "PINNED";
-    			t13 = space();
+    			t11 = space();
     			a = element("a");
     			a.textContent = "×";
-    			t15 = space();
+    			t13 = space();
     			div3 = element("div");
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].c();
     			}
 
-    			add_location(b0, file$6, 171, 6, 4170);
-    			add_location(p0, file$6, 171, 3, 4167);
-    			add_location(button0, file$6, 172, 3, 4200);
-    			add_location(button1, file$6, 173, 3, 4261);
-    			add_location(button2, file$6, 174, 3, 4304);
-    			attr_dev(button3, "id", "exportJSON");
-    			attr_dev(button3, "class", "btn");
-    			add_location(button3, file$6, 175, 3, 4350);
+    			add_location(b0, file$7, 175, 6, 4199);
+    			add_location(p0, file$7, 175, 3, 4196);
+    			add_location(button0, file$7, 177, 3, 4281);
+    			add_location(button1, file$7, 178, 3, 4324);
+    			attr_dev(button2, "id", "exportJSON");
+    			attr_dev(button2, "class", "btn");
+    			add_location(button2, file$7, 179, 3, 4370);
     			attr_dev(div0, "id", "menu");
-    			add_location(div0, file$6, 170, 2, 4148);
+    			add_location(div0, file$7, 174, 2, 4177);
     			attr_dev(div1, "id", "recommendationDisplay");
-    			attr_dev(div1, "class", "svelte-8fn13r");
-    			add_location(div1, file$6, 177, 2, 4437);
+    			attr_dev(div1, "class", "svelte-ptb5k7");
+    			add_location(div1, file$7, 181, 2, 4457);
     			attr_dev(div2, "id", "recommendations");
-    			add_location(div2, file$6, 169, 1, 4119);
-    			add_location(b1, file$6, 191, 21, 4812);
+    			attr_dev(div2, "class", "svelte-ptb5k7");
+    			add_location(div2, file$7, 173, 1, 4148);
+    			add_location(b1, file$7, 195, 21, 4832);
     			attr_dev(p1, "id", "pinnedText");
-    			attr_dev(p1, "class", "svelte-8fn13r");
-    			add_location(p1, file$6, 191, 2, 4793);
+    			attr_dev(p1, "class", "svelte-ptb5k7");
+    			add_location(p1, file$7, 195, 2, 4813);
     			attr_dev(a, "id", "closeButton");
-    			attr_dev(a, "class", "svelte-8fn13r");
-    			add_location(a, file$6, 192, 2, 4832);
+    			attr_dev(a, "class", "svelte-ptb5k7");
+    			add_location(a, file$7, 196, 2, 4852);
     			attr_dev(div3, "id", "pinnedDisplay");
-    			attr_dev(div3, "class", "svelte-8fn13r");
-    			add_location(div3, file$6, 193, 2, 4886);
+    			attr_dev(div3, "class", "svelte-ptb5k7");
+    			add_location(div3, file$7, 197, 2, 4906);
     			attr_dev(div4, "id", "pinnedDrawer");
-    			attr_dev(div4, "class", "svelte-8fn13r");
-    			add_location(div4, file$6, 190, 1, 4767);
+    			attr_dev(div4, "class", "svelte-ptb5k7");
+    			add_location(div4, file$7, 194, 1, 4787);
     			attr_dev(div5, "id", "overall");
-    			attr_dev(div5, "class", "svelte-8fn13r");
-    			add_location(div5, file$6, 167, 0, 3996);
+    			attr_dev(div5, "class", "svelte-ptb5k7");
+    			add_location(div5, file$7, 171, 0, 4025);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -32425,22 +34899,20 @@ ${constraint.asp}`;
     			append_dev(div0, button1);
     			append_dev(div0, t6);
     			append_dev(div0, button2);
-    			append_dev(div0, t8);
-    			append_dev(div0, button3);
-    			append_dev(div2, t10);
+    			append_dev(div2, t8);
     			append_dev(div2, div1);
 
     			for (let i = 0; i < each_blocks_1.length; i += 1) {
     				each_blocks_1[i].m(div1, null);
     			}
 
-    			append_dev(div5, t11);
+    			append_dev(div5, t9);
     			append_dev(div5, div4);
     			append_dev(div4, p1);
     			append_dev(p1, b1);
-    			append_dev(div4, t13);
+    			append_dev(div4, t11);
     			append_dev(div4, a);
-    			append_dev(div4, t15);
+    			append_dev(div4, t13);
     			append_dev(div4, div3);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
@@ -32451,10 +34923,9 @@ ${constraint.asp}`;
     			if (remount) run_all(dispose);
 
     			dispose = [
-    				listen_dev(button0, "click", /*update*/ ctx[4], false, false, false),
-    				listen_dev(button1, "click", /*reset*/ ctx[5], false, false, false),
-    				listen_dev(button2, "click", showPin, false, false, false),
-    				listen_dev(button3, "click", /*exportJSON*/ ctx[7], false, false, false),
+    				listen_dev(button0, "click", /*reset*/ ctx[4], false, false, false),
+    				listen_dev(button1, "click", showPin, false, false, false),
+    				listen_dev(button2, "click", /*exportJSON*/ ctx[6], false, false, false),
     				listen_dev(a, "click", closePin, false, false, false)
     			];
     		},
@@ -32475,7 +34946,7 @@ ${constraint.asp}`;
 
     			attributesconstraints.$set(attributesconstraints_changes);
 
-    			if (dirty & /*pin, recommendations*/ 66) {
+    			if (dirty & /*pin, recommendations*/ 34) {
     				each_value_1 = /*recommendations*/ ctx[1];
     				validate_each_argument(each_value_1);
     				let i;
@@ -32506,10 +34977,10 @@ ${constraint.asp}`;
     				let i;
 
     				for (i = old_length; i < each_value.length; i += 1) {
-    					const child_ctx = get_each_context$4(ctx, each_value, i);
+    					const child_ctx = get_each_context$5(ctx, each_value, i);
 
     					if (!each_blocks[i]) {
-    						each_blocks[i] = create_each_block$4(child_ctx);
+    						each_blocks[i] = create_each_block$5(child_ctx);
     						each_blocks[i].c();
     						each_blocks[i].m(div3, null);
     					}
@@ -32542,7 +35013,7 @@ ${constraint.asp}`;
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_fragment$6.name,
+    		id: create_fragment$7.name,
     		type: "component",
     		source: "",
     		ctx
@@ -32559,7 +35030,7 @@ ${constraint.asp}`;
     	document.getElementById("pinnedDrawer").style.width = "0px";
     }
 
-    function instance$6($$self, $$props, $$invalidate) {
+    function instance$7($$self, $$props, $$invalidate) {
     	let { dataset = [] } = $$props;
     	let { types = {} } = $$props;
     	let { selectedAttributes = [] } = $$props;
@@ -32602,7 +35073,7 @@ ${constraint.asp}`;
 			`;
 
     			console.log(inputConstraints);
-    			const solution = draco.solve(inputConstraints, { models: 9 });
+    			const solution = draco.solve(inputConstraints, { models: 4 });
     			console.log("solution", solution);
 
     			if (!solution) {
@@ -32613,7 +35084,13 @@ ${constraint.asp}`;
     			console.log("solution", solution);
 
     			for (let s of solution["specs"]) {
-    				recs.push({ "vega": s });
+    				s.width = 270;
+    				s.height = 270;
+
+    				recs.push({
+    					"vega": s,
+    					"uid": "id" + new Date().getTime()
+    				});
     			}
 
     			$$invalidate(1, recommendations = recs);
@@ -32640,16 +35117,12 @@ ${constraint.asp}`;
     			if (channelValue && channelValue != "") {
     				let newConstraint = `encoding(e${encodingCount}).:- not channel(e${encodingCount}, ${c}).`;
 
-    				if (channelValue.startsWith("type")) {
-    					// Get type
-    					let type = channelValue.slice(channelValue.indexOf("type") + 5);
-
-    					newConstraint = newConstraint + `:- not type(e${encodingCount}, ${type}).`;
-    				} else if (channelValue.startsWith("field")) {
+    				if (channelValue == "quantitative" || channelValue == "categorical") {
+    					// Get channel
+    					newConstraint = newConstraint + `:- not type(e${encodingCount}, ${channelValue}).`;
+    				} else {
     					// Get field
-    					let field = channelValue.slice(channelValue.indexOf("field") + 6);
-
-    					newConstraint = newConstraint + `:- field(e${encodingCount}, ${field}).`;
+    					newConstraint = newConstraint + `:- not field(e${encodingCount}, ${channelValue}).`;
     				}
 
     				visConstraints.push(newConstraint);
@@ -32661,14 +35134,13 @@ ${constraint.asp}`;
     		solveDraco(markConstraints, visConstraints, dataset);
     	}
 
-    	function update() {
-    		$$invalidate(11, updateCount++, updateCount);
-    	}
-
+    	// function update() {
+    	// 	updateCount++
+    	// }
     	function reset() {
     		$$invalidate(2, selectedMark = "");
     		$$invalidate(3, channelSelections = {});
-    		$$invalidate(11, updateCount++, updateCount);
+    		$$invalidate(10, updateCount++, updateCount);
     	}
 
     	function pin(i) {
@@ -32696,7 +35168,7 @@ ${constraint.asp}`;
     	const writable_props = ["dataset", "types", "selectedAttributes"];
 
     	Object_1$3.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$2.warn(`<VersionConstraintSolver> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$3.warn(`<VersionConstraintSolver> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
@@ -32715,9 +35187,9 @@ ${constraint.asp}`;
     	const click_handler = i => pin(i);
 
     	$$self.$set = $$props => {
-    		if ("dataset" in $$props) $$invalidate(8, dataset = $$props.dataset);
-    		if ("types" in $$props) $$invalidate(9, types = $$props.types);
-    		if ("selectedAttributes" in $$props) $$invalidate(10, selectedAttributes = $$props.selectedAttributes);
+    		if ("dataset" in $$props) $$invalidate(7, dataset = $$props.dataset);
+    		if ("types" in $$props) $$invalidate(8, types = $$props.types);
+    		if ("selectedAttributes" in $$props) $$invalidate(9, selectedAttributes = $$props.selectedAttributes);
     	};
 
     	$$self.$capture_state = () => ({
@@ -32737,7 +35209,6 @@ ${constraint.asp}`;
     		channelSelections,
     		solveDraco,
     		getRecommendations,
-    		update,
     		reset,
     		pin,
     		showPin,
@@ -32746,10 +35217,10 @@ ${constraint.asp}`;
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ("dataset" in $$props) $$invalidate(8, dataset = $$props.dataset);
-    		if ("types" in $$props) $$invalidate(9, types = $$props.types);
-    		if ("selectedAttributes" in $$props) $$invalidate(10, selectedAttributes = $$props.selectedAttributes);
-    		if ("updateCount" in $$props) $$invalidate(11, updateCount = $$props.updateCount);
+    		if ("dataset" in $$props) $$invalidate(7, dataset = $$props.dataset);
+    		if ("types" in $$props) $$invalidate(8, types = $$props.types);
+    		if ("selectedAttributes" in $$props) $$invalidate(9, selectedAttributes = $$props.selectedAttributes);
+    		if ("updateCount" in $$props) $$invalidate(10, updateCount = $$props.updateCount);
     		if ("pinned" in $$props) $$invalidate(0, pinned = $$props.pinned);
     		if ("attributesConstraints" in $$props) attributesConstraints = $$props.attributesConstraints;
     		if ("recommendations" in $$props) $$invalidate(1, recommendations = $$props.recommendations);
@@ -32763,7 +35234,13 @@ ${constraint.asp}`;
     	}
 
     	$$self.$$.update = () => {
-    		if ($$self.$$.dirty & /*updateCount*/ 2048) {
+    		if ($$self.$$.dirty & /*channelSelections, selectedMark, updateCount*/ 1036) {
+    			 if (channelSelections || selectedMark) {
+    				$$invalidate(10, updateCount++, updateCount);
+    			}
+    		}
+
+    		if ($$self.$$.dirty & /*updateCount*/ 1024) {
     			 {
     				console.log("update count", updateCount);
 
@@ -32799,7 +35276,6 @@ ${constraint.asp}`;
     		recommendations,
     		selectedMark,
     		channelSelections,
-    		update,
     		reset,
     		pin,
     		exportJSON,
@@ -32821,17 +35297,17 @@ ${constraint.asp}`;
     	constructor(options) {
     		super(options);
 
-    		init(this, options, instance$6, create_fragment$6, safe_not_equal, {
-    			dataset: 8,
-    			types: 9,
-    			selectedAttributes: 10
+    		init(this, options, instance$7, create_fragment$7, safe_not_equal, {
+    			dataset: 7,
+    			types: 8,
+    			selectedAttributes: 9
     		});
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
     			tagName: "VersionConstraintSolver",
     			options,
-    			id: create_fragment$6.name
+    			id: create_fragment$7.name
     		});
     	}
 
@@ -32863,12 +35339,12 @@ ${constraint.asp}`;
     /* src/App.svelte generated by Svelte v3.20.1 */
 
     const { Object: Object_1$4 } = globals;
-    const file$7 = "src/App.svelte";
+    const file$8 = "src/App.svelte";
 
-    // (197:2) {:catch error}
+    // (226:2) {:catch error}
     function create_catch_block$1(ctx) {
     	let p;
-    	let t_value = /*error*/ ctx[28].message + "";
+    	let t_value = /*error*/ ctx[34].message + "";
     	let t;
 
     	const block = {
@@ -32876,7 +35352,7 @@ ${constraint.asp}`;
     			p = element("p");
     			t = text(t_value);
     			set_style(p, "color", "red");
-    			add_location(p, file$7, 197, 3, 5687);
+    			add_location(p, file$8, 226, 3, 6575);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -32894,14 +35370,14 @@ ${constraint.asp}`;
     		block,
     		id: create_catch_block$1.name,
     		type: "catch",
-    		source: "(197:2) {:catch error}",
+    		source: "(226:2) {:catch error}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (111:2) {:then dataset}
+    // (117:2) {:then dataset}
     function create_then_block$1(ctx) {
     	let current_block_type_index;
     	let if_block;
@@ -32973,17 +35449,17 @@ ${constraint.asp}`;
     		block,
     		id: create_then_block$1.name,
     		type: "then",
-    		source: "(111:2) {:then dataset}",
+    		source: "(117:2) {:then dataset}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (128:3) {:else}
+    // (134:3) {:else}
     function create_else_block(ctx) {
+    	let div6;
     	let div5;
-    	let div4;
     	let div0;
     	let t0;
     	let input0;
@@ -33011,362 +35487,511 @@ ${constraint.asp}`;
     	let input4_value_value;
     	let t10;
     	let t11;
+    	let div2;
+    	let p1;
+    	let t13;
     	let label4;
     	let input5;
     	let input5_value_value;
-    	let t12;
-    	let t13;
-    	let div2;
-    	let p1;
+    	let t14;
     	let t15;
-    	let input6;
-    	let t16;
-    	let div3;
-    	let p2;
-    	let t18;
     	let label5;
+    	let input6;
+    	let input6_value_value;
+    	let t16;
+    	let t17;
+    	let label6;
     	let input7;
     	let input7_value_value;
+    	let t18;
     	let t19;
-    	let t20;
-    	let label6;
+    	let label7;
     	let input8;
     	let input8_value_value;
+    	let t20;
     	let t21;
-    	let t22;
-    	let label7;
+    	let label8;
     	let input9;
     	let input9_value_value;
+    	let t22;
     	let t23;
-    	let t24;
-    	let label8;
+    	let label9;
     	let input10;
     	let input10_value_value;
+    	let t24;
     	let t25;
-    	let t26;
-    	let label9;
-    	let input11;
-    	let input11_value_value;
+    	let div3;
+    	let p2;
     	let t27;
+    	let input11;
     	let t28;
+    	let div4;
+    	let p3;
+    	let t30;
+    	let label10;
+    	let input12;
+    	let input12_value_value;
+    	let t31;
+    	let t32;
+    	let label11;
+    	let input13;
+    	let input13_value_value;
+    	let t33;
+    	let t34;
+    	let label12;
+    	let input14;
+    	let input14_value_value;
+    	let t35;
+    	let t36;
+    	let label13;
+    	let input15;
+    	let input15_value_value;
+    	let t37;
+    	let t38;
+    	let label14;
+    	let input16;
+    	let input16_value_value;
+    	let t39;
+    	let t40;
     	let button;
     	let dispose;
 
     	const block = {
     		c: function create() {
+    			div6 = element("div");
     			div5 = element("div");
-    			div4 = element("div");
     			div0 = element("div");
     			t0 = text("Participant ID:\n\t\t\t\t\t\t\t");
     			input0 = element("input");
     			t1 = space();
     			div1 = element("div");
     			p0 = element("p");
-    			p0.textContent = "Please select your age range:";
+    			p0.textContent = "Please select your gender:";
     			t3 = space();
     			label0 = element("label");
     			input1 = element("input");
-    			t4 = text("\n\t\t\t\t\t\t\t\tLess than 18");
+    			t4 = text("\n\t\t\t\t\t\t\t\tFemale");
     			t5 = space();
     			label1 = element("label");
     			input2 = element("input");
-    			t6 = text("\n\t\t\t\t\t\t\t\t18 to 24 (inclusive)");
+    			t6 = text("\n\t\t\t\t\t\t\t\tMale");
     			t7 = space();
     			label2 = element("label");
     			input3 = element("input");
-    			t8 = text("\n\t\t\t\t\t\t\t\t25 to 29 (inclusive)");
+    			t8 = text("\n\t\t\t\t\t\t\t\tOther");
     			t9 = space();
     			label3 = element("label");
     			input4 = element("input");
-    			t10 = text("\n\t\t\t\t\t\t\t\t30 to 34 (inclusive)");
+    			t10 = text("\n\t\t\t\t\t\t\t\tPrefer not to say");
     			t11 = space();
-    			label4 = element("label");
-    			input5 = element("input");
-    			t12 = text("\n\t\t\t\t\t\t\t\t35 or greater");
-    			t13 = space();
     			div2 = element("div");
     			p1 = element("p");
-    			p1.textContent = "Please list the visualization tools you have used in the last 30 days (comma separated):";
+    			p1.textContent = "Please select your age range:";
+    			t13 = space();
+    			label4 = element("label");
+    			input5 = element("input");
+    			t14 = text("\n\t\t\t\t\t\t\t\t18 to 19 (inclusive)");
     			t15 = space();
+    			label5 = element("label");
     			input6 = element("input");
-    			t16 = space();
+    			t16 = text("\n\t\t\t\t\t\t\t\t20 to 24 (inclusive)");
+    			t17 = space();
+    			label6 = element("label");
+    			input7 = element("input");
+    			t18 = text("\n\t\t\t\t\t\t\t\t25 to 29 (inclusive)");
+    			t19 = space();
+    			label7 = element("label");
+    			input8 = element("input");
+    			t20 = text("\n\t\t\t\t\t\t\t\t30 to 34 (inclusive)");
+    			t21 = space();
+    			label8 = element("label");
+    			input9 = element("input");
+    			t22 = text("\n\t\t\t\t\t\t\t\t35 or greater");
+    			t23 = space();
+    			label9 = element("label");
+    			input10 = element("input");
+    			t24 = text("\n\t\t\t\t\t\t\t\tPrefer not to say");
+    			t25 = space();
     			div3 = element("div");
     			p2 = element("p");
-    			p2.textContent = "In the last 30 days how often have used visualization tools?";
-    			t18 = space();
-    			label5 = element("label");
-    			input7 = element("input");
-    			t19 = text("\n\t\t\t\t\t\t\t\tNever");
-    			t20 = space();
-    			label6 = element("label");
-    			input8 = element("input");
-    			t21 = text("\n\t\t\t\t\t\t\t\t1-2 times");
-    			t22 = space();
-    			label7 = element("label");
-    			input9 = element("input");
-    			t23 = text("\n\t\t\t\t\t\t\t\t3-5 times");
-    			t24 = space();
-    			label8 = element("label");
-    			input10 = element("input");
-    			t25 = text("\n\t\t\t\t\t\t\t\t5-10 times");
-    			t26 = space();
-    			label9 = element("label");
+    			p2.textContent = "Please list the visualization tools you have used in the last 30 days (comma separated):";
+    			t27 = space();
     			input11 = element("input");
-    			t27 = text("\n\t\t\t\t\t\t\t\tMore than 10 times");
     			t28 = space();
+    			div4 = element("div");
+    			p3 = element("p");
+    			p3.textContent = "In the last 30 days how often have used any of these visualization tools?";
+    			t30 = space();
+    			label10 = element("label");
+    			input12 = element("input");
+    			t31 = text("\n\t\t\t\t\t\t\t\tNever");
+    			t32 = space();
+    			label11 = element("label");
+    			input13 = element("input");
+    			t33 = text("\n\t\t\t\t\t\t\t\t1-2 times");
+    			t34 = space();
+    			label12 = element("label");
+    			input14 = element("input");
+    			t35 = text("\n\t\t\t\t\t\t\t\t3-5 times");
+    			t36 = space();
+    			label13 = element("label");
+    			input15 = element("input");
+    			t37 = text("\n\t\t\t\t\t\t\t\t5-10 times");
+    			t38 = space();
+    			label14 = element("label");
+    			input16 = element("input");
+    			t39 = text("\n\t\t\t\t\t\t\t\tMore than 10 times");
+    			t40 = space();
     			button = element("button");
     			button.textContent = "BEGIN";
-    			attr_dev(input0, "class", "inputBox svelte-1x7dse7");
-    			add_location(input0, file$7, 132, 7, 3351);
+    			attr_dev(input0, "class", "inputBox svelte-1dzpmaa");
+    			add_location(input0, file$8, 138, 7, 3465);
     			attr_dev(div0, "id", "participantID");
-    			add_location(div0, file$7, 130, 6, 3296);
-    			attr_dev(p0, "class", "inputContent svelte-1x7dse7");
-    			add_location(p0, file$7, 135, 7, 3453);
+    			add_location(div0, file$8, 136, 6, 3410);
+    			attr_dev(p0, "class", "inputContent svelte-1dzpmaa");
+    			add_location(p0, file$8, 141, 7, 3570);
     			attr_dev(input1, "type", "radio");
-    			input1.__value = input1_value_value = "<18";
+    			input1.__value = input1_value_value = "F";
     			input1.value = input1.__value;
-    			/*$$binding_groups*/ ctx[16][1].push(input1);
-    			add_location(input1, file$7, 137, 8, 3551);
-    			attr_dev(label0, "class", "inputBox svelte-1x7dse7");
-    			add_location(label0, file$7, 136, 7, 3518);
+    			/*$$binding_groups*/ ctx[17][2].push(input1);
+    			add_location(input1, file$8, 143, 8, 3665);
+    			attr_dev(label0, "class", "inputBox svelte-1dzpmaa");
+    			add_location(label0, file$8, 142, 7, 3632);
     			attr_dev(input2, "type", "radio");
-    			input2.__value = input2_value_value = "18-24";
+    			input2.__value = input2_value_value = "M";
     			input2.value = input2.__value;
-    			/*$$binding_groups*/ ctx[16][1].push(input2);
-    			add_location(input2, file$7, 141, 8, 3683);
-    			attr_dev(label1, "class", "inputBox svelte-1x7dse7");
-    			add_location(label1, file$7, 140, 7, 3650);
+    			/*$$binding_groups*/ ctx[17][2].push(input2);
+    			add_location(input2, file$8, 147, 8, 3787);
+    			attr_dev(label1, "class", "inputBox svelte-1dzpmaa");
+    			add_location(label1, file$8, 146, 7, 3754);
     			attr_dev(input3, "type", "radio");
-    			input3.__value = input3_value_value = "25-29";
+    			input3.__value = input3_value_value = "other";
     			input3.value = input3.__value;
-    			/*$$binding_groups*/ ctx[16][1].push(input3);
-    			add_location(input3, file$7, 145, 8, 3825);
-    			attr_dev(label2, "class", "inputBox svelte-1x7dse7");
-    			add_location(label2, file$7, 144, 7, 3792);
+    			/*$$binding_groups*/ ctx[17][2].push(input3);
+    			add_location(input3, file$8, 151, 8, 3907);
+    			attr_dev(label2, "class", "inputBox svelte-1dzpmaa");
+    			add_location(label2, file$8, 150, 7, 3874);
     			attr_dev(input4, "type", "radio");
-    			input4.__value = input4_value_value = "30-34";
+    			input4.__value = input4_value_value = "none";
     			input4.value = input4.__value;
-    			/*$$binding_groups*/ ctx[16][1].push(input4);
-    			add_location(input4, file$7, 149, 8, 3967);
-    			attr_dev(label3, "class", "inputBox svelte-1x7dse7");
-    			add_location(label3, file$7, 148, 7, 3934);
+    			/*$$binding_groups*/ ctx[17][2].push(input4);
+    			add_location(input4, file$8, 155, 8, 4032);
+    			attr_dev(label3, "class", "inputBox svelte-1dzpmaa");
+    			add_location(label3, file$8, 154, 7, 3999);
+    			attr_dev(div1, "id", "participantGender");
+    			add_location(div1, file$8, 140, 6, 3534);
+    			attr_dev(p1, "class", "inputContent svelte-1dzpmaa");
+    			add_location(p1, file$8, 160, 7, 4180);
     			attr_dev(input5, "type", "radio");
-    			input5.__value = input5_value_value = ">=35";
+    			input5.__value = input5_value_value = "18-19";
     			input5.value = input5.__value;
-    			/*$$binding_groups*/ ctx[16][1].push(input5);
-    			add_location(input5, file$7, 153, 8, 4109);
-    			attr_dev(label4, "class", "inputBox svelte-1x7dse7");
-    			add_location(label4, file$7, 152, 7, 4076);
-    			attr_dev(div1, "id", "participantAge");
-    			add_location(div1, file$7, 134, 6, 3420);
-    			attr_dev(p1, "class", "inputContent svelte-1x7dse7");
-    			add_location(p1, file$7, 158, 7, 4257);
-    			attr_dev(input6, "id", "toolsInput");
-    			attr_dev(input6, "class", "inputBox svelte-1x7dse7");
-    			add_location(input6, file$7, 159, 7, 4381);
-    			attr_dev(div2, "id", "participantTools");
-    			add_location(div2, file$7, 157, 6, 4222);
-    			attr_dev(p2, "class", "inputContent svelte-1x7dse7");
-    			add_location(p2, file$7, 162, 7, 4500);
+    			/*$$binding_groups*/ ctx[17][1].push(input5);
+    			add_location(input5, file$8, 162, 8, 4278);
+    			attr_dev(label4, "class", "inputBox svelte-1dzpmaa");
+    			add_location(label4, file$8, 161, 7, 4245);
+    			attr_dev(input6, "type", "radio");
+    			input6.__value = input6_value_value = "20-24";
+    			input6.value = input6.__value;
+    			/*$$binding_groups*/ ctx[17][1].push(input6);
+    			add_location(input6, file$8, 166, 8, 4420);
+    			attr_dev(label5, "class", "inputBox svelte-1dzpmaa");
+    			add_location(label5, file$8, 165, 7, 4387);
     			attr_dev(input7, "type", "radio");
-    			input7.__value = input7_value_value = "0";
+    			input7.__value = input7_value_value = "25-29";
     			input7.value = input7.__value;
-    			/*$$binding_groups*/ ctx[16][0].push(input7);
-    			add_location(input7, file$7, 164, 8, 4629);
-    			attr_dev(label5, "class", "inputBox svelte-1x7dse7");
-    			add_location(label5, file$7, 163, 7, 4596);
+    			/*$$binding_groups*/ ctx[17][1].push(input7);
+    			add_location(input7, file$8, 170, 8, 4562);
+    			attr_dev(label6, "class", "inputBox svelte-1dzpmaa");
+    			add_location(label6, file$8, 169, 7, 4529);
     			attr_dev(input8, "type", "radio");
-    			input8.__value = input8_value_value = "1-2";
+    			input8.__value = input8_value_value = "30-34";
     			input8.value = input8.__value;
-    			/*$$binding_groups*/ ctx[16][0].push(input8);
-    			add_location(input8, file$7, 168, 8, 4754);
-    			attr_dev(label6, "class", "inputBox svelte-1x7dse7");
-    			add_location(label6, file$7, 167, 7, 4721);
+    			/*$$binding_groups*/ ctx[17][1].push(input8);
+    			add_location(input8, file$8, 174, 8, 4704);
+    			attr_dev(label7, "class", "inputBox svelte-1dzpmaa");
+    			add_location(label7, file$8, 173, 7, 4671);
     			attr_dev(input9, "type", "radio");
-    			input9.__value = input9_value_value = "3-5";
+    			input9.__value = input9_value_value = ">=35";
     			input9.value = input9.__value;
-    			/*$$binding_groups*/ ctx[16][0].push(input9);
-    			add_location(input9, file$7, 172, 8, 4885);
-    			attr_dev(label7, "class", "inputBox svelte-1x7dse7");
-    			add_location(label7, file$7, 171, 7, 4852);
+    			/*$$binding_groups*/ ctx[17][1].push(input9);
+    			add_location(input9, file$8, 178, 8, 4846);
+    			attr_dev(label8, "class", "inputBox svelte-1dzpmaa");
+    			add_location(label8, file$8, 177, 7, 4813);
     			attr_dev(input10, "type", "radio");
-    			input10.__value = input10_value_value = "5-10";
+    			input10.__value = input10_value_value = "none";
     			input10.value = input10.__value;
-    			/*$$binding_groups*/ ctx[16][0].push(input10);
-    			add_location(input10, file$7, 176, 8, 5016);
-    			attr_dev(label8, "class", "inputBox svelte-1x7dse7");
-    			add_location(label8, file$7, 175, 7, 4983);
-    			attr_dev(input11, "type", "radio");
-    			input11.__value = input11_value_value = ">10";
-    			input11.value = input11.__value;
-    			/*$$binding_groups*/ ctx[16][0].push(input11);
-    			add_location(input11, file$7, 180, 8, 5149);
-    			attr_dev(label9, "class", "inputBox svelte-1x7dse7");
-    			add_location(label9, file$7, 179, 7, 5116);
-    			attr_dev(div3, "id", "participantExperience");
-    			add_location(div3, file$7, 161, 6, 4460);
+    			/*$$binding_groups*/ ctx[17][1].push(input10);
+    			add_location(input10, file$8, 182, 8, 4980);
+    			attr_dev(label9, "class", "inputBox svelte-1dzpmaa");
+    			add_location(label9, file$8, 181, 7, 4947);
+    			attr_dev(div2, "id", "participantAge");
+    			add_location(div2, file$8, 159, 6, 4147);
+    			attr_dev(p2, "class", "inputContent svelte-1dzpmaa");
+    			add_location(p2, file$8, 187, 7, 5132);
+    			attr_dev(input11, "id", "toolsInput");
+    			attr_dev(input11, "class", "inputBox svelte-1dzpmaa");
+    			add_location(input11, file$8, 188, 7, 5256);
+    			attr_dev(div3, "id", "participantTools");
+    			add_location(div3, file$8, 186, 6, 5097);
+    			attr_dev(p3, "class", "inputContent svelte-1dzpmaa");
+    			add_location(p3, file$8, 191, 7, 5375);
+    			attr_dev(input12, "type", "radio");
+    			input12.__value = input12_value_value = "0";
+    			input12.value = input12.__value;
+    			/*$$binding_groups*/ ctx[17][0].push(input12);
+    			add_location(input12, file$8, 193, 8, 5517);
+    			attr_dev(label10, "class", "inputBox svelte-1dzpmaa");
+    			add_location(label10, file$8, 192, 7, 5484);
+    			attr_dev(input13, "type", "radio");
+    			input13.__value = input13_value_value = "1-2";
+    			input13.value = input13.__value;
+    			/*$$binding_groups*/ ctx[17][0].push(input13);
+    			add_location(input13, file$8, 197, 8, 5642);
+    			attr_dev(label11, "class", "inputBox svelte-1dzpmaa");
+    			add_location(label11, file$8, 196, 7, 5609);
+    			attr_dev(input14, "type", "radio");
+    			input14.__value = input14_value_value = "3-5";
+    			input14.value = input14.__value;
+    			/*$$binding_groups*/ ctx[17][0].push(input14);
+    			add_location(input14, file$8, 201, 8, 5773);
+    			attr_dev(label12, "class", "inputBox svelte-1dzpmaa");
+    			add_location(label12, file$8, 200, 7, 5740);
+    			attr_dev(input15, "type", "radio");
+    			input15.__value = input15_value_value = "5-10";
+    			input15.value = input15.__value;
+    			/*$$binding_groups*/ ctx[17][0].push(input15);
+    			add_location(input15, file$8, 205, 8, 5904);
+    			attr_dev(label13, "class", "inputBox svelte-1dzpmaa");
+    			add_location(label13, file$8, 204, 7, 5871);
+    			attr_dev(input16, "type", "radio");
+    			input16.__value = input16_value_value = ">10";
+    			input16.value = input16.__value;
+    			/*$$binding_groups*/ ctx[17][0].push(input16);
+    			add_location(input16, file$8, 209, 8, 6037);
+    			attr_dev(label14, "class", "inputBox svelte-1dzpmaa");
+    			add_location(label14, file$8, 208, 7, 6004);
+    			attr_dev(div4, "id", "participantExperience");
+    			add_location(div4, file$8, 190, 6, 5335);
     			attr_dev(button, "id", "beginButton");
-    			attr_dev(button, "class", "svelte-1x7dse7");
-    			add_location(button, file$7, 192, 6, 5579);
-    			attr_dev(div4, "id", "demographics");
-    			attr_dev(div4, "class", "svelte-1x7dse7");
-    			add_location(div4, file$7, 129, 5, 3266);
-    			attr_dev(div5, "id", "chooseVersion");
-    			attr_dev(div5, "class", "svelte-1x7dse7");
-    			add_location(div5, file$7, 128, 4, 3236);
+    			attr_dev(button, "class", "svelte-1dzpmaa");
+    			add_location(button, file$8, 221, 6, 6467);
+    			attr_dev(div5, "id", "demographics");
+    			attr_dev(div5, "class", "svelte-1dzpmaa");
+    			add_location(div5, file$8, 135, 5, 3380);
+    			attr_dev(div6, "id", "chooseVersion");
+    			attr_dev(div6, "class", "svelte-1dzpmaa");
+    			add_location(div6, file$8, 134, 4, 3350);
     		},
     		m: function mount(target, anchor, remount) {
-    			insert_dev(target, div5, anchor);
-    			append_dev(div5, div4);
-    			append_dev(div4, div0);
+    			insert_dev(target, div6, anchor);
+    			append_dev(div6, div5);
+    			append_dev(div5, div0);
     			append_dev(div0, t0);
     			append_dev(div0, input0);
     			set_input_value(input0, /*participant*/ ctx[0]);
-    			append_dev(div4, t1);
-    			append_dev(div4, div1);
+    			append_dev(div5, t1);
+    			append_dev(div5, div1);
     			append_dev(div1, p0);
     			append_dev(div1, t3);
     			append_dev(div1, label0);
     			append_dev(label0, input1);
-    			input1.checked = input1.__value === /*ageRange*/ ctx[1];
+    			input1.checked = input1.__value === /*gender*/ ctx[1];
     			append_dev(label0, t4);
     			append_dev(div1, t5);
     			append_dev(div1, label1);
     			append_dev(label1, input2);
-    			input2.checked = input2.__value === /*ageRange*/ ctx[1];
+    			input2.checked = input2.__value === /*gender*/ ctx[1];
     			append_dev(label1, t6);
     			append_dev(div1, t7);
     			append_dev(div1, label2);
     			append_dev(label2, input3);
-    			input3.checked = input3.__value === /*ageRange*/ ctx[1];
+    			input3.checked = input3.__value === /*gender*/ ctx[1];
     			append_dev(label2, t8);
     			append_dev(div1, t9);
     			append_dev(div1, label3);
     			append_dev(label3, input4);
-    			input4.checked = input4.__value === /*ageRange*/ ctx[1];
+    			input4.checked = input4.__value === /*gender*/ ctx[1];
     			append_dev(label3, t10);
-    			append_dev(div1, t11);
-    			append_dev(div1, label4);
-    			append_dev(label4, input5);
-    			input5.checked = input5.__value === /*ageRange*/ ctx[1];
-    			append_dev(label4, t12);
-    			append_dev(div4, t13);
-    			append_dev(div4, div2);
+    			append_dev(div5, t11);
+    			append_dev(div5, div2);
     			append_dev(div2, p1);
+    			append_dev(div2, t13);
+    			append_dev(div2, label4);
+    			append_dev(label4, input5);
+    			input5.checked = input5.__value === /*ageRange*/ ctx[2];
+    			append_dev(label4, t14);
     			append_dev(div2, t15);
-    			append_dev(div2, input6);
-    			set_input_value(input6, /*tools*/ ctx[2]);
-    			append_dev(div4, t16);
-    			append_dev(div4, div3);
+    			append_dev(div2, label5);
+    			append_dev(label5, input6);
+    			input6.checked = input6.__value === /*ageRange*/ ctx[2];
+    			append_dev(label5, t16);
+    			append_dev(div2, t17);
+    			append_dev(div2, label6);
+    			append_dev(label6, input7);
+    			input7.checked = input7.__value === /*ageRange*/ ctx[2];
+    			append_dev(label6, t18);
+    			append_dev(div2, t19);
+    			append_dev(div2, label7);
+    			append_dev(label7, input8);
+    			input8.checked = input8.__value === /*ageRange*/ ctx[2];
+    			append_dev(label7, t20);
+    			append_dev(div2, t21);
+    			append_dev(div2, label8);
+    			append_dev(label8, input9);
+    			input9.checked = input9.__value === /*ageRange*/ ctx[2];
+    			append_dev(label8, t22);
+    			append_dev(div2, t23);
+    			append_dev(div2, label9);
+    			append_dev(label9, input10);
+    			input10.checked = input10.__value === /*ageRange*/ ctx[2];
+    			append_dev(label9, t24);
+    			append_dev(div5, t25);
+    			append_dev(div5, div3);
     			append_dev(div3, p2);
-    			append_dev(div3, t18);
-    			append_dev(div3, label5);
-    			append_dev(label5, input7);
-    			input7.checked = input7.__value === /*experience*/ ctx[3];
-    			append_dev(label5, t19);
-    			append_dev(div3, t20);
-    			append_dev(div3, label6);
-    			append_dev(label6, input8);
-    			input8.checked = input8.__value === /*experience*/ ctx[3];
-    			append_dev(label6, t21);
-    			append_dev(div3, t22);
-    			append_dev(div3, label7);
-    			append_dev(label7, input9);
-    			input9.checked = input9.__value === /*experience*/ ctx[3];
-    			append_dev(label7, t23);
-    			append_dev(div3, t24);
-    			append_dev(div3, label8);
-    			append_dev(label8, input10);
-    			input10.checked = input10.__value === /*experience*/ ctx[3];
-    			append_dev(label8, t25);
-    			append_dev(div3, t26);
-    			append_dev(div3, label9);
-    			append_dev(label9, input11);
-    			input11.checked = input11.__value === /*experience*/ ctx[3];
-    			append_dev(label9, t27);
-    			append_dev(div4, t28);
-    			append_dev(div4, button);
+    			append_dev(div3, t27);
+    			append_dev(div3, input11);
+    			set_input_value(input11, /*tools*/ ctx[3]);
+    			append_dev(div5, t28);
+    			append_dev(div5, div4);
+    			append_dev(div4, p3);
+    			append_dev(div4, t30);
+    			append_dev(div4, label10);
+    			append_dev(label10, input12);
+    			input12.checked = input12.__value === /*experience*/ ctx[4];
+    			append_dev(label10, t31);
+    			append_dev(div4, t32);
+    			append_dev(div4, label11);
+    			append_dev(label11, input13);
+    			input13.checked = input13.__value === /*experience*/ ctx[4];
+    			append_dev(label11, t33);
+    			append_dev(div4, t34);
+    			append_dev(div4, label12);
+    			append_dev(label12, input14);
+    			input14.checked = input14.__value === /*experience*/ ctx[4];
+    			append_dev(label12, t35);
+    			append_dev(div4, t36);
+    			append_dev(div4, label13);
+    			append_dev(label13, input15);
+    			input15.checked = input15.__value === /*experience*/ ctx[4];
+    			append_dev(label13, t37);
+    			append_dev(div4, t38);
+    			append_dev(div4, label14);
+    			append_dev(label14, input16);
+    			input16.checked = input16.__value === /*experience*/ ctx[4];
+    			append_dev(label14, t39);
+    			append_dev(div5, t40);
+    			append_dev(div5, button);
     			if (remount) run_all(dispose);
 
     			dispose = [
-    				listen_dev(input0, "input", /*input0_input_handler*/ ctx[14]),
-    				listen_dev(input1, "change", /*input1_change_handler*/ ctx[15]),
-    				listen_dev(input2, "change", /*input2_change_handler*/ ctx[17]),
-    				listen_dev(input3, "change", /*input3_change_handler*/ ctx[18]),
-    				listen_dev(input4, "change", /*input4_change_handler*/ ctx[19]),
-    				listen_dev(input5, "change", /*input5_change_handler*/ ctx[20]),
-    				listen_dev(input6, "input", /*input6_input_handler*/ ctx[21]),
-    				listen_dev(input7, "change", /*input7_change_handler*/ ctx[22]),
-    				listen_dev(input8, "change", /*input8_change_handler*/ ctx[23]),
-    				listen_dev(input9, "change", /*input9_change_handler*/ ctx[24]),
-    				listen_dev(input10, "change", /*input10_change_handler*/ ctx[25]),
-    				listen_dev(input11, "change", /*input11_change_handler*/ ctx[26]),
-    				listen_dev(button, "click", /*load*/ ctx[9], false, false, false)
+    				listen_dev(input0, "input", /*input0_input_handler*/ ctx[15]),
+    				listen_dev(input1, "change", /*input1_change_handler*/ ctx[16]),
+    				listen_dev(input2, "change", /*input2_change_handler*/ ctx[18]),
+    				listen_dev(input3, "change", /*input3_change_handler*/ ctx[19]),
+    				listen_dev(input4, "change", /*input4_change_handler*/ ctx[20]),
+    				listen_dev(input5, "change", /*input5_change_handler*/ ctx[21]),
+    				listen_dev(input6, "change", /*input6_change_handler*/ ctx[22]),
+    				listen_dev(input7, "change", /*input7_change_handler*/ ctx[23]),
+    				listen_dev(input8, "change", /*input8_change_handler*/ ctx[24]),
+    				listen_dev(input9, "change", /*input9_change_handler*/ ctx[25]),
+    				listen_dev(input10, "change", /*input10_change_handler*/ ctx[26]),
+    				listen_dev(input11, "input", /*input11_input_handler*/ ctx[27]),
+    				listen_dev(input12, "change", /*input12_change_handler*/ ctx[28]),
+    				listen_dev(input13, "change", /*input13_change_handler*/ ctx[29]),
+    				listen_dev(input14, "change", /*input14_change_handler*/ ctx[30]),
+    				listen_dev(input15, "change", /*input15_change_handler*/ ctx[31]),
+    				listen_dev(input16, "change", /*input16_change_handler*/ ctx[32]),
+    				listen_dev(button, "click", /*load*/ ctx[10], false, false, false)
     			];
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty & /*participant*/ 1 && input0.value !== /*participant*/ ctx[0]) {
+    			if (dirty[0] & /*participant*/ 1 && input0.value !== /*participant*/ ctx[0]) {
     				set_input_value(input0, /*participant*/ ctx[0]);
     			}
 
-    			if (dirty & /*ageRange*/ 2) {
-    				input1.checked = input1.__value === /*ageRange*/ ctx[1];
+    			if (dirty[0] & /*gender*/ 2) {
+    				input1.checked = input1.__value === /*gender*/ ctx[1];
     			}
 
-    			if (dirty & /*ageRange*/ 2) {
-    				input2.checked = input2.__value === /*ageRange*/ ctx[1];
+    			if (dirty[0] & /*gender*/ 2) {
+    				input2.checked = input2.__value === /*gender*/ ctx[1];
     			}
 
-    			if (dirty & /*ageRange*/ 2) {
-    				input3.checked = input3.__value === /*ageRange*/ ctx[1];
+    			if (dirty[0] & /*gender*/ 2) {
+    				input3.checked = input3.__value === /*gender*/ ctx[1];
     			}
 
-    			if (dirty & /*ageRange*/ 2) {
-    				input4.checked = input4.__value === /*ageRange*/ ctx[1];
+    			if (dirty[0] & /*gender*/ 2) {
+    				input4.checked = input4.__value === /*gender*/ ctx[1];
     			}
 
-    			if (dirty & /*ageRange*/ 2) {
-    				input5.checked = input5.__value === /*ageRange*/ ctx[1];
+    			if (dirty[0] & /*ageRange*/ 4) {
+    				input5.checked = input5.__value === /*ageRange*/ ctx[2];
     			}
 
-    			if (dirty & /*tools*/ 4 && input6.value !== /*tools*/ ctx[2]) {
-    				set_input_value(input6, /*tools*/ ctx[2]);
+    			if (dirty[0] & /*ageRange*/ 4) {
+    				input6.checked = input6.__value === /*ageRange*/ ctx[2];
     			}
 
-    			if (dirty & /*experience*/ 8) {
-    				input7.checked = input7.__value === /*experience*/ ctx[3];
+    			if (dirty[0] & /*ageRange*/ 4) {
+    				input7.checked = input7.__value === /*ageRange*/ ctx[2];
     			}
 
-    			if (dirty & /*experience*/ 8) {
-    				input8.checked = input8.__value === /*experience*/ ctx[3];
+    			if (dirty[0] & /*ageRange*/ 4) {
+    				input8.checked = input8.__value === /*ageRange*/ ctx[2];
     			}
 
-    			if (dirty & /*experience*/ 8) {
-    				input9.checked = input9.__value === /*experience*/ ctx[3];
+    			if (dirty[0] & /*ageRange*/ 4) {
+    				input9.checked = input9.__value === /*ageRange*/ ctx[2];
     			}
 
-    			if (dirty & /*experience*/ 8) {
-    				input10.checked = input10.__value === /*experience*/ ctx[3];
+    			if (dirty[0] & /*ageRange*/ 4) {
+    				input10.checked = input10.__value === /*ageRange*/ ctx[2];
     			}
 
-    			if (dirty & /*experience*/ 8) {
-    				input11.checked = input11.__value === /*experience*/ ctx[3];
+    			if (dirty[0] & /*tools*/ 8 && input11.value !== /*tools*/ ctx[3]) {
+    				set_input_value(input11, /*tools*/ ctx[3]);
+    			}
+
+    			if (dirty[0] & /*experience*/ 16) {
+    				input12.checked = input12.__value === /*experience*/ ctx[4];
+    			}
+
+    			if (dirty[0] & /*experience*/ 16) {
+    				input13.checked = input13.__value === /*experience*/ ctx[4];
+    			}
+
+    			if (dirty[0] & /*experience*/ 16) {
+    				input14.checked = input14.__value === /*experience*/ ctx[4];
+    			}
+
+    			if (dirty[0] & /*experience*/ 16) {
+    				input15.checked = input15.__value === /*experience*/ ctx[4];
+    			}
+
+    			if (dirty[0] & /*experience*/ 16) {
+    				input16.checked = input16.__value === /*experience*/ ctx[4];
     			}
     		},
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div5);
-    			/*$$binding_groups*/ ctx[16][1].splice(/*$$binding_groups*/ ctx[16][1].indexOf(input1), 1);
-    			/*$$binding_groups*/ ctx[16][1].splice(/*$$binding_groups*/ ctx[16][1].indexOf(input2), 1);
-    			/*$$binding_groups*/ ctx[16][1].splice(/*$$binding_groups*/ ctx[16][1].indexOf(input3), 1);
-    			/*$$binding_groups*/ ctx[16][1].splice(/*$$binding_groups*/ ctx[16][1].indexOf(input4), 1);
-    			/*$$binding_groups*/ ctx[16][1].splice(/*$$binding_groups*/ ctx[16][1].indexOf(input5), 1);
-    			/*$$binding_groups*/ ctx[16][0].splice(/*$$binding_groups*/ ctx[16][0].indexOf(input7), 1);
-    			/*$$binding_groups*/ ctx[16][0].splice(/*$$binding_groups*/ ctx[16][0].indexOf(input8), 1);
-    			/*$$binding_groups*/ ctx[16][0].splice(/*$$binding_groups*/ ctx[16][0].indexOf(input9), 1);
-    			/*$$binding_groups*/ ctx[16][0].splice(/*$$binding_groups*/ ctx[16][0].indexOf(input10), 1);
-    			/*$$binding_groups*/ ctx[16][0].splice(/*$$binding_groups*/ ctx[16][0].indexOf(input11), 1);
+    			if (detaching) detach_dev(div6);
+    			/*$$binding_groups*/ ctx[17][2].splice(/*$$binding_groups*/ ctx[17][2].indexOf(input1), 1);
+    			/*$$binding_groups*/ ctx[17][2].splice(/*$$binding_groups*/ ctx[17][2].indexOf(input2), 1);
+    			/*$$binding_groups*/ ctx[17][2].splice(/*$$binding_groups*/ ctx[17][2].indexOf(input3), 1);
+    			/*$$binding_groups*/ ctx[17][2].splice(/*$$binding_groups*/ ctx[17][2].indexOf(input4), 1);
+    			/*$$binding_groups*/ ctx[17][1].splice(/*$$binding_groups*/ ctx[17][1].indexOf(input5), 1);
+    			/*$$binding_groups*/ ctx[17][1].splice(/*$$binding_groups*/ ctx[17][1].indexOf(input6), 1);
+    			/*$$binding_groups*/ ctx[17][1].splice(/*$$binding_groups*/ ctx[17][1].indexOf(input7), 1);
+    			/*$$binding_groups*/ ctx[17][1].splice(/*$$binding_groups*/ ctx[17][1].indexOf(input8), 1);
+    			/*$$binding_groups*/ ctx[17][1].splice(/*$$binding_groups*/ ctx[17][1].indexOf(input9), 1);
+    			/*$$binding_groups*/ ctx[17][1].splice(/*$$binding_groups*/ ctx[17][1].indexOf(input10), 1);
+    			/*$$binding_groups*/ ctx[17][0].splice(/*$$binding_groups*/ ctx[17][0].indexOf(input12), 1);
+    			/*$$binding_groups*/ ctx[17][0].splice(/*$$binding_groups*/ ctx[17][0].indexOf(input13), 1);
+    			/*$$binding_groups*/ ctx[17][0].splice(/*$$binding_groups*/ ctx[17][0].indexOf(input14), 1);
+    			/*$$binding_groups*/ ctx[17][0].splice(/*$$binding_groups*/ ctx[17][0].indexOf(input15), 1);
+    			/*$$binding_groups*/ ctx[17][0].splice(/*$$binding_groups*/ ctx[17][0].indexOf(input16), 1);
     			run_all(dispose);
     		}
     	};
@@ -33375,24 +36000,24 @@ ${constraint.asp}`;
     		block,
     		id: create_else_block.name,
     		type: "else",
-    		source: "(128:3) {:else}",
+    		source: "(134:3) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (118:80) 
+    // (124:80) 
     function create_if_block_1(ctx) {
     	let current;
 
     	const versionrecommendations = new VersionRecommendations({
     			props: {
-    				dataset: /*dataset*/ ctx[27]["dataset"],
-    				types: /*dataset*/ ctx[27]["types"],
+    				dataset: /*dataset*/ ctx[33]["dataset"],
+    				types: /*dataset*/ ctx[33]["types"],
     				selectedAttributes: /*selectedAttributes*/ ctx[6],
     				participant: /*participant*/ ctx[0],
-    				allParticipantInfo: /*allParticipantInfo*/ ctx[4]
+    				allParticipantInfo: /*allParticipantInfo*/ ctx[8]
     			},
     			$$inline: true
     		});
@@ -33407,9 +36032,8 @@ ${constraint.asp}`;
     		},
     		p: function update(ctx, dirty) {
     			const versionrecommendations_changes = {};
-    			if (dirty & /*selectedAttributes*/ 64) versionrecommendations_changes.selectedAttributes = /*selectedAttributes*/ ctx[6];
-    			if (dirty & /*participant*/ 1) versionrecommendations_changes.participant = /*participant*/ ctx[0];
-    			if (dirty & /*allParticipantInfo*/ 16) versionrecommendations_changes.allParticipantInfo = /*allParticipantInfo*/ ctx[4];
+    			if (dirty[0] & /*selectedAttributes*/ 64) versionrecommendations_changes.selectedAttributes = /*selectedAttributes*/ ctx[6];
+    			if (dirty[0] & /*participant*/ 1) versionrecommendations_changes.participant = /*participant*/ ctx[0];
     			versionrecommendations.$set(versionrecommendations_changes);
     		},
     		i: function intro(local) {
@@ -33430,23 +36054,23 @@ ${constraint.asp}`;
     		block,
     		id: create_if_block_1.name,
     		type: "if",
-    		source: "(118:80) ",
+    		source: "(124:80) ",
     		ctx
     	});
 
     	return block;
     }
 
-    // (112:3) {#if start && participantOrder[participant - 1] === "constraintSolver"}
+    // (118:3) {#if start && participantOrder[participant - 1] === "constraintSolver"}
     function create_if_block(ctx) {
     	let current;
 
     	const versionconstraintsolver = new VersionConstraintSolver({
     			props: {
-    				dataset: /*dataset*/ ctx[27]["dataset"],
-    				types: /*dataset*/ ctx[27]["types"],
+    				dataset: /*dataset*/ ctx[33]["dataset"],
+    				types: /*dataset*/ ctx[33]["types"],
     				selectedAttributes: /*selectedAttributes*/ ctx[6],
-    				allParticipantInfo: /*allParticipantInfo*/ ctx[4]
+    				allParticipantInfo: /*allParticipantInfo*/ ctx[8]
     			},
     			$$inline: true
     		});
@@ -33461,8 +36085,7 @@ ${constraint.asp}`;
     		},
     		p: function update(ctx, dirty) {
     			const versionconstraintsolver_changes = {};
-    			if (dirty & /*selectedAttributes*/ 64) versionconstraintsolver_changes.selectedAttributes = /*selectedAttributes*/ ctx[6];
-    			if (dirty & /*allParticipantInfo*/ 16) versionconstraintsolver_changes.allParticipantInfo = /*allParticipantInfo*/ ctx[4];
+    			if (dirty[0] & /*selectedAttributes*/ 64) versionconstraintsolver_changes.selectedAttributes = /*selectedAttributes*/ ctx[6];
     			versionconstraintsolver.$set(versionconstraintsolver_changes);
     		},
     		i: function intro(local) {
@@ -33483,14 +36106,14 @@ ${constraint.asp}`;
     		block,
     		id: create_if_block.name,
     		type: "if",
-    		source: "(112:3) {#if start && participantOrder[participant - 1] === \\\"constraintSolver\\\"}",
+    		source: "(118:3) {#if start && participantOrder[participant - 1] === \\\"constraintSolver\\\"}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (109:18)     <p>...loading</p>   {:then dataset}
+    // (115:18)     <p>...loading</p>   {:then dataset}
     function create_pending_block$1(ctx) {
     	let p;
 
@@ -33498,7 +36121,7 @@ ${constraint.asp}`;
     		c: function create() {
     			p = element("p");
     			p.textContent = "...loading";
-    			add_location(p, file$7, 109, 3, 2601);
+    			add_location(p, file$8, 115, 3, 2715);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -33515,14 +36138,14 @@ ${constraint.asp}`;
     		block,
     		id: create_pending_block$1.name,
     		type: "pending",
-    		source: "(109:18)     <p>...loading</p>   {:then dataset}",
+    		source: "(115:18)     <p>...loading</p>   {:then dataset}",
     		ctx
     	});
 
     	return block;
     }
 
-    function create_fragment$7(ctx) {
+    function create_fragment$8(ctx) {
     	let div1;
     	let div0;
     	let promise_1;
@@ -33535,12 +36158,12 @@ ${constraint.asp}`;
     		pending: create_pending_block$1,
     		then: create_then_block$1,
     		catch: create_catch_block$1,
-    		value: 27,
-    		error: 28,
+    		value: 33,
+    		error: 34,
     		blocks: [,,,]
     	};
 
-    	handle_promise(promise_1 = /*promise*/ ctx[8], info);
+    	handle_promise(promise_1 = /*promise*/ ctx[9], info);
 
     	const block = {
     		c: function create() {
@@ -33548,10 +36171,10 @@ ${constraint.asp}`;
     			div0 = element("div");
     			info.block.c();
     			attr_dev(div0, "id", "main");
-    			attr_dev(div0, "class", "svelte-1x7dse7");
-    			add_location(div0, file$7, 107, 1, 2563);
+    			attr_dev(div0, "class", "svelte-1dzpmaa");
+    			add_location(div0, file$8, 113, 1, 2677);
     			set_style(div1, "padding", "'20px'");
-    			add_location(div1, file$7, 95, 0, 2222);
+    			add_location(div1, file$8, 101, 0, 2336);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -33564,12 +36187,12 @@ ${constraint.asp}`;
     			info.anchor = null;
     			current = true;
     		},
-    		p: function update(new_ctx, [dirty]) {
+    		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
 
     			{
     				const child_ctx = ctx.slice();
-    				child_ctx[27] = info.resolved;
+    				child_ctx[33] = info.resolved;
     				info.block.p(child_ctx, dirty);
     			}
     		},
@@ -33596,7 +36219,7 @@ ${constraint.asp}`;
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_fragment$7.name,
+    		id: create_fragment$8.name,
     		type: "component",
     		source: "",
     		ctx
@@ -33651,7 +36274,7 @@ ${constraint.asp}`;
     	return { dataset, types };
     }
 
-    function instance$7($$self, $$props, $$invalidate) {
+    function instance$8($$self, $$props, $$invalidate) {
     	let versionChoice = null;
     	let version = null;
     	let participant = null;
@@ -33671,6 +36294,7 @@ ${constraint.asp}`;
     		"constraintLearner"
     	];
 
+    	let gender = null;
     	let ageRange = null;
     	let tools = null;
     	let experience = null;
@@ -33690,11 +36314,11 @@ ${constraint.asp}`;
     	}
 
     	function load() {
-    		if (participant && ageRange && ageRange != "<18" && experience) {
-    			$$invalidate(4, allParticipantInfo = { "age": ageRange, tools, experience });
+    		if (participant) {
     			$$invalidate(5, start = true);
     		}
-    	}
+    	} // Uncomment for study
+    	// if (participant && gender && ageRange && ageRange != "<18" && experience) {
 
     	const writable_props = [];
 
@@ -33704,7 +36328,7 @@ ${constraint.asp}`;
 
     	let { $$slots = {}, $$scope } = $$props;
     	validate_slots("App", $$slots, []);
-    	const $$binding_groups = [[], []];
+    	const $$binding_groups = [[], [], []];
 
     	function input0_input_handler() {
     		participant = this.value;
@@ -33712,58 +36336,83 @@ ${constraint.asp}`;
     	}
 
     	function input1_change_handler() {
-    		ageRange = this.__value;
-    		$$invalidate(1, ageRange);
+    		gender = this.__value;
+    		$$invalidate(1, gender);
     	}
 
     	function input2_change_handler() {
-    		ageRange = this.__value;
-    		$$invalidate(1, ageRange);
+    		gender = this.__value;
+    		$$invalidate(1, gender);
     	}
 
     	function input3_change_handler() {
-    		ageRange = this.__value;
-    		$$invalidate(1, ageRange);
+    		gender = this.__value;
+    		$$invalidate(1, gender);
     	}
 
     	function input4_change_handler() {
-    		ageRange = this.__value;
-    		$$invalidate(1, ageRange);
+    		gender = this.__value;
+    		$$invalidate(1, gender);
     	}
 
     	function input5_change_handler() {
     		ageRange = this.__value;
-    		$$invalidate(1, ageRange);
+    		$$invalidate(2, ageRange);
     	}
 
-    	function input6_input_handler() {
-    		tools = this.value;
-    		$$invalidate(2, tools);
+    	function input6_change_handler() {
+    		ageRange = this.__value;
+    		$$invalidate(2, ageRange);
     	}
 
     	function input7_change_handler() {
-    		experience = this.__value;
-    		$$invalidate(3, experience);
+    		ageRange = this.__value;
+    		$$invalidate(2, ageRange);
     	}
 
     	function input8_change_handler() {
-    		experience = this.__value;
-    		$$invalidate(3, experience);
+    		ageRange = this.__value;
+    		$$invalidate(2, ageRange);
     	}
 
     	function input9_change_handler() {
-    		experience = this.__value;
-    		$$invalidate(3, experience);
+    		ageRange = this.__value;
+    		$$invalidate(2, ageRange);
     	}
 
     	function input10_change_handler() {
-    		experience = this.__value;
-    		$$invalidate(3, experience);
+    		ageRange = this.__value;
+    		$$invalidate(2, ageRange);
     	}
 
-    	function input11_change_handler() {
+    	function input11_input_handler() {
+    		tools = this.value;
+    		$$invalidate(3, tools);
+    	}
+
+    	function input12_change_handler() {
     		experience = this.__value;
-    		$$invalidate(3, experience);
+    		$$invalidate(4, experience);
+    	}
+
+    	function input13_change_handler() {
+    		experience = this.__value;
+    		$$invalidate(4, experience);
+    	}
+
+    	function input14_change_handler() {
+    		experience = this.__value;
+    		$$invalidate(4, experience);
+    	}
+
+    	function input15_change_handler() {
+    		experience = this.__value;
+    		$$invalidate(4, experience);
+    	}
+
+    	function input16_change_handler() {
+    		experience = this.__value;
+    		$$invalidate(4, experience);
     	}
 
     	$$self.$capture_state = () => ({
@@ -33775,6 +36424,7 @@ ${constraint.asp}`;
     		version,
     		participant,
     		participantOrder,
+    		gender,
     		ageRange,
     		tools,
     		experience,
@@ -33796,14 +36446,15 @@ ${constraint.asp}`;
     		if ("version" in $$props) version = $$props.version;
     		if ("participant" in $$props) $$invalidate(0, participant = $$props.participant);
     		if ("participantOrder" in $$props) $$invalidate(7, participantOrder = $$props.participantOrder);
-    		if ("ageRange" in $$props) $$invalidate(1, ageRange = $$props.ageRange);
-    		if ("tools" in $$props) $$invalidate(2, tools = $$props.tools);
-    		if ("experience" in $$props) $$invalidate(3, experience = $$props.experience);
-    		if ("allParticipantInfo" in $$props) $$invalidate(4, allParticipantInfo = $$props.allParticipantInfo);
+    		if ("gender" in $$props) $$invalidate(1, gender = $$props.gender);
+    		if ("ageRange" in $$props) $$invalidate(2, ageRange = $$props.ageRange);
+    		if ("tools" in $$props) $$invalidate(3, tools = $$props.tools);
+    		if ("experience" in $$props) $$invalidate(4, experience = $$props.experience);
+    		if ("allParticipantInfo" in $$props) $$invalidate(8, allParticipantInfo = $$props.allParticipantInfo);
     		if ("start" in $$props) $$invalidate(5, start = $$props.start);
     		if ("rand" in $$props) rand = $$props.rand;
     		if ("selectedAttributes" in $$props) $$invalidate(6, selectedAttributes = $$props.selectedAttributes);
-    		if ("promise" in $$props) $$invalidate(8, promise = $$props.promise);
+    		if ("promise" in $$props) $$invalidate(9, promise = $$props.promise);
     	};
 
     	if ($$props && "$$inject" in $$props) {
@@ -33812,13 +36463,14 @@ ${constraint.asp}`;
 
     	return [
     		participant,
+    		gender,
     		ageRange,
     		tools,
     		experience,
-    		allParticipantInfo,
     		start,
     		selectedAttributes,
     		participantOrder,
+    		allParticipantInfo,
     		promise,
     		load,
     		versionChoice,
@@ -33832,25 +36484,30 @@ ${constraint.asp}`;
     		input3_change_handler,
     		input4_change_handler,
     		input5_change_handler,
-    		input6_input_handler,
+    		input6_change_handler,
     		input7_change_handler,
     		input8_change_handler,
     		input9_change_handler,
     		input10_change_handler,
-    		input11_change_handler
+    		input11_input_handler,
+    		input12_change_handler,
+    		input13_change_handler,
+    		input14_change_handler,
+    		input15_change_handler,
+    		input16_change_handler
     	];
     }
 
     class App extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$7, create_fragment$7, safe_not_equal, {});
+    		init(this, options, instance$8, create_fragment$8, safe_not_equal, {}, [-1, -1]);
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
     			tagName: "App",
     			options,
-    			id: create_fragment$7.name
+    			id: create_fragment$8.name
     		});
     	}
     }

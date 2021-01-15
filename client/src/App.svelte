@@ -16,6 +16,7 @@
 							'constraintLearner', 'constraintSolver',
 							'constraintLearner', 'constraintLearner']
 
+	let gender = null
 	let ageRange = null
 	let tools = null
 	let experience = null
@@ -84,12 +85,17 @@
 	}
 
 	function load() {
-		if (participant && ageRange && ageRange != "<18" && experience) {
-			allParticipantInfo = {"age": ageRange,
-								  "tools": tools,
-								  "experience": experience}
+		if (participant) {
 			start = true
 		}
+
+		// Uncomment for study
+		// if (participant && gender && ageRange && ageRange != "<18" && experience) {
+		// 	allParticipantInfo = {"age": ageRange,
+		// 						  "tools": tools,
+		// 						  "experience": experience}
+		// 	start = true
+		// }
 	}
 </script>
 
@@ -132,15 +138,34 @@
 							Participant ID:
 							<input class="inputBox" bind:value={participant}>
 						</div>
+						<div id="participantGender">
+							<p class="inputContent">Please select your gender:</p>
+							<label class="inputBox">
+								<input type=radio bind:group={gender} value={"F"}>
+								Female
+							</label>
+							<label class="inputBox">
+								<input type=radio bind:group={gender} value={"M"}>
+								Male
+							</label>
+							<label class="inputBox">
+								<input type=radio bind:group={gender} value={"other"}>
+								Other
+							</label>
+							<label class="inputBox">
+								<input type=radio bind:group={gender} value={"none"}>
+								Prefer not to say
+							</label>
+						</div>
 						<div id="participantAge">
 							<p class="inputContent">Please select your age range:</p>
 							<label class="inputBox">
-								<input type=radio bind:group={ageRange} value={"<18"}>
-								Less than 18
+								<input type=radio bind:group={ageRange} value={"18-19"}>
+								18 to 19 (inclusive)
 							</label>
 							<label class="inputBox">
-								<input type=radio bind:group={ageRange} value={"18-24"}>
-								18 to 24 (inclusive)
+								<input type=radio bind:group={ageRange} value={"20-24"}>
+								20 to 24 (inclusive)
 							</label>
 							<label class="inputBox">
 								<input type=radio bind:group={ageRange} value={"25-29"}>
@@ -154,13 +179,17 @@
 								<input type=radio bind:group={ageRange} value={">=35"}>
 								35 or greater
 							</label>
+							<label class="inputBox">
+								<input type=radio bind:group={ageRange} value={"none"}>
+								Prefer not to say
+							</label>
 						</div>
 						<div id="participantTools">
 							<p class="inputContent">Please list the visualization tools you have used in the last 30 days (comma separated):</p>
 							<input id="toolsInput" class="inputBox" bind:value={tools}>
 						</div>
 						<div id="participantExperience">
-							<p class="inputContent">In the last 30 days how often have used visualization tools?</p>
+							<p class="inputContent">In the last 30 days how often have used any of these visualization tools?</p>
 							<label class="inputBox">
 								<input type=radio bind:group={experience} value={"0"}>
 								Never
@@ -208,10 +237,11 @@
 
 	#chooseVersion {
 		width: 100vw;
-		height: 100vh;
+		padding: 150px 0px 150px 0px;
 		display: flex;
 		justify-content: center;
-		align-items: center
+		align-items: center;
+		overflow: scroll
 	}
 
 	#demographics {}
