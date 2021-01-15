@@ -9,6 +9,7 @@ from pandas.io.json._normalize import nested_to_record
 import itertools
 import copy
 from umap import UMAP
+import time
 
 app = Flask(__name__)
 
@@ -82,7 +83,7 @@ def recombine():
 	vegaSpecs = data["vegaSpecs"]
 	types = data["types"]
 
-	print(types)
+	# print(types)
 
 	attrByType = {"string": [], "number": []}
 
@@ -97,7 +98,7 @@ def recombine():
 	df = pd.DataFrame(specsWithFields)
 	df = df.fillna(0)
 
-	print(df)
+	# print(df)
 
 	return json.dumps(df.to_dict('records'))
 
@@ -115,7 +116,7 @@ def flatten_one_hot_encoding(training, testing):
 
 	new_columns = list(df)
 
-	print(new_columns)
+	# print(new_columns)
 
 	for new_col in new_columns:
 		col_values = list(df[new_col].unique())
@@ -131,7 +132,7 @@ def flatten_one_hot_encoding(training, testing):
 
 	columns = list(df)
 
-	print(columns)
+	# print(columns)
 
 	# accepted_columns = list(pd.read_csv('./client/public/manual_specs_one_hot_encoding_3.csv'))
 
@@ -200,6 +201,7 @@ def getCoords(df):
 
 @app.route("/kneighbors", methods=["POST"])
 def kneighbors():
+	start = time.time()
 	print("kneighbors call ok...")
 	dataset = json.loads(request.data)
 
@@ -245,6 +247,9 @@ def kneighbors():
 
 	# for i in ind:
 	# 	print(X[i], y[i])
+
+	end = time.time()
+	print("time elapsed...", end - start)
 
 	result = json.dumps({"newData": df.to_dict(orient="records"), "predictions":predictions})
 
