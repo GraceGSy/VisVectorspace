@@ -1,5 +1,4 @@
 <script>
-	import * as d3 from 'd3'
 	import { dndzone, TRIGGERS, SHADOW_ITEM_MARKER_PROPERTY_NAME } from "svelte-dnd-action"
 	import { flip } from 'svelte/animate'
 

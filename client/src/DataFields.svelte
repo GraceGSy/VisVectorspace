@@ -1,36 +1,11 @@
 <script>
-	import * as d3 from 'd3'
 	import { dndzone, TRIGGERS, SHADOW_ITEM_MARKER_PROPERTY_NAME } from "svelte-dnd-action"
 	import { flip } from 'svelte/animate'
-	import Constraint from './Constraint.svelte'
-	import DataFields from './DataFields.svelte'
 
-	export let selectedMark
-	export let channelSelections
+	export let items = []
 
 	let shouldIgnoreDndEvents = false;
 	let dropFromOthersDisabled = true
-
-	let marks = ['', 'area','bar','point', 'line','rect','tick']
-
-	let channels = ['x','y','color','size','shape']
-
-	let wildcards = [{id:"quantitative", name:"quantitative"},
-				  	{id:"nominal", name:"categorical"}]
-
-	// let variable_types = {'name': 'number', 'mfr': 'string', 'type': 'string', 'calories': 'number', 'protein': 'number', 'fat': 'number', 'sodium': 'number', 'fiber': 'number', 'carbo': 'number', 'sugars': 'number', 'potass': 'number', 'vitamins': 'number', 'shelf': 'number', 'weight': 'number', 'cups': 'number', 'rating': 'number'}
-
-
-	// let variable_types = {'title': 'string', 'startYear': 'number', 'runtimeMinutes': 'number', 'averageRating': 'number', 'numVotes': 'number'}
-
-	let dataOptions = [{id:"type", name:"type"},
-				  {id:"minutes", name:"minutes"},
-				  {id:"rating", name:"rating"},
-				  {id:"votes", name:"votes"},
-				  {id:"principals", name:"principals"},
-				  {id:"genre", name:"genre"}]
-
-	// let variables = [''].concat(accepted_types).concat(Object.keys(variable_types).map(v => 'field_' + v))
 
 	const flipDurationMs = 200
 
@@ -61,37 +36,15 @@
 
 </script>
 
-<div id="attributesInfo">
-	<div id="attributesList">
-		<p><b>DATA</b></p>
-		<div id="datasetName">
-			<i class="material-icons md-24" id="listIcon">view_list</i>
-			<p> movies90s.csv</p>
+
+<div use:dndzone={{items, flipDurationMs, dropFromOthersDisabled}}
+	on:consider={handleConsider}
+	on:finalize={handleFinalize}>
+	{#each items as item(item.id)}
+		<div key={item.name} class="dataField" animate:flip={{duration:flipDurationMs}}>
+			<div class="field">{item.name}</div>
 		</div>
-		<p>Fields</p>
-		<DataFields items={dataOptions} />
-		<p>Wildcards</p>
-		<DataFields items={wildcards} />
-	</div>
-	<div id="attributesConstraints">
-		<p><b>ENCODINGS</b></p>
-		<p>Mark</p>
-		<div class="attribute">
-			<div class="attributeLeft">mark</div>
-			<select id="mark-dropdown"
-				class="attributeRight"
-				bind:value={selectedMark}>
-				{#each marks as m}
-					<option value={m}>{m}</option>
-				{/each}
-			</select>
-		</div>
-		<p>Encoding</p>
-		
-		{#each channels as c}
-			<Constraint attributeType={c} bind:setValue={channelSelections[c]} />
-		{/each}
-	</div>	
+	{/each}
 </div>
 
 <style>

@@ -87,10 +87,12 @@
 		for (let c of Object.keys(channelSelections)) {
 			let channelValue = channelSelections[c]
 
+			console.log(c, channelValue)
+
 			if (channelValue && channelValue != '') {
 				let newConstraint = `encoding(e${encodingCount}).:- not channel(e${encodingCount}, ${c}).`
 				
-				if (channelValue == "quantitative" || channelValue == "categorical") {
+				if (channelValue == "quantitative" || channelValue == "nominal") {
 					// Get channel
 					newConstraint = newConstraint + `:- not type(e${encodingCount}, ${channelValue}).`
 
