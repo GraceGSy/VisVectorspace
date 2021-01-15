@@ -129,20 +129,6 @@
 		background: white;
 	}
 
-	.dataField {
-		height: 25px;
-		margin-bottom: 10px;
-		display: flex;
-	}
-
-	.field {
-		align-content: middle;
-		border-radius: 12px 12px 12px 12px;
-    	border: steelblue solid 2px;
-    	padding: 0px 10px 0px 10px;
-    	width: 100%;
-	}
-
 	.attribute {
 		height: 25px;
 		margin-bottom: 10px;

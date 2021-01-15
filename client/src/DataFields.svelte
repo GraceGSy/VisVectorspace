@@ -48,40 +48,6 @@
 </div>
 
 <style>
-	#datasetName {
-		display: flex;
-		font-size: 11px;
-		align-items: center;
-	}
-
-	#listIcon {
-		font-size: 16px;
-		margin-right: 2px;
-	}
-
-	#attributesInfo {
-		display: flex;
-	}
-
-	#attributesConstraints {
-		display: flex;
-		flex-direction: column;
-		width: 175px;
-		padding: 20px 50px 0px 15px;
-	    margin-right: 25px;
-		background: #f3f3f3;
-		border-right: 2px solid white;
-	}
-
-	#attributesList {
-		display: flex;
-		height: 100%;
-		flex-direction: column;
-	    padding: 20px 50px 0px 15px;
-	    margin-right: 25px;
-		background: white;
-	}
-
 	.dataField {
 		height: 25px;
 		margin-bottom: 10px;
@@ -94,32 +60,5 @@
     	border: steelblue solid 2px;
     	padding: 0px 10px 0px 10px;
     	width: 100%;
-	}
-
-	.attribute {
-		height: 25px;
-		margin-bottom: 10px;
-		display: flex;
-	}
-
-	.attributeLeft {
-		border-radius: 12px 0px 0px 12px;
-    	border: steelblue solid 2px;
-    	align-content: middle;
-    	padding: 0px 5px 0px 10px;
-	}
-
-	#mark-dropdown {
-		height: 25px;
-		width: 200px;
-	}
-
-	.attributeRight {
-		border-radius: 0px 12px 12px 0px;
-    	border-style: solid solid solid hidden;
-	    border-color: steelblue;
-	    border-width: 2px;
-    	align-content: middle;
-    	padding: 0px 10px 0px 5px;
 	}
 </style>

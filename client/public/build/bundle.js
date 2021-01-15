@@ -29911,7 +29911,7 @@ ${constraint.asp}`;
     	return child_ctx;
     }
 
-    // (52:2) {#each attributesList as l}
+    // (56:2) {#each attributesList as l}
     function create_each_block_2(ctx) {
     	let div1;
     	let div0;
@@ -29926,11 +29926,11 @@ ${constraint.asp}`;
     			div0 = element("div");
     			t0 = text(t0_value);
     			t1 = space();
-    			attr_dev(div0, "class", "field svelte-199cc5s");
-    			add_location(div0, file$2, 53, 4, 1277);
+    			attr_dev(div0, "class", "field svelte-15q3sl3");
+    			add_location(div0, file$2, 57, 4, 1399);
     			attr_dev(div1, "key", div1_key_value = /*l*/ ctx[13]);
-    			attr_dev(div1, "class", "dataField svelte-199cc5s");
-    			add_location(div1, file$2, 52, 3, 1241);
+    			attr_dev(div1, "class", "dataField svelte-15q3sl3");
+    			add_location(div1, file$2, 56, 3, 1363);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div1, anchor);
@@ -29948,14 +29948,14 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_2.name,
     		type: "each",
-    		source: "(52:2) {#each attributesList as l}",
+    		source: "(56:2) {#each attributesList as l}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (61:2) {#each markAttr as a}
+    // (65:2) {#each markAttr as a}
     function create_each_block_1(ctx) {
     	let div2;
     	let div0;
@@ -29975,13 +29975,13 @@ ${constraint.asp}`;
     			t1 = space();
     			div1 = element("div");
     			t2 = text(t2_value);
-    			attr_dev(div0, "class", "attributeLeft svelte-199cc5s");
-    			add_location(div0, file$2, 62, 4, 1476);
-    			attr_dev(div1, "class", "attributeRight svelte-199cc5s");
-    			add_location(div1, file$2, 63, 4, 1520);
+    			attr_dev(div0, "class", "attributeLeft svelte-15q3sl3");
+    			add_location(div0, file$2, 66, 4, 1598);
+    			attr_dev(div1, "class", "attributeRight svelte-15q3sl3");
+    			add_location(div1, file$2, 67, 4, 1642);
     			attr_dev(div2, "key", div2_key_value = /*a*/ ctx[10].join());
-    			attr_dev(div2, "class", "attribute svelte-199cc5s");
-    			add_location(div2, file$2, 61, 3, 1433);
+    			attr_dev(div2, "class", "attribute svelte-15q3sl3");
+    			add_location(div2, file$2, 65, 3, 1555);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div2, anchor);
@@ -30008,14 +30008,14 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_1.name,
     		type: "each",
-    		source: "(61:2) {#each markAttr as a}",
+    		source: "(65:2) {#each markAttr as a}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (68:2) {#each encodingAttr as e}
+    // (72:2) {#each encodingAttr as e}
     function create_each_block$1(ctx) {
     	let div2;
     	let div0;
@@ -30037,13 +30037,13 @@ ${constraint.asp}`;
     			div1 = element("div");
     			t2 = text(t2_value);
     			t3 = space();
-    			attr_dev(div0, "class", "attributeLeft svelte-199cc5s");
-    			add_location(div0, file$2, 69, 4, 1673);
-    			attr_dev(div1, "class", "attributeRight svelte-199cc5s");
-    			add_location(div1, file$2, 70, 4, 1717);
+    			attr_dev(div0, "class", "attributeLeft svelte-15q3sl3");
+    			add_location(div0, file$2, 73, 4, 1795);
+    			attr_dev(div1, "class", "attributeRight svelte-15q3sl3");
+    			add_location(div1, file$2, 74, 4, 1839);
     			attr_dev(div2, "key", div2_key_value = /*e*/ ctx[7].join());
-    			attr_dev(div2, "class", "attribute svelte-199cc5s");
-    			add_location(div2, file$2, 68, 3, 1630);
+    			attr_dev(div2, "class", "attribute svelte-15q3sl3");
+    			add_location(div2, file$2, 72, 3, 1752);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div2, anchor);
@@ -30071,7 +30071,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$1.name,
     		type: "each",
-    		source: "(68:2) {#each encodingAttr as e}",
+    		source: "(72:2) {#each encodingAttr as e}",
     		ctx
     	});
 
@@ -30079,23 +30079,28 @@ ${constraint.asp}`;
     }
 
     function create_fragment$2(ctx) {
-    	let div2;
-    	let div0;
+    	let div3;
+    	let div1;
     	let p0;
     	let b0;
     	let t1;
-    	let p1;
+    	let div0;
+    	let i;
     	let t3;
-    	let t4;
-    	let div1;
+    	let p1;
+    	let t5;
     	let p2;
-    	let b1;
-    	let t6;
-    	let p3;
+    	let t7;
     	let t8;
-    	let t9;
+    	let div2;
+    	let p3;
+    	let b1;
+    	let t10;
     	let p4;
-    	let t11;
+    	let t12;
+    	let t13;
+    	let p5;
+    	let t15;
     	let each_value_2 = /*attributesList*/ ctx[2];
     	validate_each_argument(each_value_2);
     	let each_blocks_2 = [];
@@ -30122,38 +30127,45 @@ ${constraint.asp}`;
 
     	const block = {
     		c: function create() {
-    			div2 = element("div");
-    			div0 = element("div");
+    			div3 = element("div");
+    			div1 = element("div");
     			p0 = element("p");
     			b0 = element("b");
     			b0.textContent = "DATA";
     			t1 = space();
-    			p1 = element("p");
-    			p1.textContent = "Fields";
+    			div0 = element("div");
+    			i = element("i");
+    			i.textContent = "view_list";
     			t3 = space();
+    			p1 = element("p");
+    			p1.textContent = "movies90s.csv";
+    			t5 = space();
+    			p2 = element("p");
+    			p2.textContent = "Fields";
+    			t7 = space();
 
     			for (let i = 0; i < each_blocks_2.length; i += 1) {
     				each_blocks_2[i].c();
     			}
 
-    			t4 = space();
-    			div1 = element("div");
-    			p2 = element("p");
+    			t8 = space();
+    			div2 = element("div");
+    			p3 = element("p");
     			b1 = element("b");
     			b1.textContent = "PREFERENCES";
-    			t6 = space();
-    			p3 = element("p");
-    			p3.textContent = "Mark";
-    			t8 = space();
+    			t10 = space();
+    			p4 = element("p");
+    			p4.textContent = "Mark";
+    			t12 = space();
 
     			for (let i = 0; i < each_blocks_1.length; i += 1) {
     				each_blocks_1[i].c();
     			}
 
-    			t9 = space();
-    			p4 = element("p");
-    			p4.textContent = "Encoding";
-    			t11 = space();
+    			t13 = space();
+    			p5 = element("p");
+    			p5.textContent = "Encoding";
+    			t15 = space();
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].c();
@@ -30161,55 +30173,67 @@ ${constraint.asp}`;
 
     			add_location(b0, file$2, 49, 5, 1176);
     			add_location(p0, file$2, 49, 2, 1173);
-    			add_location(p1, file$2, 50, 2, 1194);
-    			attr_dev(div0, "id", "attributesList");
-    			attr_dev(div0, "class", "svelte-199cc5s");
-    			add_location(div0, file$2, 48, 1, 1145);
-    			add_location(b1, file$2, 58, 5, 1369);
-    			add_location(p2, file$2, 58, 2, 1366);
-    			add_location(p3, file$2, 59, 2, 1394);
-    			add_location(p4, file$2, 66, 2, 1583);
-    			attr_dev(div1, "id", "attributesWeights");
-    			attr_dev(div1, "class", "svelte-199cc5s");
-    			add_location(div1, file$2, 57, 1, 1335);
-    			attr_dev(div2, "id", "attributesInfo");
-    			attr_dev(div2, "class", "svelte-199cc5s");
-    			add_location(div2, file$2, 47, 0, 1118);
+    			attr_dev(i, "class", "material-icons md-24 svelte-15q3sl3");
+    			attr_dev(i, "id", "listIcon");
+    			add_location(i, file$2, 51, 3, 1220);
+    			add_location(p1, file$2, 52, 3, 1283);
+    			attr_dev(div0, "id", "datasetName");
+    			attr_dev(div0, "class", "svelte-15q3sl3");
+    			add_location(div0, file$2, 50, 2, 1194);
+    			add_location(p2, file$2, 54, 2, 1316);
+    			attr_dev(div1, "id", "attributesList");
+    			attr_dev(div1, "class", "svelte-15q3sl3");
+    			add_location(div1, file$2, 48, 1, 1145);
+    			add_location(b1, file$2, 62, 5, 1491);
+    			add_location(p3, file$2, 62, 2, 1488);
+    			add_location(p4, file$2, 63, 2, 1516);
+    			add_location(p5, file$2, 70, 2, 1705);
+    			attr_dev(div2, "id", "attributesWeights");
+    			attr_dev(div2, "class", "svelte-15q3sl3");
+    			add_location(div2, file$2, 61, 1, 1457);
+    			attr_dev(div3, "id", "attributesInfo");
+    			attr_dev(div3, "class", "svelte-15q3sl3");
+    			add_location(div3, file$2, 47, 0, 1118);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div2, anchor);
-    			append_dev(div2, div0);
-    			append_dev(div0, p0);
+    			insert_dev(target, div3, anchor);
+    			append_dev(div3, div1);
+    			append_dev(div1, p0);
     			append_dev(p0, b0);
-    			append_dev(div0, t1);
-    			append_dev(div0, p1);
+    			append_dev(div1, t1);
+    			append_dev(div1, div0);
+    			append_dev(div0, i);
     			append_dev(div0, t3);
+    			append_dev(div0, p1);
+    			append_dev(div1, t5);
+    			append_dev(div1, p2);
+    			append_dev(div1, t7);
 
     			for (let i = 0; i < each_blocks_2.length; i += 1) {
-    				each_blocks_2[i].m(div0, null);
+    				each_blocks_2[i].m(div1, null);
     			}
 
-    			append_dev(div2, t4);
-    			append_dev(div2, div1);
-    			append_dev(div1, p2);
-    			append_dev(p2, b1);
-    			append_dev(div1, t6);
-    			append_dev(div1, p3);
-    			append_dev(div1, t8);
+    			append_dev(div3, t8);
+    			append_dev(div3, div2);
+    			append_dev(div2, p3);
+    			append_dev(p3, b1);
+    			append_dev(div2, t10);
+    			append_dev(div2, p4);
+    			append_dev(div2, t12);
 
     			for (let i = 0; i < each_blocks_1.length; i += 1) {
-    				each_blocks_1[i].m(div1, null);
+    				each_blocks_1[i].m(div2, null);
     			}
 
-    			append_dev(div1, t9);
-    			append_dev(div1, p4);
-    			append_dev(div1, t11);
+    			append_dev(div2, t13);
+    			append_dev(div2, p5);
+    			append_dev(div2, t15);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].m(div1, null);
+    				each_blocks[i].m(div2, null);
     			}
     		},
     		p: function update(ctx, [dirty]) {
@@ -30226,7 +30250,7 @@ ${constraint.asp}`;
     					} else {
     						each_blocks_2[i] = create_each_block_2(child_ctx);
     						each_blocks_2[i].c();
-    						each_blocks_2[i].m(div0, null);
+    						each_blocks_2[i].m(div1, null);
     					}
     				}
 
@@ -30250,7 +30274,7 @@ ${constraint.asp}`;
     					} else {
     						each_blocks_1[i] = create_each_block_1(child_ctx);
     						each_blocks_1[i].c();
-    						each_blocks_1[i].m(div1, t9);
+    						each_blocks_1[i].m(div2, t13);
     					}
     				}
 
@@ -30274,7 +30298,7 @@ ${constraint.asp}`;
     					} else {
     						each_blocks[i] = create_each_block$1(child_ctx);
     						each_blocks[i].c();
-    						each_blocks[i].m(div1, null);
+    						each_blocks[i].m(div2, null);
     					}
     				}
 
@@ -30288,7 +30312,7 @@ ${constraint.asp}`;
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div2);
+    			if (detaching) detach_dev(div3);
     			destroy_each(each_blocks_2, detaching);
     			destroy_each(each_blocks_1, detaching);
     			destroy_each(each_blocks, detaching);
@@ -33958,10 +33982,10 @@ ${constraint.asp}`;
     			div0 = element("div");
     			t0 = text(t0_value);
     			t1 = space();
-    			attr_dev(div0, "class", "field svelte-7ly4wi");
+    			attr_dev(div0, "class", "field svelte-1k0wfqa");
     			add_location(div0, file$6, 44, 3, 1492);
     			attr_dev(div1, "key", div1_key_value = /*item*/ ctx[5].name);
-    			attr_dev(div1, "class", "dataField svelte-7ly4wi");
+    			attr_dev(div1, "class", "dataField svelte-1k0wfqa");
     			add_location(div1, file$6, 43, 2, 1408);
     			this.first = div1;
     		},
@@ -34421,35 +34445,35 @@ ${constraint.asp}`;
 
     			add_location(b0, file$7, 65, 5, 2495);
     			add_location(p0, file$7, 65, 2, 2492);
-    			attr_dev(i, "class", "material-icons md-24 svelte-7ly4wi");
+    			attr_dev(i, "class", "material-icons md-24 svelte-x9t7p3");
     			attr_dev(i, "id", "listIcon");
     			add_location(i, file$7, 67, 3, 2539);
     			add_location(p1, file$7, 68, 3, 2602);
     			attr_dev(div0, "id", "datasetName");
-    			attr_dev(div0, "class", "svelte-7ly4wi");
+    			attr_dev(div0, "class", "svelte-x9t7p3");
     			add_location(div0, file$7, 66, 2, 2513);
     			add_location(p2, file$7, 70, 2, 2635);
     			add_location(p3, file$7, 72, 2, 2688);
     			attr_dev(div1, "id", "attributesList");
-    			attr_dev(div1, "class", "svelte-7ly4wi");
+    			attr_dev(div1, "class", "svelte-x9t7p3");
     			add_location(div1, file$7, 64, 1, 2464);
     			add_location(b1, file$7, 76, 5, 2787);
     			add_location(p4, file$7, 76, 2, 2784);
     			add_location(p5, file$7, 77, 2, 2810);
-    			attr_dev(div2, "class", "attributeLeft svelte-7ly4wi");
+    			attr_dev(div2, "class", "attributeLeft svelte-x9t7p3");
     			add_location(div2, file$7, 79, 3, 2851);
     			attr_dev(select, "id", "mark-dropdown");
-    			attr_dev(select, "class", "attributeRight svelte-7ly4wi");
+    			attr_dev(select, "class", "attributeRight svelte-x9t7p3");
     			if (/*selectedMark*/ ctx[0] === void 0) add_render_callback(() => /*select_change_handler*/ ctx[9].call(select));
     			add_location(select, file$7, 80, 3, 2892);
-    			attr_dev(div3, "class", "attribute svelte-7ly4wi");
+    			attr_dev(div3, "class", "attribute svelte-x9t7p3");
     			add_location(div3, file$7, 78, 2, 2824);
     			add_location(p6, file$7, 88, 2, 3072);
     			attr_dev(div4, "id", "attributesConstraints");
-    			attr_dev(div4, "class", "svelte-7ly4wi");
+    			attr_dev(div4, "class", "svelte-x9t7p3");
     			add_location(div4, file$7, 75, 1, 2749);
     			attr_dev(div5, "id", "attributesInfo");
-    			attr_dev(div5, "class", "svelte-7ly4wi");
+    			attr_dev(div5, "class", "svelte-x9t7p3");
     			add_location(div5, file$7, 63, 0, 2437);
     		},
     		l: function claim(nodes) {
@@ -34790,7 +34814,7 @@ ${constraint.asp}`;
     	return child_ctx;
     }
 
-    // (185:3) {#each recommendations as c, i}
+    // (186:3) {#each recommendations as c, i}
     function create_each_block_1$3(ctx) {
     	let div3;
     	let div0;
@@ -34817,16 +34841,16 @@ ${constraint.asp}`;
     			div1 = element("div");
     			t2 = space();
     			attr_dev(i_1, "class", "material-icons-outlined md-24");
-    			add_location(i_1, file$8, 187, 6, 4635);
+    			add_location(i_1, file$8, 188, 6, 4642);
     			attr_dev(div0, "class", "pinButton svelte-ptb5k7");
-    			add_location(div0, file$8, 186, 5, 4581);
+    			add_location(div0, file$8, 187, 5, 4588);
     			attr_dev(div1, "id", div1_id_value = "vis" + /*i*/ ctx[20]);
     			attr_dev(div1, "class", "svelte-ptb5k7");
-    			add_location(div1, file$8, 190, 6, 4740);
+    			add_location(div1, file$8, 191, 6, 4747);
     			attr_dev(div2, "class", "vegaContainer svelte-ptb5k7");
-    			add_location(div2, file$8, 189, 5, 4706);
+    			add_location(div2, file$8, 190, 5, 4713);
     			attr_dev(div3, "class", "vis svelte-ptb5k7");
-    			add_location(div3, file$8, 185, 4, 4558);
+    			add_location(div3, file$8, 186, 4, 4565);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div3, anchor);
@@ -34852,14 +34876,14 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_1$3.name,
     		type: "each",
-    		source: "(185:3) {#each recommendations as c, i}",
+    		source: "(186:3) {#each recommendations as c, i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (201:3) {#each pinned as p, i}
+    // (202:3) {#each pinned as p, i}
     function create_each_block$6(ctx) {
     	let div;
     	let div_id_value;
@@ -34869,7 +34893,7 @@ ${constraint.asp}`;
     			div = element("div");
     			attr_dev(div, "id", div_id_value = "pin" + /*i*/ ctx[20]);
     			attr_dev(div, "class", "svelte-ptb5k7");
-    			add_location(div, file$8, 201, 4, 4990);
+    			add_location(div, file$8, 202, 4, 4997);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -34883,7 +34907,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$6.name,
     		type: "each",
-    		source: "(201:3) {#each pinned as p, i}",
+    		source: "(202:3) {#each pinned as p, i}",
     		ctx
     	});
 
@@ -35000,37 +35024,37 @@ ${constraint.asp}`;
     				each_blocks[i].c();
     			}
 
-    			add_location(b0, file$8, 177, 6, 4228);
-    			add_location(p0, file$8, 177, 3, 4225);
-    			add_location(button0, file$8, 179, 3, 4310);
-    			add_location(button1, file$8, 180, 3, 4353);
+    			add_location(b0, file$8, 178, 6, 4235);
+    			add_location(p0, file$8, 178, 3, 4232);
+    			add_location(button0, file$8, 180, 3, 4317);
+    			add_location(button1, file$8, 181, 3, 4360);
     			attr_dev(button2, "id", "exportJSON");
     			attr_dev(button2, "class", "btn");
-    			add_location(button2, file$8, 181, 3, 4399);
+    			add_location(button2, file$8, 182, 3, 4406);
     			attr_dev(div0, "id", "menu");
-    			add_location(div0, file$8, 176, 2, 4206);
+    			add_location(div0, file$8, 177, 2, 4213);
     			attr_dev(div1, "id", "recommendationDisplay");
     			attr_dev(div1, "class", "svelte-ptb5k7");
-    			add_location(div1, file$8, 183, 2, 4486);
+    			add_location(div1, file$8, 184, 2, 4493);
     			attr_dev(div2, "id", "recommendations");
     			attr_dev(div2, "class", "svelte-ptb5k7");
-    			add_location(div2, file$8, 175, 1, 4177);
-    			add_location(b1, file$8, 197, 21, 4861);
+    			add_location(div2, file$8, 176, 1, 4184);
+    			add_location(b1, file$8, 198, 21, 4868);
     			attr_dev(p1, "id", "pinnedText");
     			attr_dev(p1, "class", "svelte-ptb5k7");
-    			add_location(p1, file$8, 197, 2, 4842);
+    			add_location(p1, file$8, 198, 2, 4849);
     			attr_dev(a, "id", "closeButton");
     			attr_dev(a, "class", "svelte-ptb5k7");
-    			add_location(a, file$8, 198, 2, 4881);
+    			add_location(a, file$8, 199, 2, 4888);
     			attr_dev(div3, "id", "pinnedDisplay");
     			attr_dev(div3, "class", "svelte-ptb5k7");
-    			add_location(div3, file$8, 199, 2, 4935);
+    			add_location(div3, file$8, 200, 2, 4942);
     			attr_dev(div4, "id", "pinnedDrawer");
     			attr_dev(div4, "class", "svelte-ptb5k7");
-    			add_location(div4, file$8, 196, 1, 4816);
+    			add_location(div4, file$8, 197, 1, 4823);
     			attr_dev(div5, "id", "overall");
     			attr_dev(div5, "class", "svelte-ptb5k7");
-    			add_location(div5, file$8, 173, 0, 4054);
+    			add_location(div5, file$8, 174, 0, 4061);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -35231,8 +35255,7 @@ ${constraint.asp}`;
     				return [];
     			}
 
-    			console.log("solution", solution);
-
+    			// console.log("solution", solution)
     			for (let s of solution["specs"]) {
     				s.width = 270;
     				s.height = 270;

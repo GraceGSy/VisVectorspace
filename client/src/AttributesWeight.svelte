@@ -48,6 +48,10 @@
 <div id="attributesInfo">
 	<div id="attributesList">
 		<p><b>DATA</b></p>
+		<div id="datasetName">
+			<i class="material-icons md-24" id="listIcon">view_list</i>
+			<p> movies90s.csv</p>
+		</div>
 		<p>Fields</p>
 		{#each attributesList as l}
 			<div key={l} class="dataField">
@@ -77,6 +81,17 @@
 </div>
 
 <style>
+	#datasetName {
+		display: flex;
+		font-size: 11px;
+		align-items: center;
+	}
+
+	#listIcon {
+		font-size: 16px;
+		margin-right: 2px;
+	}
+
 	#attributesInfo {
 		display: flex;
 	}
@@ -110,6 +125,7 @@
 		border-radius: 12px 12px 12px 12px;
     	border: steelblue solid 2px;
     	padding: 0px 10px 0px 10px;
+    	width: 100%;
 	}
 
 	.attribute {
@@ -132,5 +148,6 @@
 	    border-width: 2px;
     	align-content: middle;
     	padding: 0px 10px 0px 5px;
+    	width: 200px;
 	}
 </style>

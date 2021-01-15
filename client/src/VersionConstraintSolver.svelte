@@ -54,12 +54,13 @@
 			const solution = draco.solve(inputConstraints, { models: 4 });
 			
 			console.log("solution", solution)
+			
 			if (!solution) {
 				console.log('no solution')
 				return []
 			}
 
-			console.log("solution", solution)
+			// console.log("solution", solution)
 
 			for (let s of solution['specs']) {
 				s.width = 270
