@@ -29706,7 +29706,7 @@ ${constraint.asp}`;
     			return []
     		}
 
-    		for (let s of solution['specs']) {
+    		for (let [i, s] of solution['specs'].entries()) {
     			s.width = 270;
     			s.height = 270;
     			recs.push({'vega':s, 'uid': 'id' + (new Date().valueOf()) + '_' + i});
@@ -29895,52 +29895,78 @@ ${constraint.asp}`;
 
     function get_each_context$1(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[7] = list[i];
+    	child_ctx[8] = list[i];
     	return child_ctx;
     }
 
     function get_each_context_1(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[10] = list[i];
+    	child_ctx[11] = list[i];
     	return child_ctx;
     }
 
     function get_each_context_2(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[13] = list[i];
+    	child_ctx[14] = list[i];
     	return child_ctx;
     }
 
-    // (56:2) {#each attributesList as l}
+    // (69:2) {#each attributesList as l}
     function create_each_block_2(ctx) {
-    	let div1;
+    	let div2;
     	let div0;
-    	let t0_value = /*l*/ ctx[13] + "";
+    	let t0_value = /*l*/ ctx[14] + "";
     	let t0;
     	let t1;
-    	let div1_key_value;
+    	let div1;
+    	let i;
+    	let t3;
+    	let span;
+    	let t4_value = /*descriptions*/ ctx[2][/*l*/ ctx[14]].type + ": " + /*descriptions*/ ctx[2][/*l*/ ctx[14]].des + "";
+    	let t4;
+    	let t5;
+    	let div2_key_value;
 
     	const block = {
     		c: function create() {
-    			div1 = element("div");
+    			div2 = element("div");
     			div0 = element("div");
     			t0 = text(t0_value);
     			t1 = space();
-    			attr_dev(div0, "class", "field svelte-1y1sfvi");
-    			add_location(div0, file$2, 57, 4, 1399);
-    			attr_dev(div1, "key", div1_key_value = /*l*/ ctx[13]);
-    			attr_dev(div1, "class", "dataField svelte-1y1sfvi");
-    			add_location(div1, file$2, 56, 3, 1363);
+    			div1 = element("div");
+    			i = element("i");
+    			i.textContent = "info";
+    			t3 = space();
+    			span = element("span");
+    			t4 = text(t4_value);
+    			t5 = space();
+    			attr_dev(div0, "class", "field svelte-bojl");
+    			add_location(div0, file$2, 70, 4, 2319);
+    			attr_dev(i, "class", "material-icons md-24 dataInfo svelte-bojl");
+    			add_location(i, file$2, 72, 5, 2380);
+    			attr_dev(span, "class", "tooltiptext svelte-bojl");
+    			add_location(span, file$2, 73, 5, 2435);
+    			attr_dev(div1, "class", "tooltip svelte-bojl");
+    			add_location(div1, file$2, 71, 5, 2353);
+    			attr_dev(div2, "key", div2_key_value = /*l*/ ctx[14]);
+    			attr_dev(div2, "class", "dataField svelte-bojl");
+    			add_location(div2, file$2, 69, 3, 2283);
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div1, anchor);
-    			append_dev(div1, div0);
+    			insert_dev(target, div2, anchor);
+    			append_dev(div2, div0);
     			append_dev(div0, t0);
-    			append_dev(div1, t1);
+    			append_dev(div2, t1);
+    			append_dev(div2, div1);
+    			append_dev(div1, i);
+    			append_dev(div1, t3);
+    			append_dev(div1, span);
+    			append_dev(span, t4);
+    			append_dev(div2, t5);
     		},
     		p: noop,
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div1);
+    			if (detaching) detach_dev(div2);
     		}
     	};
 
@@ -29948,22 +29974,22 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_2.name,
     		type: "each",
-    		source: "(56:2) {#each attributesList as l}",
+    		source: "(69:2) {#each attributesList as l}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (65:2) {#each markAttr as a}
+    // (82:2) {#each markAttr as a}
     function create_each_block_1(ctx) {
     	let div2;
     	let div0;
-    	let t0_value = /*a*/ ctx[10][0] + "";
+    	let t0_value = /*a*/ ctx[11][0] + "";
     	let t0;
     	let t1;
     	let div1;
-    	let t2_value = /*a*/ ctx[10][1] + "";
+    	let t2_value = /*a*/ ctx[11][1] + "";
     	let t2;
     	let div2_key_value;
 
@@ -29975,13 +30001,13 @@ ${constraint.asp}`;
     			t1 = space();
     			div1 = element("div");
     			t2 = text(t2_value);
-    			attr_dev(div0, "class", "attributeLeft svelte-1y1sfvi");
-    			add_location(div0, file$2, 66, 4, 1598);
-    			attr_dev(div1, "class", "attributeRight svelte-1y1sfvi");
-    			add_location(div1, file$2, 67, 4, 1642);
-    			attr_dev(div2, "key", div2_key_value = /*a*/ ctx[10].join());
-    			attr_dev(div2, "class", "attribute svelte-1y1sfvi");
-    			add_location(div2, file$2, 65, 3, 1555);
+    			attr_dev(div0, "class", "attributeLeft svelte-bojl");
+    			add_location(div0, file$2, 83, 4, 2701);
+    			attr_dev(div1, "class", "attributeRight svelte-bojl");
+    			add_location(div1, file$2, 84, 4, 2745);
+    			attr_dev(div2, "key", div2_key_value = /*a*/ ctx[11].join());
+    			attr_dev(div2, "class", "attribute svelte-bojl");
+    			add_location(div2, file$2, 82, 3, 2658);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div2, anchor);
@@ -29992,10 +30018,10 @@ ${constraint.asp}`;
     			append_dev(div1, t2);
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty & /*markAttr*/ 1 && t0_value !== (t0_value = /*a*/ ctx[10][0] + "")) set_data_dev(t0, t0_value);
-    			if (dirty & /*markAttr*/ 1 && t2_value !== (t2_value = /*a*/ ctx[10][1] + "")) set_data_dev(t2, t2_value);
+    			if (dirty & /*markAttr*/ 1 && t0_value !== (t0_value = /*a*/ ctx[11][0] + "")) set_data_dev(t0, t0_value);
+    			if (dirty & /*markAttr*/ 1 && t2_value !== (t2_value = /*a*/ ctx[11][1] + "")) set_data_dev(t2, t2_value);
 
-    			if (dirty & /*markAttr*/ 1 && div2_key_value !== (div2_key_value = /*a*/ ctx[10].join())) {
+    			if (dirty & /*markAttr*/ 1 && div2_key_value !== (div2_key_value = /*a*/ ctx[11].join())) {
     				attr_dev(div2, "key", div2_key_value);
     			}
     		},
@@ -30008,22 +30034,22 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_1.name,
     		type: "each",
-    		source: "(65:2) {#each markAttr as a}",
+    		source: "(82:2) {#each markAttr as a}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (72:2) {#each encodingAttr as e}
+    // (89:2) {#each encodingAttr as e}
     function create_each_block$1(ctx) {
     	let div2;
     	let div0;
-    	let t0_value = /*e*/ ctx[7][0] + "";
+    	let t0_value = /*e*/ ctx[8][0] + "";
     	let t0;
     	let t1;
     	let div1;
-    	let t2_value = /*e*/ ctx[7][1] + "";
+    	let t2_value = /*e*/ ctx[8][1] + "";
     	let t2;
     	let t3;
     	let div2_key_value;
@@ -30037,13 +30063,13 @@ ${constraint.asp}`;
     			div1 = element("div");
     			t2 = text(t2_value);
     			t3 = space();
-    			attr_dev(div0, "class", "attributeLeft svelte-1y1sfvi");
-    			add_location(div0, file$2, 73, 4, 1795);
-    			attr_dev(div1, "class", "attributeRight svelte-1y1sfvi");
-    			add_location(div1, file$2, 74, 4, 1839);
-    			attr_dev(div2, "key", div2_key_value = /*e*/ ctx[7].join());
-    			attr_dev(div2, "class", "attribute svelte-1y1sfvi");
-    			add_location(div2, file$2, 72, 3, 1752);
+    			attr_dev(div0, "class", "attributeLeft svelte-bojl");
+    			add_location(div0, file$2, 90, 4, 2898);
+    			attr_dev(div1, "class", "attributeRight svelte-bojl");
+    			add_location(div1, file$2, 91, 4, 2942);
+    			attr_dev(div2, "key", div2_key_value = /*e*/ ctx[8].join());
+    			attr_dev(div2, "class", "attribute svelte-bojl");
+    			add_location(div2, file$2, 89, 3, 2855);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div2, anchor);
@@ -30055,10 +30081,10 @@ ${constraint.asp}`;
     			append_dev(div2, t3);
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty & /*encodingAttr*/ 2 && t0_value !== (t0_value = /*e*/ ctx[7][0] + "")) set_data_dev(t0, t0_value);
-    			if (dirty & /*encodingAttr*/ 2 && t2_value !== (t2_value = /*e*/ ctx[7][1] + "")) set_data_dev(t2, t2_value);
+    			if (dirty & /*encodingAttr*/ 2 && t0_value !== (t0_value = /*e*/ ctx[8][0] + "")) set_data_dev(t0, t0_value);
+    			if (dirty & /*encodingAttr*/ 2 && t2_value !== (t2_value = /*e*/ ctx[8][1] + "")) set_data_dev(t2, t2_value);
 
-    			if (dirty & /*encodingAttr*/ 2 && div2_key_value !== (div2_key_value = /*e*/ ctx[7].join())) {
+    			if (dirty & /*encodingAttr*/ 2 && div2_key_value !== (div2_key_value = /*e*/ ctx[8].join())) {
     				attr_dev(div2, "key", div2_key_value);
     			}
     		},
@@ -30071,7 +30097,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$1.name,
     		type: "each",
-    		source: "(72:2) {#each encodingAttr as e}",
+    		source: "(89:2) {#each encodingAttr as e}",
     		ctx
     	});
 
@@ -30101,7 +30127,7 @@ ${constraint.asp}`;
     	let t13;
     	let p5;
     	let t15;
-    	let each_value_2 = /*attributesList*/ ctx[2];
+    	let each_value_2 = /*attributesList*/ ctx[3];
     	validate_each_argument(each_value_2);
     	let each_blocks_2 = [];
 
@@ -30171,29 +30197,29 @@ ${constraint.asp}`;
     				each_blocks[i].c();
     			}
 
-    			add_location(b0, file$2, 49, 5, 1176);
-    			add_location(p0, file$2, 49, 2, 1173);
-    			attr_dev(i, "class", "material-icons md-24 svelte-1y1sfvi");
+    			add_location(b0, file$2, 62, 5, 2096);
+    			add_location(p0, file$2, 62, 2, 2093);
+    			attr_dev(i, "class", "material-icons md-24 svelte-bojl");
     			attr_dev(i, "id", "listIcon");
-    			add_location(i, file$2, 51, 3, 1220);
-    			add_location(p1, file$2, 52, 3, 1283);
+    			add_location(i, file$2, 64, 3, 2140);
+    			add_location(p1, file$2, 65, 3, 2203);
     			attr_dev(div0, "id", "datasetName");
-    			attr_dev(div0, "class", "svelte-1y1sfvi");
-    			add_location(div0, file$2, 50, 2, 1194);
-    			add_location(p2, file$2, 54, 2, 1316);
+    			attr_dev(div0, "class", "svelte-bojl");
+    			add_location(div0, file$2, 63, 2, 2114);
+    			add_location(p2, file$2, 67, 2, 2236);
     			attr_dev(div1, "id", "attributesList");
-    			attr_dev(div1, "class", "svelte-1y1sfvi");
-    			add_location(div1, file$2, 48, 1, 1145);
-    			add_location(b1, file$2, 62, 5, 1491);
-    			add_location(p3, file$2, 62, 2, 1488);
-    			add_location(p4, file$2, 63, 2, 1516);
-    			add_location(p5, file$2, 70, 2, 1705);
+    			attr_dev(div1, "class", "svelte-bojl");
+    			add_location(div1, file$2, 61, 1, 2065);
+    			add_location(b1, file$2, 79, 5, 2594);
+    			add_location(p3, file$2, 79, 2, 2591);
+    			add_location(p4, file$2, 80, 2, 2619);
+    			add_location(p5, file$2, 87, 2, 2808);
     			attr_dev(div2, "id", "attributesWeights");
-    			attr_dev(div2, "class", "svelte-1y1sfvi");
-    			add_location(div2, file$2, 61, 1, 1457);
+    			attr_dev(div2, "class", "svelte-bojl");
+    			add_location(div2, file$2, 78, 1, 2560);
     			attr_dev(div3, "id", "attributesInfo");
-    			attr_dev(div3, "class", "svelte-1y1sfvi");
-    			add_location(div3, file$2, 47, 0, 1118);
+    			attr_dev(div3, "class", "svelte-bojl");
+    			add_location(div3, file$2, 60, 0, 2038);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -30237,8 +30263,8 @@ ${constraint.asp}`;
     			}
     		},
     		p: function update(ctx, [dirty]) {
-    			if (dirty & /*attributesList*/ 4) {
-    				each_value_2 = /*attributesList*/ ctx[2];
+    			if (dirty & /*attributesList, descriptions*/ 12) {
+    				each_value_2 = /*attributesList*/ ctx[3];
     				validate_each_argument(each_value_2);
     				let i;
 
@@ -30337,6 +30363,43 @@ ${constraint.asp}`;
     	let attributesProcessed = [];
     	let markAttr = [];
     	let encodingAttr = [];
+
+    	// The following descriptions are provided by IMDB
+    	// https://www.imdb.com/interfaces/
+    	// principals and genre have been modified from the original dataset
+    	// Their descriptions reflect the modifications
+    	let descriptions = {
+    		"type": {
+    			type: "categorical",
+    			des: "the type/format of the title (e.g. movie, short, tvseries, tvepisode, video, etc)"
+    		},
+    		"minutes": {
+    			type: "quantitative",
+    			des: "primary runtime of the title, in minutes"
+    		},
+    		"rating": {
+    			type: "quantitative",
+    			des: "weighted average of all the individual user ratings"
+    		},
+    		"votes": {
+    			type: "quantitative",
+    			des: "number of votes the title has received"
+    		},
+    		"principals": {
+    			type: "quantitative",
+    			des: "total principal cast/crew for titles"
+    		},
+    		"genre": {
+    			type: "categorical",
+    			des: "first genre associated with the title"
+    		},
+    		"categorical": { type: "any", des: "type, genre" },
+    		"quantitative": {
+    			type: "any",
+    			des: "minutes, rating, votes, principals"
+    		}
+    	};
+
     	let attributesList = ["type", "minutes", "rating", "votes", "principals", "genre"];
     	const writable_props = ["attributes", "allPoints", "shownPoints"];
 
@@ -30348,9 +30411,9 @@ ${constraint.asp}`;
     	validate_slots("AttributesWeight", $$slots, []);
 
     	$$self.$set = $$props => {
-    		if ("attributes" in $$props) $$invalidate(3, attributes = $$props.attributes);
-    		if ("allPoints" in $$props) $$invalidate(4, allPoints = $$props.allPoints);
-    		if ("shownPoints" in $$props) $$invalidate(5, shownPoints = $$props.shownPoints);
+    		if ("attributes" in $$props) $$invalidate(4, attributes = $$props.attributes);
+    		if ("allPoints" in $$props) $$invalidate(5, allPoints = $$props.allPoints);
+    		if ("shownPoints" in $$props) $$invalidate(6, shownPoints = $$props.shownPoints);
     	};
 
     	$$self.$capture_state = () => ({
@@ -30361,17 +30424,19 @@ ${constraint.asp}`;
     		attributesProcessed,
     		markAttr,
     		encodingAttr,
+    		descriptions,
     		attributesList
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ("attributes" in $$props) $$invalidate(3, attributes = $$props.attributes);
-    		if ("allPoints" in $$props) $$invalidate(4, allPoints = $$props.allPoints);
-    		if ("shownPoints" in $$props) $$invalidate(5, shownPoints = $$props.shownPoints);
+    		if ("attributes" in $$props) $$invalidate(4, attributes = $$props.attributes);
+    		if ("allPoints" in $$props) $$invalidate(5, allPoints = $$props.allPoints);
+    		if ("shownPoints" in $$props) $$invalidate(6, shownPoints = $$props.shownPoints);
     		if ("attributesProcessed" in $$props) attributesProcessed = $$props.attributesProcessed;
     		if ("markAttr" in $$props) $$invalidate(0, markAttr = $$props.markAttr);
     		if ("encodingAttr" in $$props) $$invalidate(1, encodingAttr = $$props.encodingAttr);
-    		if ("attributesList" in $$props) $$invalidate(2, attributesList = $$props.attributesList);
+    		if ("descriptions" in $$props) $$invalidate(2, descriptions = $$props.descriptions);
+    		if ("attributesList" in $$props) $$invalidate(3, attributesList = $$props.attributesList);
     	};
 
     	if ($$props && "$$inject" in $$props) {
@@ -30379,7 +30444,7 @@ ${constraint.asp}`;
     	}
 
     	$$self.$$.update = () => {
-    		if ($$self.$$.dirty & /*attributes*/ 8) {
+    		if ($$self.$$.dirty & /*attributes*/ 16) {
     			 {
 
     				let newMarkAttr = [];
@@ -30412,7 +30477,15 @@ ${constraint.asp}`;
     		}
     	};
 
-    	return [markAttr, encodingAttr, attributesList, attributes, allPoints, shownPoints];
+    	return [
+    		markAttr,
+    		encodingAttr,
+    		descriptions,
+    		attributesList,
+    		attributes,
+    		allPoints,
+    		shownPoints
+    	];
     }
 
     class AttributesWeight extends SvelteComponentDev {
@@ -30420,9 +30493,9 @@ ${constraint.asp}`;
     		super(options);
 
     		init(this, options, instance$2, create_fragment$2, safe_not_equal, {
-    			attributes: 3,
-    			allPoints: 4,
-    			shownPoints: 5
+    			attributes: 4,
+    			allPoints: 5,
+    			shownPoints: 6
     		});
 
     		dispatch_dev("SvelteRegisterComponent", {
@@ -33970,7 +34043,7 @@ ${constraint.asp}`;
     	return child_ctx;
     }
 
-    // (54:1) {#each items as item(item.id)}
+    // (56:1) {#each items as item(item.id)}
     function create_each_block$4(key_1, ctx) {
     	let div2;
     	let div0;
@@ -33981,7 +34054,7 @@ ${constraint.asp}`;
     	let i;
     	let t3;
     	let span;
-    	let t4_value = /*descriptions*/ ctx[2][/*item*/ ctx[6].name] + "";
+    	let t4_value = /*descriptions*/ ctx[2][/*item*/ ctx[6].name].type + ": " + /*descriptions*/ ctx[2][/*item*/ ctx[6].name].des + "";
     	let t4;
     	let t5;
     	let div2_key_value;
@@ -34003,17 +34076,17 @@ ${constraint.asp}`;
     			span = element("span");
     			t4 = text(t4_value);
     			t5 = space();
-    			attr_dev(div0, "class", "field svelte-12ercmj");
-    			add_location(div0, file$6, 55, 3, 2115);
-    			attr_dev(i, "class", "material-icons md-24 dataInfo svelte-12ercmj");
-    			add_location(i, file$6, 57, 4, 2181);
-    			attr_dev(span, "class", "tooltiptext svelte-12ercmj");
-    			add_location(span, file$6, 58, 4, 2235);
-    			attr_dev(div1, "class", "tooltip svelte-12ercmj");
-    			add_location(div1, file$6, 56, 3, 2155);
+    			attr_dev(div0, "class", "field svelte-1mzkywj");
+    			add_location(div0, file$6, 57, 3, 2413);
+    			attr_dev(i, "class", "material-icons md-24 dataInfo svelte-1mzkywj");
+    			add_location(i, file$6, 59, 4, 2479);
+    			attr_dev(span, "class", "tooltiptext svelte-1mzkywj");
+    			add_location(span, file$6, 60, 4, 2533);
+    			attr_dev(div1, "class", "tooltip svelte-1mzkywj");
+    			add_location(div1, file$6, 58, 3, 2453);
     			attr_dev(div2, "key", div2_key_value = /*item*/ ctx[6].name);
-    			attr_dev(div2, "class", "dataField svelte-12ercmj");
-    			add_location(div2, file$6, 54, 2, 2031);
+    			attr_dev(div2, "class", "dataField svelte-1mzkywj");
+    			add_location(div2, file$6, 56, 2, 2329);
     			this.first = div2;
     		},
     		m: function mount(target, anchor) {
@@ -34030,7 +34103,7 @@ ${constraint.asp}`;
     		},
     		p: function update(ctx, dirty) {
     			if (dirty & /*items*/ 1 && t0_value !== (t0_value = /*item*/ ctx[6].name + "")) set_data_dev(t0, t0_value);
-    			if (dirty & /*items*/ 1 && t4_value !== (t4_value = /*descriptions*/ ctx[2][/*item*/ ctx[6].name] + "")) set_data_dev(t4, t4_value);
+    			if (dirty & /*items*/ 1 && t4_value !== (t4_value = /*descriptions*/ ctx[2][/*item*/ ctx[6].name].type + ": " + /*descriptions*/ ctx[2][/*item*/ ctx[6].name].des + "")) set_data_dev(t4, t4_value);
 
     			if (dirty & /*items*/ 1 && div2_key_value !== (div2_key_value = /*item*/ ctx[6].name)) {
     				attr_dev(div2, "key", div2_key_value);
@@ -34056,7 +34129,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$4.name,
     		type: "each",
-    		source: "(54:1) {#each items as item(item.id)}",
+    		source: "(56:1) {#each items as item(item.id)}",
     		ctx
     	});
 
@@ -34088,7 +34161,7 @@ ${constraint.asp}`;
     				each_blocks[i].c();
     			}
 
-    			add_location(div, file$6, 50, 0, 1869);
+    			add_location(div, file$6, 52, 0, 2167);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -34164,12 +34237,35 @@ ${constraint.asp}`;
     	// principals and genre have been modified from the original dataset
     	// Their descriptions reflect the modifications
     	let descriptions = {
-    		"type": "the type/format of the title (e.g. movie, short, tvseries, tvepisode, video, etc)",
-    		"minutes": "primary runtime of the title, in minutes",
-    		"rating": "weighted average of all the individual user ratings",
-    		"votes": "number of votes the title has received",
-    		"principals": "total principal cast/crew for titles",
-    		"genre": "first genre associated with the title"
+    		"type": {
+    			type: "categorical",
+    			des: "the type/format of the title (e.g. movie, short, tvseries, tvepisode, video, etc)"
+    		},
+    		"minutes": {
+    			type: "quantitative",
+    			des: "primary runtime of the title, in minutes"
+    		},
+    		"rating": {
+    			type: "quantitative",
+    			des: "weighted average of all the individual user ratings"
+    		},
+    		"votes": {
+    			type: "quantitative",
+    			des: "number of votes the title has received"
+    		},
+    		"principals": {
+    			type: "quantitative",
+    			des: "total principal cast/crew for titles"
+    		},
+    		"genre": {
+    			type: "categorical",
+    			des: "first genre associated with the title"
+    		},
+    		"categorical": { type: "any", des: "type, genre" },
+    		"quantitative": {
+    			type: "any",
+    			des: "minutes, rating, votes, principals"
+    		}
     	};
 
     	function handleConsider(e) {
@@ -36869,8 +36965,8 @@ ${constraint.asp}`;
     {
         if(!window.console) window.console = {};
         var methods = ["debug", "warn", "info"];
-        for(var i$1=0;i$1<methods.length;i$1++){
-            console[methods[i$1]] = function(){};
+        for(var i=0;i<methods.length;i++){
+            console[methods[i]] = function(){};
         }
     }
 

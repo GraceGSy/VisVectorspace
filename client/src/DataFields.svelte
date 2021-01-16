@@ -11,12 +11,14 @@
 	// https://www.imdb.com/interfaces/
 	// principals and genre have been modified from the original dataset
 	// Their descriptions reflect the modifications
-	let descriptions = {"type":"the type/format of the title (e.g. movie, short, tvseries, tvepisode, video, etc)",
-						"minutes":"primary runtime of the title, in minutes",
-						"rating":"weighted average of all the individual user ratings",
-						"votes":"number of votes the title has received",
-						"principals":"total principal cast/crew for titles",
-						"genre":"first genre associated with the title"}
+	let descriptions = {"type":{type: "categorical", des:"the type/format of the title (e.g. movie, short, tvseries, tvepisode, video, etc)"},
+						"minutes":{type: "quantitative", des:"primary runtime of the title, in minutes"},
+						"rating":{type: "quantitative", des:"weighted average of all the individual user ratings"},
+						"votes":{type: "quantitative", des:"number of votes the title has received"},
+						"principals":{type: "quantitative", des:"total principal cast/crew for titles"},
+						"genre":{type: "categorical", des:"first genre associated with the title"},
+						"categorical":{type: "any", des:"type, genre"},
+						"quantitative":{type: "any", des:"minutes, rating, votes, principals"}}
 
 	const flipDurationMs = 200
 
@@ -56,7 +58,7 @@
 			<div class="field">{item.name}</div>
 			<div class="tooltip">
 				<i class="material-icons md-24 dataInfo">info</i>
-				<span class="tooltiptext">{descriptions[item.name]}</span>
+				<span class="tooltiptext">{descriptions[item.name].type + ': ' + descriptions[item.name].des}</span>
 			</div>
 		</div>
 	{/each}
@@ -120,7 +122,7 @@
 		margin-top: -5px;
 		border-width: 5px;
 		border-style: solid;
-		border-color: transparent black transparent transparent;
+		border-color: transparent gray transparent transparent;
 	}
 
 	/* Show the tooltip text when you mouse over the tooltip container */

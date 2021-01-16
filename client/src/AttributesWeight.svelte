@@ -10,6 +10,19 @@
 	let markAttr = []
 	let encodingAttr = []
 
+	// The following descriptions are provided by IMDB
+	// https://www.imdb.com/interfaces/
+	// principals and genre have been modified from the original dataset
+	// Their descriptions reflect the modifications
+	let descriptions = {"type":{type: "categorical", des:"the type/format of the title (e.g. movie, short, tvseries, tvepisode, video, etc)"},
+						"minutes":{type: "quantitative", des:"primary runtime of the title, in minutes"},
+						"rating":{type: "quantitative", des:"weighted average of all the individual user ratings"},
+						"votes":{type: "quantitative", des:"number of votes the title has received"},
+						"principals":{type: "quantitative", des:"total principal cast/crew for titles"},
+						"genre":{type: "categorical", des:"first genre associated with the title"},
+						"categorical":{type: "any", des:"type, genre"},
+						"quantitative":{type: "any", des:"minutes, rating, votes, principals"}}
+
 	let attributesList = ["type","minutes","rating","votes","principals","genre"]
 
 	$: {
@@ -56,6 +69,10 @@
 		{#each attributesList as l}
 			<div key={l} class="dataField">
 				<div class="field">{l}</div>
+					<div class="tooltip">
+					<i class="material-icons md-24 dataInfo">info</i>
+					<span class="tooltiptext">{descriptions[l].type + ': ' + descriptions[l].des}</span>
+				</div>
 			</div>
 		{/each}
 	</div>
@@ -149,5 +166,56 @@
     	align-content: middle;
     	padding: 0px 10px 0px 5px;
     	width: 200px;
+	}
+
+	.dataInfo {
+		opacity: 25%;
+    	cursor: default;
+    	margin-left: 10px;
+    	cursor: default;
+	}
+
+	.tooltip {
+		position: relative;
+		display: flex;
+		align-items: center;
+	}
+
+	/* Tooltip text */
+	.tooltip .tooltiptext {
+		visibility: hidden;
+	    width: 200px;
+	    background-color: gray;
+	    color: white;
+	    text-align: center;
+	    padding: 20px;
+	    border-radius: 6px;
+	    position: absolute;
+	    z-index: 1;
+	    /* top: -2px; */
+	    left: 120%;
+	    opacity: 0;
+	    transition: opacity 0.3s;
+	    /* height: 80px; */
+	    font-size: 12px;
+	    opacity: 0.6;
+	}
+
+	/* Tooltip arrow */
+	.tooltip .tooltiptext::after {
+		content: " ";
+		position: absolute;
+		top: 50%;
+		right: 100%; /* To the left of the tooltip */
+		margin-top: -5px;
+		border-width: 5px;
+		border-style: solid;
+		border-color: transparent gray transparent transparent;
+	}
+
+	/* Show the tooltip text when you mouse over the tooltip container */
+	.tooltip:hover .tooltiptext {
+		visibility: visible;
+		opacity: 1;
 	}
 </style>
