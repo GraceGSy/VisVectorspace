@@ -127,7 +127,7 @@
 		display: flex;
 		height: 100%;
 		flex-direction: column;
-	    padding: 20px 50px 0px 15px;
+	    padding: 20px 20px 0px 15px;
 	    margin-right: 25px;
 		background: white;
 	}

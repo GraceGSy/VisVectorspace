@@ -29926,10 +29926,10 @@ ${constraint.asp}`;
     			div0 = element("div");
     			t0 = text(t0_value);
     			t1 = space();
-    			attr_dev(div0, "class", "field svelte-15q3sl3");
+    			attr_dev(div0, "class", "field svelte-1y1sfvi");
     			add_location(div0, file$2, 57, 4, 1399);
     			attr_dev(div1, "key", div1_key_value = /*l*/ ctx[13]);
-    			attr_dev(div1, "class", "dataField svelte-15q3sl3");
+    			attr_dev(div1, "class", "dataField svelte-1y1sfvi");
     			add_location(div1, file$2, 56, 3, 1363);
     		},
     		m: function mount(target, anchor) {
@@ -29975,12 +29975,12 @@ ${constraint.asp}`;
     			t1 = space();
     			div1 = element("div");
     			t2 = text(t2_value);
-    			attr_dev(div0, "class", "attributeLeft svelte-15q3sl3");
+    			attr_dev(div0, "class", "attributeLeft svelte-1y1sfvi");
     			add_location(div0, file$2, 66, 4, 1598);
-    			attr_dev(div1, "class", "attributeRight svelte-15q3sl3");
+    			attr_dev(div1, "class", "attributeRight svelte-1y1sfvi");
     			add_location(div1, file$2, 67, 4, 1642);
     			attr_dev(div2, "key", div2_key_value = /*a*/ ctx[10].join());
-    			attr_dev(div2, "class", "attribute svelte-15q3sl3");
+    			attr_dev(div2, "class", "attribute svelte-1y1sfvi");
     			add_location(div2, file$2, 65, 3, 1555);
     		},
     		m: function mount(target, anchor) {
@@ -30037,12 +30037,12 @@ ${constraint.asp}`;
     			div1 = element("div");
     			t2 = text(t2_value);
     			t3 = space();
-    			attr_dev(div0, "class", "attributeLeft svelte-15q3sl3");
+    			attr_dev(div0, "class", "attributeLeft svelte-1y1sfvi");
     			add_location(div0, file$2, 73, 4, 1795);
-    			attr_dev(div1, "class", "attributeRight svelte-15q3sl3");
+    			attr_dev(div1, "class", "attributeRight svelte-1y1sfvi");
     			add_location(div1, file$2, 74, 4, 1839);
     			attr_dev(div2, "key", div2_key_value = /*e*/ ctx[7].join());
-    			attr_dev(div2, "class", "attribute svelte-15q3sl3");
+    			attr_dev(div2, "class", "attribute svelte-1y1sfvi");
     			add_location(div2, file$2, 72, 3, 1752);
     		},
     		m: function mount(target, anchor) {
@@ -30173,26 +30173,26 @@ ${constraint.asp}`;
 
     			add_location(b0, file$2, 49, 5, 1176);
     			add_location(p0, file$2, 49, 2, 1173);
-    			attr_dev(i, "class", "material-icons md-24 svelte-15q3sl3");
+    			attr_dev(i, "class", "material-icons md-24 svelte-1y1sfvi");
     			attr_dev(i, "id", "listIcon");
     			add_location(i, file$2, 51, 3, 1220);
     			add_location(p1, file$2, 52, 3, 1283);
     			attr_dev(div0, "id", "datasetName");
-    			attr_dev(div0, "class", "svelte-15q3sl3");
+    			attr_dev(div0, "class", "svelte-1y1sfvi");
     			add_location(div0, file$2, 50, 2, 1194);
     			add_location(p2, file$2, 54, 2, 1316);
     			attr_dev(div1, "id", "attributesList");
-    			attr_dev(div1, "class", "svelte-15q3sl3");
+    			attr_dev(div1, "class", "svelte-1y1sfvi");
     			add_location(div1, file$2, 48, 1, 1145);
     			add_location(b1, file$2, 62, 5, 1491);
     			add_location(p3, file$2, 62, 2, 1488);
     			add_location(p4, file$2, 63, 2, 1516);
     			add_location(p5, file$2, 70, 2, 1705);
     			attr_dev(div2, "id", "attributesWeights");
-    			attr_dev(div2, "class", "svelte-15q3sl3");
+    			attr_dev(div2, "class", "svelte-1y1sfvi");
     			add_location(div2, file$2, 61, 1, 1457);
     			attr_dev(div3, "id", "attributesInfo");
-    			attr_dev(div3, "class", "svelte-15q3sl3");
+    			attr_dev(div3, "class", "svelte-1y1sfvi");
     			add_location(div3, file$2, 47, 0, 1118);
     		},
     		l: function claim(nodes) {
@@ -33966,18 +33966,25 @@ ${constraint.asp}`;
 
     function get_each_context$4(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[5] = list[i];
+    	child_ctx[6] = list[i];
     	return child_ctx;
     }
 
-    // (43:1) {#each items as item(item.id)}
+    // (54:1) {#each items as item(item.id)}
     function create_each_block$4(key_1, ctx) {
-    	let div1;
+    	let div2;
     	let div0;
-    	let t0_value = /*item*/ ctx[5].name + "";
+    	let t0_value = /*item*/ ctx[6].name + "";
     	let t0;
     	let t1;
-    	let div1_key_value;
+    	let div1;
+    	let i;
+    	let t3;
+    	let span;
+    	let t4_value = /*descriptions*/ ctx[2][/*item*/ ctx[6].name] + "";
+    	let t4;
+    	let t5;
+    	let div2_key_value;
     	let rect;
     	let stop_animation = noop;
 
@@ -33985,43 +33992,63 @@ ${constraint.asp}`;
     		key: key_1,
     		first: null,
     		c: function create() {
-    			div1 = element("div");
+    			div2 = element("div");
     			div0 = element("div");
     			t0 = text(t0_value);
     			t1 = space();
-    			attr_dev(div0, "class", "field svelte-1k0wfqa");
-    			add_location(div0, file$6, 44, 3, 1492);
-    			attr_dev(div1, "key", div1_key_value = /*item*/ ctx[5].name);
-    			attr_dev(div1, "class", "dataField svelte-1k0wfqa");
-    			add_location(div1, file$6, 43, 2, 1408);
-    			this.first = div1;
+    			div1 = element("div");
+    			i = element("i");
+    			i.textContent = "info";
+    			t3 = space();
+    			span = element("span");
+    			t4 = text(t4_value);
+    			t5 = space();
+    			attr_dev(div0, "class", "field svelte-12ercmj");
+    			add_location(div0, file$6, 55, 3, 2115);
+    			attr_dev(i, "class", "material-icons md-24 dataInfo svelte-12ercmj");
+    			add_location(i, file$6, 57, 4, 2181);
+    			attr_dev(span, "class", "tooltiptext svelte-12ercmj");
+    			add_location(span, file$6, 58, 4, 2235);
+    			attr_dev(div1, "class", "tooltip svelte-12ercmj");
+    			add_location(div1, file$6, 56, 3, 2155);
+    			attr_dev(div2, "key", div2_key_value = /*item*/ ctx[6].name);
+    			attr_dev(div2, "class", "dataField svelte-12ercmj");
+    			add_location(div2, file$6, 54, 2, 2031);
+    			this.first = div2;
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div1, anchor);
-    			append_dev(div1, div0);
+    			insert_dev(target, div2, anchor);
+    			append_dev(div2, div0);
     			append_dev(div0, t0);
-    			append_dev(div1, t1);
+    			append_dev(div2, t1);
+    			append_dev(div2, div1);
+    			append_dev(div1, i);
+    			append_dev(div1, t3);
+    			append_dev(div1, span);
+    			append_dev(span, t4);
+    			append_dev(div2, t5);
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty & /*items*/ 1 && t0_value !== (t0_value = /*item*/ ctx[5].name + "")) set_data_dev(t0, t0_value);
+    			if (dirty & /*items*/ 1 && t0_value !== (t0_value = /*item*/ ctx[6].name + "")) set_data_dev(t0, t0_value);
+    			if (dirty & /*items*/ 1 && t4_value !== (t4_value = /*descriptions*/ ctx[2][/*item*/ ctx[6].name] + "")) set_data_dev(t4, t4_value);
 
-    			if (dirty & /*items*/ 1 && div1_key_value !== (div1_key_value = /*item*/ ctx[5].name)) {
-    				attr_dev(div1, "key", div1_key_value);
+    			if (dirty & /*items*/ 1 && div2_key_value !== (div2_key_value = /*item*/ ctx[6].name)) {
+    				attr_dev(div2, "key", div2_key_value);
     			}
     		},
     		r: function measure() {
-    			rect = div1.getBoundingClientRect();
+    			rect = div2.getBoundingClientRect();
     		},
     		f: function fix() {
-    			fix_position(div1);
+    			fix_position(div2);
     			stop_animation();
     		},
     		a: function animate() {
     			stop_animation();
-    			stop_animation = create_animation(div1, rect, flip, { duration: flipDurationMs$1 });
+    			stop_animation = create_animation(div2, rect, flip, { duration: flipDurationMs$1 });
     		},
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div1);
+    			if (detaching) detach_dev(div2);
     		}
     	};
 
@@ -34029,7 +34056,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$4.name,
     		type: "each",
-    		source: "(43:1) {#each items as item(item.id)}",
+    		source: "(54:1) {#each items as item(item.id)}",
     		ctx
     	});
 
@@ -34044,7 +34071,7 @@ ${constraint.asp}`;
     	let dispose;
     	let each_value = /*items*/ ctx[0];
     	validate_each_argument(each_value);
-    	const get_key = ctx => /*item*/ ctx[5].id;
+    	const get_key = ctx => /*item*/ ctx[6].id;
     	validate_each_keys(ctx, each_value, get_each_context$4, get_key);
 
     	for (let i = 0; i < each_value.length; i += 1) {
@@ -34061,7 +34088,7 @@ ${constraint.asp}`;
     				each_blocks[i].c();
     			}
 
-    			add_location(div, file$6, 39, 0, 1246);
+    			add_location(div, file$6, 50, 0, 1869);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -34081,12 +34108,12 @@ ${constraint.asp}`;
     					flipDurationMs: flipDurationMs$1,
     					dropFromOthersDisabled: /*dropFromOthersDisabled*/ ctx[1]
     				})),
-    				listen_dev(div, "consider", /*handleConsider*/ ctx[2], false, false, false),
-    				listen_dev(div, "finalize", /*handleFinalize*/ ctx[3], false, false, false)
+    				listen_dev(div, "consider", /*handleConsider*/ ctx[3], false, false, false),
+    				listen_dev(div, "finalize", /*handleFinalize*/ ctx[4], false, false, false)
     			];
     		},
     		p: function update(ctx, [dirty]) {
-    			if (dirty & /*items*/ 1) {
+    			if (dirty & /*items, descriptions*/ 5) {
     				const each_value = /*items*/ ctx[0];
     				validate_each_argument(each_value);
     				for (let i = 0; i < each_blocks.length; i += 1) each_blocks[i].r();
@@ -34131,6 +34158,19 @@ ${constraint.asp}`;
     	let { items = [] } = $$props;
     	let shouldIgnoreDndEvents = false;
     	let dropFromOthersDisabled = true;
+
+    	// The following descriptions are provided by IMDB
+    	// https://www.imdb.com/interfaces/
+    	// principals and genre have been modified from the original dataset
+    	// Their descriptions reflect the modifications
+    	let descriptions = {
+    		"type": "the type/format of the title (e.g. movie, short, tvseries, tvepisode, video, etc)",
+    		"minutes": "primary runtime of the title, in minutes",
+    		"rating": "weighted average of all the individual user ratings",
+    		"votes": "number of votes the title has received",
+    		"principals": "total principal cast/crew for titles",
+    		"genre": "first genre associated with the title"
+    	};
 
     	function handleConsider(e) {
     		console.warn(`got consider ${JSON.stringify(e.detail, null, 2)}`);
@@ -34179,6 +34219,7 @@ ${constraint.asp}`;
     		items,
     		shouldIgnoreDndEvents,
     		dropFromOthersDisabled,
+    		descriptions,
     		flipDurationMs: flipDurationMs$1,
     		handleConsider,
     		handleFinalize
@@ -34188,13 +34229,14 @@ ${constraint.asp}`;
     		if ("items" in $$props) $$invalidate(0, items = $$props.items);
     		if ("shouldIgnoreDndEvents" in $$props) shouldIgnoreDndEvents = $$props.shouldIgnoreDndEvents;
     		if ("dropFromOthersDisabled" in $$props) $$invalidate(1, dropFromOthersDisabled = $$props.dropFromOthersDisabled);
+    		if ("descriptions" in $$props) $$invalidate(2, descriptions = $$props.descriptions);
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [items, dropFromOthersDisabled, handleConsider, handleFinalize];
+    	return [items, dropFromOthersDisabled, descriptions, handleConsider, handleFinalize];
     }
 
     class DataFields extends SvelteComponentDev {
@@ -34468,35 +34510,35 @@ ${constraint.asp}`;
 
     			add_location(b0, file$7, 68, 5, 2561);
     			add_location(p0, file$7, 68, 2, 2558);
-    			attr_dev(i, "class", "material-icons md-24 svelte-x9t7p3");
+    			attr_dev(i, "class", "material-icons md-24 svelte-1bz42d2");
     			attr_dev(i, "id", "listIcon");
     			add_location(i, file$7, 70, 3, 2605);
     			add_location(p1, file$7, 71, 3, 2668);
     			attr_dev(div0, "id", "datasetName");
-    			attr_dev(div0, "class", "svelte-x9t7p3");
+    			attr_dev(div0, "class", "svelte-1bz42d2");
     			add_location(div0, file$7, 69, 2, 2579);
     			add_location(p2, file$7, 73, 2, 2701);
     			add_location(p3, file$7, 75, 2, 2754);
     			attr_dev(div1, "id", "attributesList");
-    			attr_dev(div1, "class", "svelte-x9t7p3");
+    			attr_dev(div1, "class", "svelte-1bz42d2");
     			add_location(div1, file$7, 67, 1, 2530);
     			add_location(b1, file$7, 79, 5, 2853);
     			add_location(p4, file$7, 79, 2, 2850);
     			add_location(p5, file$7, 80, 2, 2876);
-    			attr_dev(div2, "class", "attributeLeft svelte-x9t7p3");
+    			attr_dev(div2, "class", "attributeLeft svelte-1bz42d2");
     			add_location(div2, file$7, 82, 3, 2917);
     			attr_dev(select, "id", "mark-dropdown");
-    			attr_dev(select, "class", "attributeRight svelte-x9t7p3");
+    			attr_dev(select, "class", "attributeRight svelte-1bz42d2");
     			if (/*selectedMark*/ ctx[0] === void 0) add_render_callback(() => /*select_change_handler*/ ctx[10].call(select));
     			add_location(select, file$7, 83, 3, 2958);
-    			attr_dev(div3, "class", "attribute svelte-x9t7p3");
+    			attr_dev(div3, "class", "attribute svelte-1bz42d2");
     			add_location(div3, file$7, 81, 2, 2890);
     			add_location(p6, file$7, 91, 2, 3138);
     			attr_dev(div4, "id", "attributesConstraints");
-    			attr_dev(div4, "class", "svelte-x9t7p3");
+    			attr_dev(div4, "class", "svelte-1bz42d2");
     			add_location(div4, file$7, 78, 1, 2815);
     			attr_dev(div5, "id", "attributesInfo");
-    			attr_dev(div5, "class", "svelte-x9t7p3");
+    			attr_dev(div5, "class", "svelte-1bz42d2");
     			add_location(div5, file$7, 66, 0, 2503);
     		},
     		l: function claim(nodes) {

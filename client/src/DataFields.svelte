@@ -5,7 +5,18 @@
 	export let items = []
 
 	let shouldIgnoreDndEvents = false;
-	let dropFromOthersDisabled = true
+	let dropFromOthersDisabled = true;
+
+	// The following descriptions are provided by IMDB
+	// https://www.imdb.com/interfaces/
+	// principals and genre have been modified from the original dataset
+	// Their descriptions reflect the modifications
+	let descriptions = {"type":"the type/format of the title (e.g. movie, short, tvseries, tvepisode, video, etc)",
+						"minutes":"primary runtime of the title, in minutes",
+						"rating":"weighted average of all the individual user ratings",
+						"votes":"number of votes the title has received",
+						"principals":"total principal cast/crew for titles",
+						"genre":"first genre associated with the title"}
 
 	const flipDurationMs = 200
 
@@ -43,6 +54,10 @@
 	{#each items as item(item.id)}
 		<div key={item.name} class="dataField" animate:flip={{duration:flipDurationMs}}>
 			<div class="field">{item.name}</div>
+			<div class="tooltip">
+				<i class="material-icons md-24 dataInfo">info</i>
+				<span class="tooltiptext">{descriptions[item.name]}</span>
+			</div>
 		</div>
 	{/each}
 </div>
@@ -52,6 +67,7 @@
 		height: 25px;
 		margin-bottom: 10px;
 		display: flex;
+		cursor: move;
 	}
 
 	.field {
@@ -60,5 +76,56 @@
     	border: steelblue solid 2px;
     	padding: 0px 10px 0px 10px;
     	width: 100%;
+	}
+
+	.dataInfo {
+		opacity: 25%;
+    	cursor: default;
+    	margin-left: 10px;
+    	cursor: default;
+	}
+
+	.tooltip {
+		position: relative;
+		display: flex;
+		align-items: center;
+	}
+
+	/* Tooltip text */
+	.tooltip .tooltiptext {
+		visibility: hidden;
+	    width: 200px;
+	    background-color: gray;
+	    color: white;
+	    text-align: center;
+	    padding: 20px;
+	    border-radius: 6px;
+	    position: absolute;
+	    z-index: 1;
+	    /* top: -2px; */
+	    left: 120%;
+	    opacity: 0;
+	    transition: opacity 0.3s;
+	    /* height: 80px; */
+	    font-size: 12px;
+	    opacity: 0.6;
+	}
+
+	/* Tooltip arrow */
+	.tooltip .tooltiptext::after {
+		content: " ";
+		position: absolute;
+		top: 50%;
+		right: 100%; /* To the left of the tooltip */
+		margin-top: -5px;
+		border-width: 5px;
+		border-style: solid;
+		border-color: transparent black transparent transparent;
+	}
+
+	/* Show the tooltip text when you mouse over the tooltip container */
+	.tooltip:hover .tooltiptext {
+		visibility: visible;
+		opacity: 1;
 	}
 </style>
