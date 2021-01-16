@@ -76,13 +76,32 @@
 		similarRecommendations = recommendationSets
 
 		let result = []
+		let resultUid = new Set()
 		let setNumber = 0
 
-		for (let set of similarRecommendations) {
-			let randomIndex = Math.floor(Math.random() * (set.length))
-			let selected = set[randomIndex]
+		while (result.length < 4) {
+
+			let set = similarRecommendations[setNumber % 4]
+
+			if (set.length == 0) {
+				setNumber++;
+				continue;
+			}
+
+			let selectedUid
+			let selected
+
+			while (!selectedUid || resultUid.has(selectedUid)) {
+				let randomIndex = Math.floor(Math.random() * (set.length))
+				selected = set[randomIndex]
+				selectedUid = selected.uid
+			}
 
 			result.push(selected)
+			resultUid.add(selected.uid)
+
+			setNumber++
+
 		}
 
 		recommendationsClass = recommendationsClass.map(r => 'default')

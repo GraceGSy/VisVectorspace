@@ -29753,7 +29753,7 @@ ${constraint.asp}`;
     		}
     	}
 
-    	console.log(allDracoRecommendations);
+    	// console.log(allDracoRecommendations)
 
     	return allDracoRecommendations
     }
@@ -30550,7 +30550,7 @@ ${constraint.asp}`;
     	return child_ctx;
     }
 
-    // (400:3) {#each recommendations as c, i}
+    // (419:3) {#each recommendations as c, i}
     function create_each_block_1$1(ctx) {
     	let div4;
     	let div1;
@@ -30605,27 +30605,27 @@ ${constraint.asp}`;
     			? "more"
     			: "default") + " svelte-177db2a"));
 
-    			add_location(button0, file$3, 402, 6, 10443);
+    			add_location(button0, file$3, 421, 6, 10747);
 
     			attr_dev(button1, "class", button1_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[2][/*i*/ ctx[37]] === "less"
     			? "less"
     			: "default") + " svelte-177db2a"));
 
-    			add_location(button1, file$3, 406, 6, 10601);
+    			add_location(button1, file$3, 425, 6, 10905);
     			attr_dev(i_1, "class", "material-icons-outlined md-24");
-    			add_location(i_1, file$3, 413, 7, 10922);
+    			add_location(i_1, file$3, 432, 7, 11226);
     			attr_dev(div0, "class", "pinButton svelte-177db2a");
     			toggle_class(div0, "isPinned", /*recommendations*/ ctx[1][/*i*/ ctx[37]] && /*currentPinned*/ ctx[4].indexOf(/*recommendations*/ ctx[1][/*i*/ ctx[37]].uid) > -1);
-    			add_location(div0, file$3, 410, 6, 10759);
+    			add_location(div0, file$3, 429, 6, 11063);
     			attr_dev(div1, "class", "buttons svelte-177db2a");
-    			add_location(div1, file$3, 401, 5, 10415);
+    			add_location(div1, file$3, 420, 5, 10719);
     			attr_dev(div2, "id", div2_id_value = "vis" + /*i*/ ctx[37]);
     			attr_dev(div2, "class", "svelte-177db2a");
-    			add_location(div2, file$3, 417, 6, 11040);
+    			add_location(div2, file$3, 436, 6, 11344);
     			attr_dev(div3, "class", "vegaContainer svelte-177db2a");
-    			add_location(div3, file$3, 416, 5, 11006);
+    			add_location(div3, file$3, 435, 5, 11310);
     			attr_dev(div4, "class", "vis svelte-177db2a");
-    			add_location(div4, file$3, 400, 4, 10392);
+    			add_location(div4, file$3, 419, 4, 10696);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div4, anchor);
@@ -30679,14 +30679,14 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_1$1.name,
     		type: "each",
-    		source: "(400:3) {#each recommendations as c, i}",
+    		source: "(419:3) {#each recommendations as c, i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (428:3) {#each pinned as p, i}
+    // (447:3) {#each pinned as p, i}
     function create_each_block$2(ctx) {
     	let div;
     	let div_id_value;
@@ -30696,7 +30696,7 @@ ${constraint.asp}`;
     			div = element("div");
     			attr_dev(div, "id", div_id_value = "pin" + /*i*/ ctx[37]);
     			attr_dev(div, "class", "svelte-177db2a");
-    			add_location(div, file$3, 428, 4, 11290);
+    			add_location(div, file$3, 447, 4, 11594);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -30710,7 +30710,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$2.name,
     		type: "each",
-    		source: "(428:3) {#each pinned as p, i}",
+    		source: "(447:3) {#each pinned as p, i}",
     		ctx
     	});
 
@@ -30816,43 +30816,43 @@ ${constraint.asp}`;
     			}
 
     			attr_dev(div0, "class", "spinner svelte-177db2a");
-    			add_location(div0, file$3, 386, 2, 9882);
+    			add_location(div0, file$3, 405, 2, 10186);
     			attr_dev(div1, "class", "loader svelte-177db2a");
     			toggle_class(div1, "showLoader", /*loading*/ ctx[0]);
     			toggle_class(div1, "hideLoader", !/*loading*/ ctx[0]);
-    			add_location(div1, file$3, 383, 1, 9796);
-    			add_location(b0, file$3, 393, 21, 10096);
+    			add_location(div1, file$3, 402, 1, 10100);
+    			add_location(b0, file$3, 412, 21, 10400);
     			attr_dev(p0, "class", "title1");
-    			add_location(p0, file$3, 393, 3, 10078);
-    			add_location(button0, file$3, 394, 3, 10126);
-    			add_location(button1, file$3, 395, 3, 10187);
+    			add_location(p0, file$3, 412, 3, 10382);
+    			add_location(button0, file$3, 413, 3, 10430);
+    			add_location(button1, file$3, 414, 3, 10491);
     			attr_dev(button2, "id", "exportJSON");
     			attr_dev(button2, "class", "btn");
-    			add_location(button2, file$3, 396, 3, 10233);
+    			add_location(button2, file$3, 415, 3, 10537);
     			attr_dev(div2, "id", "menu");
-    			add_location(div2, file$3, 392, 2, 10059);
+    			add_location(div2, file$3, 411, 2, 10363);
     			attr_dev(div3, "id", "recommendationDisplay");
     			attr_dev(div3, "class", "svelte-177db2a");
-    			add_location(div3, file$3, 398, 2, 10320);
+    			add_location(div3, file$3, 417, 2, 10624);
     			attr_dev(div4, "id", "recommendations");
     			attr_dev(div4, "class", "svelte-177db2a");
-    			add_location(div4, file$3, 391, 1, 10030);
-    			add_location(b1, file$3, 424, 21, 11161);
+    			add_location(div4, file$3, 410, 1, 10334);
+    			add_location(b1, file$3, 443, 21, 11465);
     			attr_dev(p1, "id", "pinnedText");
     			attr_dev(p1, "class", "svelte-177db2a");
-    			add_location(p1, file$3, 424, 2, 11142);
+    			add_location(p1, file$3, 443, 2, 11446);
     			attr_dev(a, "id", "closeButton");
     			attr_dev(a, "class", "svelte-177db2a");
-    			add_location(a, file$3, 425, 2, 11181);
+    			add_location(a, file$3, 444, 2, 11485);
     			attr_dev(div5, "id", "pinnedDisplay");
     			attr_dev(div5, "class", "svelte-177db2a");
-    			add_location(div5, file$3, 426, 2, 11235);
+    			add_location(div5, file$3, 445, 2, 11539);
     			attr_dev(div6, "id", "pinnedDrawer");
     			attr_dev(div6, "class", "svelte-177db2a");
-    			add_location(div6, file$3, 423, 1, 11116);
+    			add_location(div6, file$3, 442, 1, 11420);
     			attr_dev(div7, "id", "overall");
     			attr_dev(div7, "class", "svelte-177db2a");
-    			add_location(div7, file$3, 382, 0, 9776);
+    			add_location(div7, file$3, 401, 0, 10080);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -31058,11 +31058,29 @@ ${constraint.asp}`;
     	function selectRecommendations(recommendationSets) {
     		similarRecommendations = recommendationSets;
     		let result = [];
+    		let resultUid = new Set();
+    		let setNumber = 0;
 
-    		for (let set of similarRecommendations) {
-    			let randomIndex = Math.floor(Math.random() * set.length);
-    			let selected = set[randomIndex];
+    		while (result.length < 4) {
+    			let set = similarRecommendations[setNumber % 4];
+
+    			if (set.length == 0) {
+    				setNumber++;
+    				continue;
+    			}
+
+    			let selectedUid;
+    			let selected;
+
+    			while (!selectedUid || resultUid.has(selectedUid)) {
+    				let randomIndex = Math.floor(Math.random() * set.length);
+    				selected = set[randomIndex];
+    				selectedUid = selected.uid;
+    			}
+
     			result.push(selected);
+    			resultUid.add(selected.uid);
+    			setNumber++;
     		}
 
     		$$invalidate(2, recommendationsClass = recommendationsClass.map(r => "default"));

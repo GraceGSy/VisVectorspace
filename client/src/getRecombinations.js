@@ -91,7 +91,7 @@ export default function getRecombinations(vegaSpecs, dataset) {
 		}
 	}
 
-	console.log(allDracoRecommendations)
+	// console.log(allDracoRecommendations)
 
 	return allDracoRecommendations
 }
