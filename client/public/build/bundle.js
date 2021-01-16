@@ -29709,7 +29709,7 @@ ${constraint.asp}`;
     		for (let s of solution['specs']) {
     			s.width = 270;
     			s.height = 270;
-    			recs.push({'vega':s, 'uid': 'id' + (new Date()).getTime()});
+    			recs.push({'vega':s, 'uid': 'id' + (new Date().valueOf()) + '_' + i});
     		}
 
     		return recs
@@ -34861,19 +34861,19 @@ ${constraint.asp}`;
 
     function get_each_context$6(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[20] = list[i];
-    	child_ctx[22] = i;
+    	child_ctx[21] = list[i];
+    	child_ctx[23] = i;
     	return child_ctx;
     }
 
     function get_each_context_1$3(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[23] = list[i];
-    	child_ctx[22] = i;
+    	child_ctx[24] = list[i];
+    	child_ctx[23] = i;
     	return child_ctx;
     }
 
-    // (195:3) {#each recommendations as c, i}
+    // (224:3) {#each recommendations as c, i}
     function create_each_block_1$3(ctx) {
     	let div3;
     	let div0;
@@ -34886,7 +34886,7 @@ ${constraint.asp}`;
     	let dispose;
 
     	function click_handler(...args) {
-    		return /*click_handler*/ ctx[19](/*i*/ ctx[22], ...args);
+    		return /*click_handler*/ ctx[20](/*i*/ ctx[23], ...args);
     	}
 
     	const block = {
@@ -34900,16 +34900,17 @@ ${constraint.asp}`;
     			div1 = element("div");
     			t2 = space();
     			attr_dev(i_1, "class", "material-icons-outlined md-24");
-    			add_location(i_1, file$8, 197, 6, 5066);
-    			attr_dev(div0, "class", "pinButton svelte-ptb5k7");
-    			add_location(div0, file$8, 196, 5, 5012);
-    			attr_dev(div1, "id", div1_id_value = "vis" + /*i*/ ctx[22]);
-    			attr_dev(div1, "class", "svelte-ptb5k7");
-    			add_location(div1, file$8, 200, 6, 5171);
-    			attr_dev(div2, "class", "vegaContainer svelte-ptb5k7");
-    			add_location(div2, file$8, 199, 5, 5137);
-    			attr_dev(div3, "class", "vis svelte-ptb5k7");
-    			add_location(div3, file$8, 195, 4, 4989);
+    			add_location(i_1, file$8, 228, 6, 5896);
+    			attr_dev(div0, "class", "pinButton svelte-1984k8c");
+    			toggle_class(div0, "isPinned", /*recommendations*/ ctx[3][/*i*/ ctx[23]] && /*currentPinned*/ ctx[2].indexOf(/*recommendations*/ ctx[3][/*i*/ ctx[23]].uid) > -1);
+    			add_location(div0, file$8, 225, 5, 5738);
+    			attr_dev(div1, "id", div1_id_value = "vis" + /*i*/ ctx[23]);
+    			attr_dev(div1, "class", "svelte-1984k8c");
+    			add_location(div1, file$8, 231, 6, 6002);
+    			attr_dev(div2, "class", "vegaContainer svelte-1984k8c");
+    			add_location(div2, file$8, 230, 5, 5968);
+    			attr_dev(div3, "class", "vis svelte-1984k8c");
+    			add_location(div3, file$8, 224, 4, 5715);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div3, anchor);
@@ -34924,6 +34925,10 @@ ${constraint.asp}`;
     		},
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
+
+    			if (dirty & /*recommendations, currentPinned*/ 12) {
+    				toggle_class(div0, "isPinned", /*recommendations*/ ctx[3][/*i*/ ctx[23]] && /*currentPinned*/ ctx[2].indexOf(/*recommendations*/ ctx[3][/*i*/ ctx[23]].uid) > -1);
+    			}
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div3);
@@ -34935,14 +34940,14 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_1$3.name,
     		type: "each",
-    		source: "(195:3) {#each recommendations as c, i}",
+    		source: "(224:3) {#each recommendations as c, i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (211:3) {#each pinned as p, i}
+    // (242:3) {#each pinned as p, i}
     function create_each_block$6(ctx) {
     	let div;
     	let div_id_value;
@@ -34950,9 +34955,9 @@ ${constraint.asp}`;
     	const block = {
     		c: function create() {
     			div = element("div");
-    			attr_dev(div, "id", div_id_value = "pin" + /*i*/ ctx[22]);
-    			attr_dev(div, "class", "svelte-ptb5k7");
-    			add_location(div, file$8, 211, 4, 5421);
+    			attr_dev(div, "id", div_id_value = "pin" + /*i*/ ctx[23]);
+    			attr_dev(div, "class", "svelte-1984k8c");
+    			add_location(div, file$8, 242, 4, 6252);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -34966,7 +34971,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$6.name,
     		type: "each",
-    		source: "(211:3) {#each pinned as p, i}",
+    		source: "(242:3) {#each pinned as p, i}",
     		ctx
     	});
 
@@ -35003,25 +35008,25 @@ ${constraint.asp}`;
     	let dispose;
 
     	function attributesconstraints_selectedMark_binding(value) {
-    		/*attributesconstraints_selectedMark_binding*/ ctx[16].call(null, value);
+    		/*attributesconstraints_selectedMark_binding*/ ctx[17].call(null, value);
     	}
 
     	function attributesconstraints_channelSelections_binding(value) {
-    		/*attributesconstraints_channelSelections_binding*/ ctx[17].call(null, value);
+    		/*attributesconstraints_channelSelections_binding*/ ctx[18].call(null, value);
     	}
 
     	function attributesconstraints_updateCount_binding(value) {
-    		/*attributesconstraints_updateCount_binding*/ ctx[18].call(null, value);
+    		/*attributesconstraints_updateCount_binding*/ ctx[19].call(null, value);
     	}
 
     	let attributesconstraints_props = {};
 
-    	if (/*selectedMark*/ ctx[3] !== void 0) {
-    		attributesconstraints_props.selectedMark = /*selectedMark*/ ctx[3];
+    	if (/*selectedMark*/ ctx[4] !== void 0) {
+    		attributesconstraints_props.selectedMark = /*selectedMark*/ ctx[4];
     	}
 
-    	if (/*channelSelections*/ ctx[4] !== void 0) {
-    		attributesconstraints_props.channelSelections = /*channelSelections*/ ctx[4];
+    	if (/*channelSelections*/ ctx[5] !== void 0) {
+    		attributesconstraints_props.channelSelections = /*channelSelections*/ ctx[5];
     	}
 
     	if (/*updateCount*/ ctx[0] !== void 0) {
@@ -35036,7 +35041,7 @@ ${constraint.asp}`;
     	binding_callbacks.push(() => bind(attributesconstraints, "selectedMark", attributesconstraints_selectedMark_binding));
     	binding_callbacks.push(() => bind(attributesconstraints, "channelSelections", attributesconstraints_channelSelections_binding));
     	binding_callbacks.push(() => bind(attributesconstraints, "updateCount", attributesconstraints_updateCount_binding));
-    	let each_value_1 = /*recommendations*/ ctx[2];
+    	let each_value_1 = /*recommendations*/ ctx[3];
     	validate_each_argument(each_value_1);
     	let each_blocks_1 = [];
 
@@ -35093,37 +35098,37 @@ ${constraint.asp}`;
     				each_blocks[i].c();
     			}
 
-    			add_location(b0, file$8, 187, 6, 4659);
-    			add_location(p0, file$8, 187, 3, 4656);
-    			add_location(button0, file$8, 189, 3, 4741);
-    			add_location(button1, file$8, 190, 3, 4784);
+    			add_location(b0, file$8, 216, 6, 5385);
+    			add_location(p0, file$8, 216, 3, 5382);
+    			add_location(button0, file$8, 218, 3, 5467);
+    			add_location(button1, file$8, 219, 3, 5510);
     			attr_dev(button2, "id", "exportJSON");
     			attr_dev(button2, "class", "btn");
-    			add_location(button2, file$8, 191, 3, 4830);
+    			add_location(button2, file$8, 220, 3, 5556);
     			attr_dev(div0, "id", "menu");
-    			add_location(div0, file$8, 186, 2, 4637);
+    			add_location(div0, file$8, 215, 2, 5363);
     			attr_dev(div1, "id", "recommendationDisplay");
-    			attr_dev(div1, "class", "svelte-ptb5k7");
-    			add_location(div1, file$8, 193, 2, 4917);
+    			attr_dev(div1, "class", "svelte-1984k8c");
+    			add_location(div1, file$8, 222, 2, 5643);
     			attr_dev(div2, "id", "recommendations");
-    			attr_dev(div2, "class", "svelte-ptb5k7");
-    			add_location(div2, file$8, 185, 1, 4608);
-    			add_location(b1, file$8, 207, 21, 5292);
+    			attr_dev(div2, "class", "svelte-1984k8c");
+    			add_location(div2, file$8, 214, 1, 5334);
+    			add_location(b1, file$8, 238, 21, 6123);
     			attr_dev(p1, "id", "pinnedText");
-    			attr_dev(p1, "class", "svelte-ptb5k7");
-    			add_location(p1, file$8, 207, 2, 5273);
+    			attr_dev(p1, "class", "svelte-1984k8c");
+    			add_location(p1, file$8, 238, 2, 6104);
     			attr_dev(a, "id", "closeButton");
-    			attr_dev(a, "class", "svelte-ptb5k7");
-    			add_location(a, file$8, 208, 2, 5312);
+    			attr_dev(a, "class", "svelte-1984k8c");
+    			add_location(a, file$8, 239, 2, 6143);
     			attr_dev(div3, "id", "pinnedDisplay");
-    			attr_dev(div3, "class", "svelte-ptb5k7");
-    			add_location(div3, file$8, 209, 2, 5366);
+    			attr_dev(div3, "class", "svelte-1984k8c");
+    			add_location(div3, file$8, 240, 2, 6197);
     			attr_dev(div4, "id", "pinnedDrawer");
-    			attr_dev(div4, "class", "svelte-ptb5k7");
-    			add_location(div4, file$8, 206, 1, 5247);
+    			attr_dev(div4, "class", "svelte-1984k8c");
+    			add_location(div4, file$8, 237, 1, 6078);
     			attr_dev(div5, "id", "overall");
-    			attr_dev(div5, "class", "svelte-ptb5k7");
-    			add_location(div5, file$8, 181, 0, 4440);
+    			attr_dev(div5, "class", "svelte-1984k8c");
+    			add_location(div5, file$8, 210, 0, 5166);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -35166,24 +35171,24 @@ ${constraint.asp}`;
     			if (remount) run_all(dispose);
 
     			dispose = [
-    				listen_dev(button0, "click", /*reset*/ ctx[5], false, false, false),
+    				listen_dev(button0, "click", /*reset*/ ctx[6], false, false, false),
     				listen_dev(button1, "click", showPin, false, false, false),
-    				listen_dev(button2, "click", /*exportJSON*/ ctx[7], false, false, false),
+    				listen_dev(button2, "click", /*exportJSON*/ ctx[8], false, false, false),
     				listen_dev(a, "click", closePin, false, false, false)
     			];
     		},
     		p: function update(ctx, [dirty]) {
     			const attributesconstraints_changes = {};
 
-    			if (!updating_selectedMark && dirty & /*selectedMark*/ 8) {
+    			if (!updating_selectedMark && dirty & /*selectedMark*/ 16) {
     				updating_selectedMark = true;
-    				attributesconstraints_changes.selectedMark = /*selectedMark*/ ctx[3];
+    				attributesconstraints_changes.selectedMark = /*selectedMark*/ ctx[4];
     				add_flush_callback(() => updating_selectedMark = false);
     			}
 
-    			if (!updating_channelSelections && dirty & /*channelSelections*/ 16) {
+    			if (!updating_channelSelections && dirty & /*channelSelections*/ 32) {
     				updating_channelSelections = true;
-    				attributesconstraints_changes.channelSelections = /*channelSelections*/ ctx[4];
+    				attributesconstraints_changes.channelSelections = /*channelSelections*/ ctx[5];
     				add_flush_callback(() => updating_channelSelections = false);
     			}
 
@@ -35195,8 +35200,8 @@ ${constraint.asp}`;
 
     			attributesconstraints.$set(attributesconstraints_changes);
 
-    			if (dirty & /*pin, recommendations*/ 68) {
-    				each_value_1 = /*recommendations*/ ctx[2];
+    			if (dirty & /*recommendations, currentPinned, pin*/ 140) {
+    				each_value_1 = /*recommendations*/ ctx[3];
     				validate_each_argument(each_value_1);
     				let i;
 
@@ -35285,6 +35290,7 @@ ${constraint.asp}`;
     	let { selectedAttributes = [] } = $$props;
     	let updateCount = 0;
     	let pinned = [];
+    	let currentPinned = [];
     	let attributesConstraints = [];
     	let recommendations = [];
     	let sessionData = [];
@@ -35335,22 +35341,23 @@ ${constraint.asp}`;
     			// console.log("solution", solution)
     			if (!solution) {
     				console.log("no solution");
-    				$$invalidate(2, recommendations = []);
+    				$$invalidate(3, recommendations = []);
     				return [];
     			}
 
     			// console.log("solution", solution)
-    			for (let s of solution["specs"]) {
+    			for (let [i, s] of solution["specs"].entries()) {
     				s.width = 270;
     				s.height = 270;
 
     				recs.push({
     					"vega": s,
-    					"uid": "id" + new Date().getTime()
+    					"uid": "id" + new Date().valueOf() + "_" + i
     				});
     			}
 
-    			$$invalidate(2, recommendations = recs);
+    			console.log(recs);
+    			$$invalidate(3, recommendations = recs);
 
     			sessionData.push({
     				"markConstraints": selectedMark,
@@ -35407,20 +35414,51 @@ ${constraint.asp}`;
     	// 	updateCount++
     	// }
     	function reset() {
-    		$$invalidate(3, selectedMark = "");
-    		$$invalidate(4, channelSelections = JSON.parse(JSON.stringify(channelDefaults)));
+    		$$invalidate(4, selectedMark = "");
+    		$$invalidate(5, channelSelections = JSON.parse(JSON.stringify(channelDefaults)));
     		$$invalidate(0, updateCount++, updateCount);
     	}
 
     	function pin(i) {
-    		$$invalidate(1, pinned = pinned.concat([recommendations[i]]));
-    		let date = new Date();
+    		// Pinning is disabled if new recommendations are loading
+    		let selectedUid = recommendations[i].uid;
 
-    		sessionData = sessionData.concat({
-    			"pinned": recommendations[i],
-    			"label": "pinned",
-    			date
-    		});
+    		let pinnedIndex = currentPinned.indexOf(selectedUid);
+
+    		if (pinnedIndex === -1) {
+    			$$invalidate(2, currentPinned = [...currentPinned, selectedUid]);
+    			$$invalidate(1, pinned = pinned.concat([recommendations[i]]));
+    			let date = new Date();
+
+    			sessionData = sessionData.concat({
+    				"pinned": recommendations[i],
+    				"label": "pinned",
+    				date
+    			});
+    		} else {
+    			currentPinned.splice(pinnedIndex, 1);
+    			$$invalidate(2, currentPinned);
+    			let newPinned = [];
+
+    			for (let p of pinned) {
+    				if (p.uid === selectedUid) {
+    					continue;
+    				} else {
+    					newPinned.push(p);
+    				}
+    			}
+
+    			$$invalidate(1, pinned = newPinned);
+    			let date = new Date();
+
+    			sessionData = sessionData.concat({
+    				"pinned": recommendations[i],
+    				"label": "unpinned",
+    				date
+    			});
+    		}
+
+    		console.log(currentPinned);
     	}
 
     	function exportJSON() {
@@ -35445,12 +35483,12 @@ ${constraint.asp}`;
 
     	function attributesconstraints_selectedMark_binding(value) {
     		selectedMark = value;
-    		$$invalidate(3, selectedMark);
+    		$$invalidate(4, selectedMark);
     	}
 
     	function attributesconstraints_channelSelections_binding(value) {
     		channelSelections = value;
-    		$$invalidate(4, channelSelections);
+    		$$invalidate(5, channelSelections);
     	}
 
     	function attributesconstraints_updateCount_binding(value) {
@@ -35461,9 +35499,9 @@ ${constraint.asp}`;
     	const click_handler = i => pin(i);
 
     	$$self.$set = $$props => {
-    		if ("dataset" in $$props) $$invalidate(8, dataset = $$props.dataset);
-    		if ("types" in $$props) $$invalidate(9, types = $$props.types);
-    		if ("selectedAttributes" in $$props) $$invalidate(10, selectedAttributes = $$props.selectedAttributes);
+    		if ("dataset" in $$props) $$invalidate(9, dataset = $$props.dataset);
+    		if ("types" in $$props) $$invalidate(10, types = $$props.types);
+    		if ("selectedAttributes" in $$props) $$invalidate(11, selectedAttributes = $$props.selectedAttributes);
     	};
 
     	$$self.$capture_state = () => ({
@@ -35476,6 +35514,7 @@ ${constraint.asp}`;
     		selectedAttributes,
     		updateCount,
     		pinned,
+    		currentPinned,
     		attributesConstraints,
     		recommendations,
     		sessionData,
@@ -35492,16 +35531,17 @@ ${constraint.asp}`;
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ("dataset" in $$props) $$invalidate(8, dataset = $$props.dataset);
-    		if ("types" in $$props) $$invalidate(9, types = $$props.types);
-    		if ("selectedAttributes" in $$props) $$invalidate(10, selectedAttributes = $$props.selectedAttributes);
+    		if ("dataset" in $$props) $$invalidate(9, dataset = $$props.dataset);
+    		if ("types" in $$props) $$invalidate(10, types = $$props.types);
+    		if ("selectedAttributes" in $$props) $$invalidate(11, selectedAttributes = $$props.selectedAttributes);
     		if ("updateCount" in $$props) $$invalidate(0, updateCount = $$props.updateCount);
     		if ("pinned" in $$props) $$invalidate(1, pinned = $$props.pinned);
+    		if ("currentPinned" in $$props) $$invalidate(2, currentPinned = $$props.currentPinned);
     		if ("attributesConstraints" in $$props) attributesConstraints = $$props.attributesConstraints;
-    		if ("recommendations" in $$props) $$invalidate(2, recommendations = $$props.recommendations);
+    		if ("recommendations" in $$props) $$invalidate(3, recommendations = $$props.recommendations);
     		if ("sessionData" in $$props) sessionData = $$props.sessionData;
-    		if ("selectedMark" in $$props) $$invalidate(3, selectedMark = $$props.selectedMark);
-    		if ("channelSelections" in $$props) $$invalidate(4, channelSelections = $$props.channelSelections);
+    		if ("selectedMark" in $$props) $$invalidate(4, selectedMark = $$props.selectedMark);
+    		if ("channelSelections" in $$props) $$invalidate(5, channelSelections = $$props.channelSelections);
     	};
 
     	if ($$props && "$$inject" in $$props) {
@@ -35519,7 +35559,7 @@ ${constraint.asp}`;
     			}
     		}
 
-    		if ($$self.$$.dirty & /*recommendations*/ 4) {
+    		if ($$self.$$.dirty & /*recommendations*/ 8) {
     			 for (let rec = 0; rec < recommendations.length; rec++) {
     				if (!recommendations[rec]) {
     					continue;
@@ -35543,6 +35583,7 @@ ${constraint.asp}`;
     	return [
     		updateCount,
     		pinned,
+    		currentPinned,
     		recommendations,
     		selectedMark,
     		channelSelections,
@@ -35569,9 +35610,9 @@ ${constraint.asp}`;
     		super(options);
 
     		init(this, options, instance$8, create_fragment$8, safe_not_equal, {
-    			dataset: 8,
-    			types: 9,
-    			selectedAttributes: 10
+    			dataset: 9,
+    			types: 10,
+    			selectedAttributes: 11
     		});
 
     		dispatch_dev("SvelteRegisterComponent", {
@@ -36786,8 +36827,8 @@ ${constraint.asp}`;
     {
         if(!window.console) window.console = {};
         var methods = ["debug", "warn", "info"];
-        for(var i=0;i<methods.length;i++){
-            console[methods[i]] = function(){};
+        for(var i$1=0;i$1<methods.length;i$1++){
+            console[methods[i$1]] = function(){};
         }
     }
 

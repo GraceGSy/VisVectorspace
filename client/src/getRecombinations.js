@@ -47,7 +47,7 @@ function solveDraco(newConstraints, dataset) {
 		for (let s of solution['specs']) {
 			s.width = 270
 			s.height = 270
-			recs.push({'vega':s, 'uid': 'id' + (new Date()).getTime()})
+			recs.push({'vega':s, 'uid': 'id' + (new Date().valueOf()) + '_' + i})
 		}
 
 		return recs

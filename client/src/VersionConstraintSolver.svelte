@@ -12,6 +12,7 @@
 	let updateCount = 0
 
 	let pinned = []
+	let currentPinned = []
 
 	let attributesConstraints = []
 
@@ -64,11 +65,13 @@
 
 			// console.log("solution", solution)
 
-			for (let s of solution['specs']) {
+			for (let [i, s] of solution['specs'].entries()) {
 				s.width = 270
 				s.height = 270
-				recs.push({'vega':s, 'uid': 'id' + (new Date()).getTime()})
+				recs.push({'vega':s, 'uid': 'id' + (new Date().valueOf()) + '_' + i})
 			}
+
+			console.log(recs)
 
 			recommendations = recs
 
@@ -150,10 +153,36 @@
 	}
 
 	function pin(i) {
-		pinned = pinned.concat([recommendations[i]])
+		// Pinning is disabled if new recommendations are loading
+		let selectedUid = recommendations[i].uid
+		let pinnedIndex = currentPinned.indexOf(selectedUid)
+		if (pinnedIndex === -1) {
+			currentPinned = [...currentPinned, selectedUid]
+			pinned = pinned.concat([recommendations[i]])
 
-		let date = new Date()
-		sessionData = sessionData.concat({"pinned": recommendations[i], "label": "pinned", "date": date})
+			let date = new Date()
+			sessionData = sessionData.concat({"pinned": recommendations[i], "label": "pinned", "date": date})
+		} else {
+			currentPinned.splice(pinnedIndex, 1)
+			currentPinned = currentPinned
+
+			let newPinned = []
+
+			for (let p of pinned) {
+				if (p.uid === selectedUid) {
+					continue
+				} else {
+					newPinned.push(p)
+				}
+			}
+
+			pinned = newPinned
+
+			let date = new Date()
+			sessionData = sessionData.concat({"pinned": recommendations[i], "label": "unpinned", "date": date})
+		}
+
+		console.log(currentPinned)
 	}
 
 	function showPin() {
@@ -194,9 +223,11 @@
 		<div id="recommendationDisplay">
 			{#each recommendations as c, i}
 				<div class="vis">
-					<div class="pinButton" on:click={() => pin(i)}>
+					<div class:isPinned="{recommendations[i] && currentPinned.indexOf(recommendations[i].uid) > -1}"
+						class="pinButton"
+						on:click={() => pin(i)}>
 						<i class="material-icons-outlined md-24">push_pin</i>
-					</div>
+						</div>
 					<div class="vegaContainer">
 						<div id="vis{i}"></div>
 					</div>
@@ -291,6 +322,12 @@
     	height: 28px;
     	color: gray;
     	cursor: pointer;
+	}
+
+	.isPinned {
+		color: green;
+	    transform: rotate(45deg);
+	    transition: transform 0.5s;
 	}
 
 	.vegaContainer {
