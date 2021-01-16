@@ -90,7 +90,9 @@
 		for (let c of Object.keys(channelSelections)) {
 			if (channelSelections[c].length == 0) {continue}
 
-			let channelValue = channelSelections[c][0].id
+			let channelValue = channelSelections[c][0].name
+
+			if (channelValue === "categorical") { channelValue = "nominal" }
 
 			console.log(c, channelValue)
 

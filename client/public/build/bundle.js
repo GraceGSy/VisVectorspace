@@ -25602,7 +25602,7 @@ ${constraint.asp}`;
         Object.defineProperty(exports, '__esModule', { value: true });
 
     })));
-
+    //# sourceMappingURL=draco.js.map
     });
 
     var Draco = unwrapExports(draco);
@@ -29290,6 +29290,8 @@ ${constraint.asp}`;
       return (s.__summary__ = true, s);
     };
     });
+
+    //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi9zcmMvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsY0FBYyxTQUFTLENBQUM7QUFDeEIsY0FBYyxRQUFRLENBQUM7QUFDdkIsY0FBYyxZQUFZLENBQUM7QUFDM0IsT0FBTyxLQUFLLE1BQU0sU0FBUyxDQUFDO0FBQzVCLGVBQWUsS0FBSyxDQUFDIn0=
 
     /*!
      * Determine if an object is a Buffer
@@ -34871,7 +34873,7 @@ ${constraint.asp}`;
     	return child_ctx;
     }
 
-    // (193:3) {#each recommendations as c, i}
+    // (195:3) {#each recommendations as c, i}
     function create_each_block_1$3(ctx) {
     	let div3;
     	let div0;
@@ -34898,16 +34900,16 @@ ${constraint.asp}`;
     			div1 = element("div");
     			t2 = space();
     			attr_dev(i_1, "class", "material-icons-outlined md-24");
-    			add_location(i_1, file$8, 195, 6, 4995);
+    			add_location(i_1, file$8, 197, 6, 5066);
     			attr_dev(div0, "class", "pinButton svelte-ptb5k7");
-    			add_location(div0, file$8, 194, 5, 4941);
+    			add_location(div0, file$8, 196, 5, 5012);
     			attr_dev(div1, "id", div1_id_value = "vis" + /*i*/ ctx[22]);
     			attr_dev(div1, "class", "svelte-ptb5k7");
-    			add_location(div1, file$8, 198, 6, 5100);
+    			add_location(div1, file$8, 200, 6, 5171);
     			attr_dev(div2, "class", "vegaContainer svelte-ptb5k7");
-    			add_location(div2, file$8, 197, 5, 5066);
+    			add_location(div2, file$8, 199, 5, 5137);
     			attr_dev(div3, "class", "vis svelte-ptb5k7");
-    			add_location(div3, file$8, 193, 4, 4918);
+    			add_location(div3, file$8, 195, 4, 4989);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div3, anchor);
@@ -34933,14 +34935,14 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_1$3.name,
     		type: "each",
-    		source: "(193:3) {#each recommendations as c, i}",
+    		source: "(195:3) {#each recommendations as c, i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (209:3) {#each pinned as p, i}
+    // (211:3) {#each pinned as p, i}
     function create_each_block$6(ctx) {
     	let div;
     	let div_id_value;
@@ -34950,7 +34952,7 @@ ${constraint.asp}`;
     			div = element("div");
     			attr_dev(div, "id", div_id_value = "pin" + /*i*/ ctx[22]);
     			attr_dev(div, "class", "svelte-ptb5k7");
-    			add_location(div, file$8, 209, 4, 5350);
+    			add_location(div, file$8, 211, 4, 5421);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -34964,7 +34966,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$6.name,
     		type: "each",
-    		source: "(209:3) {#each pinned as p, i}",
+    		source: "(211:3) {#each pinned as p, i}",
     		ctx
     	});
 
@@ -35091,37 +35093,37 @@ ${constraint.asp}`;
     				each_blocks[i].c();
     			}
 
-    			add_location(b0, file$8, 185, 6, 4588);
-    			add_location(p0, file$8, 185, 3, 4585);
-    			add_location(button0, file$8, 187, 3, 4670);
-    			add_location(button1, file$8, 188, 3, 4713);
+    			add_location(b0, file$8, 187, 6, 4659);
+    			add_location(p0, file$8, 187, 3, 4656);
+    			add_location(button0, file$8, 189, 3, 4741);
+    			add_location(button1, file$8, 190, 3, 4784);
     			attr_dev(button2, "id", "exportJSON");
     			attr_dev(button2, "class", "btn");
-    			add_location(button2, file$8, 189, 3, 4759);
+    			add_location(button2, file$8, 191, 3, 4830);
     			attr_dev(div0, "id", "menu");
-    			add_location(div0, file$8, 184, 2, 4566);
+    			add_location(div0, file$8, 186, 2, 4637);
     			attr_dev(div1, "id", "recommendationDisplay");
     			attr_dev(div1, "class", "svelte-ptb5k7");
-    			add_location(div1, file$8, 191, 2, 4846);
+    			add_location(div1, file$8, 193, 2, 4917);
     			attr_dev(div2, "id", "recommendations");
     			attr_dev(div2, "class", "svelte-ptb5k7");
-    			add_location(div2, file$8, 183, 1, 4537);
-    			add_location(b1, file$8, 205, 21, 5221);
+    			add_location(div2, file$8, 185, 1, 4608);
+    			add_location(b1, file$8, 207, 21, 5292);
     			attr_dev(p1, "id", "pinnedText");
     			attr_dev(p1, "class", "svelte-ptb5k7");
-    			add_location(p1, file$8, 205, 2, 5202);
+    			add_location(p1, file$8, 207, 2, 5273);
     			attr_dev(a, "id", "closeButton");
     			attr_dev(a, "class", "svelte-ptb5k7");
-    			add_location(a, file$8, 206, 2, 5241);
+    			add_location(a, file$8, 208, 2, 5312);
     			attr_dev(div3, "id", "pinnedDisplay");
     			attr_dev(div3, "class", "svelte-ptb5k7");
-    			add_location(div3, file$8, 207, 2, 5295);
+    			add_location(div3, file$8, 209, 2, 5366);
     			attr_dev(div4, "id", "pinnedDrawer");
     			attr_dev(div4, "class", "svelte-ptb5k7");
-    			add_location(div4, file$8, 204, 1, 5176);
+    			add_location(div4, file$8, 206, 1, 5247);
     			attr_dev(div5, "id", "overall");
     			attr_dev(div5, "class", "svelte-ptb5k7");
-    			add_location(div5, file$8, 179, 0, 4369);
+    			add_location(div5, file$8, 181, 0, 4440);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -35369,7 +35371,12 @@ ${constraint.asp}`;
     				continue;
     			}
 
-    			let channelValue = channelSelections[c][0].id;
+    			let channelValue = channelSelections[c][0].name;
+
+    			if (channelValue === "categorical") {
+    				channelValue = "nominal";
+    			}
+
     			console.log(c, channelValue);
 
     			if (channelValue && channelValue != "") {
