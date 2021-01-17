@@ -1,5 +1,6 @@
 <script>
 	import Vectorspace from './Vectorspace.svelte'
+	import * as d3 from "d3"
 
 	export let attributes = []
 	export let allPoints = []
@@ -27,6 +28,10 @@
 
 	$: {
 		// console.log(attributes)
+		let opacityScale = d3.scaleLinear()
+							.domain(d3.extent(attributes.map(a => a[1])))
+							.range([0.25, 1])
+
 		let newAttributes = []
 		let newMarkAttr = []
 		let newEncodingAttr = []
@@ -36,14 +41,18 @@
 			if (feature.indexOf("mark") > -1) {
 				let name = "mark"
 				let value = feature.slice(feature.indexOf("_") + 1)
-				newMarkAttr.push([name, value])
+				let opacity = opacityScale(a[1])
+
+				newMarkAttr.push([name, value, opacity])
 			} else {
 				let name = feature.slice(0, feature.indexOf("."))
 				let value = feature.slice(feature.indexOf("_") + 1)
+				let opacity = opacityScale(a[1])
+
 				if (value === "nominal") {
 					value = "categorical"
 				}
-				newEncodingAttr.push([name, value])
+				newEncodingAttr.push([name, value, opacity])
 			}
 			
 		}
@@ -80,14 +89,14 @@
 		<p><b>PREFERENCES</b></p>
 		<p>Mark</p>
 		{#each markAttr as a}
-			<div key={a.join()} class="attribute">
+			<div key={a.join()} class="attribute" style={`opacity:${a[2]}`}>
 				<div class="attributeLeft">{a[0]}</div>
 				<div class="attributeRight">{a[1]}</div>
 			</div>
 		{/each}
 		<p>Encoding</p>
 		{#each encodingAttr as e}
-			<div key={e.join()} class="attribute">
+			<div key={e.join()} class="attribute" style={`opacity:${e[2]}`}>
 				<div class="attributeLeft">{e[0]}</div>
 				<div class="attributeRight">{e[1]}</div>
 			</div>

@@ -11,10 +11,14 @@
 	export let participant = -1
 	export let allParticipantInfo = {}
 
-	export let vegaSpecs = []
+	export let vegaSpecsOriginal = []
 	export let dataset = []
 	export let selectedAttributes = []
 	export let recommendationCount = 4
+
+	let vegaSpecs
+
+	$: vegaSpecs = JSON.parse(JSON.stringify(vegaSpecsOriginal))
 
 	// true if updating recommendations from server
 	let loading = false
@@ -203,10 +207,13 @@
 					newVectors.push({ 'spec':s })
       			}
 
-      			// We keep only the most recent 200 visualizations
-      			if (newVectors.length > 200) {
-      				let difference = newVectors.length - 200
-      				newVectors = newVectors.slice(difference, newVectors.length)
+      			// We keep only the most recent 200 ranked visualizations
+      			// In addition to the original 50
+      			if (newVectors.length > 250) {
+      				let difference = newVectors.length - 250
+      				let originals = newVectors.slice(0, 50)
+      				let added = newVectors.slice(51)
+      				newVectors = originals.concat(added.slice(difference, added.length))
       			}
 
       			visVectors = newVectors

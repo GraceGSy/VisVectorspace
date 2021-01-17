@@ -29911,7 +29911,7 @@ ${constraint.asp}`;
     	return child_ctx;
     }
 
-    // (69:2) {#each attributesList as l}
+    // (78:2) {#each attributesList as l}
     function create_each_block_2(ctx) {
     	let div2;
     	let div0;
@@ -29941,16 +29941,16 @@ ${constraint.asp}`;
     			t4 = text(t4_value);
     			t5 = space();
     			attr_dev(div0, "class", "field svelte-bojl");
-    			add_location(div0, file$2, 70, 4, 2319);
+    			add_location(div0, file$2, 79, 4, 2556);
     			attr_dev(i, "class", "material-icons md-24 dataInfo svelte-bojl");
-    			add_location(i, file$2, 72, 5, 2380);
+    			add_location(i, file$2, 81, 5, 2617);
     			attr_dev(span, "class", "tooltiptext svelte-bojl");
-    			add_location(span, file$2, 73, 5, 2435);
+    			add_location(span, file$2, 82, 5, 2672);
     			attr_dev(div1, "class", "tooltip svelte-bojl");
-    			add_location(div1, file$2, 71, 5, 2353);
+    			add_location(div1, file$2, 80, 5, 2590);
     			attr_dev(div2, "key", div2_key_value = /*l*/ ctx[14]);
     			attr_dev(div2, "class", "dataField svelte-bojl");
-    			add_location(div2, file$2, 69, 3, 2283);
+    			add_location(div2, file$2, 78, 3, 2520);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div2, anchor);
@@ -29974,14 +29974,14 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_2.name,
     		type: "each",
-    		source: "(69:2) {#each attributesList as l}",
+    		source: "(78:2) {#each attributesList as l}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (82:2) {#each markAttr as a}
+    // (91:2) {#each markAttr as a}
     function create_each_block_1(ctx) {
     	let div2;
     	let div0;
@@ -29992,6 +29992,7 @@ ${constraint.asp}`;
     	let t2_value = /*a*/ ctx[11][1] + "";
     	let t2;
     	let div2_key_value;
+    	let div2_style_value;
 
     	const block = {
     		c: function create() {
@@ -30002,12 +30003,13 @@ ${constraint.asp}`;
     			div1 = element("div");
     			t2 = text(t2_value);
     			attr_dev(div0, "class", "attributeLeft svelte-bojl");
-    			add_location(div0, file$2, 83, 4, 2701);
+    			add_location(div0, file$2, 92, 4, 2964);
     			attr_dev(div1, "class", "attributeRight svelte-bojl");
-    			add_location(div1, file$2, 84, 4, 2745);
+    			add_location(div1, file$2, 93, 4, 3008);
     			attr_dev(div2, "key", div2_key_value = /*a*/ ctx[11].join());
     			attr_dev(div2, "class", "attribute svelte-bojl");
-    			add_location(div2, file$2, 82, 3, 2658);
+    			attr_dev(div2, "style", div2_style_value = `opacity:${/*a*/ ctx[11][2]}`);
+    			add_location(div2, file$2, 91, 3, 2895);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div2, anchor);
@@ -30024,6 +30026,10 @@ ${constraint.asp}`;
     			if (dirty & /*markAttr*/ 1 && div2_key_value !== (div2_key_value = /*a*/ ctx[11].join())) {
     				attr_dev(div2, "key", div2_key_value);
     			}
+
+    			if (dirty & /*markAttr*/ 1 && div2_style_value !== (div2_style_value = `opacity:${/*a*/ ctx[11][2]}`)) {
+    				attr_dev(div2, "style", div2_style_value);
+    			}
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div2);
@@ -30034,14 +30040,14 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_1.name,
     		type: "each",
-    		source: "(82:2) {#each markAttr as a}",
+    		source: "(91:2) {#each markAttr as a}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (89:2) {#each encodingAttr as e}
+    // (98:2) {#each encodingAttr as e}
     function create_each_block$1(ctx) {
     	let div2;
     	let div0;
@@ -30053,6 +30059,7 @@ ${constraint.asp}`;
     	let t2;
     	let t3;
     	let div2_key_value;
+    	let div2_style_value;
 
     	const block = {
     		c: function create() {
@@ -30064,12 +30071,13 @@ ${constraint.asp}`;
     			t2 = text(t2_value);
     			t3 = space();
     			attr_dev(div0, "class", "attributeLeft svelte-bojl");
-    			add_location(div0, file$2, 90, 4, 2898);
+    			add_location(div0, file$2, 99, 4, 3187);
     			attr_dev(div1, "class", "attributeRight svelte-bojl");
-    			add_location(div1, file$2, 91, 4, 2942);
+    			add_location(div1, file$2, 100, 4, 3231);
     			attr_dev(div2, "key", div2_key_value = /*e*/ ctx[8].join());
     			attr_dev(div2, "class", "attribute svelte-bojl");
-    			add_location(div2, file$2, 89, 3, 2855);
+    			attr_dev(div2, "style", div2_style_value = `opacity:${/*e*/ ctx[8][2]}`);
+    			add_location(div2, file$2, 98, 3, 3118);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div2, anchor);
@@ -30087,6 +30095,10 @@ ${constraint.asp}`;
     			if (dirty & /*encodingAttr*/ 2 && div2_key_value !== (div2_key_value = /*e*/ ctx[8].join())) {
     				attr_dev(div2, "key", div2_key_value);
     			}
+
+    			if (dirty & /*encodingAttr*/ 2 && div2_style_value !== (div2_style_value = `opacity:${/*e*/ ctx[8][2]}`)) {
+    				attr_dev(div2, "style", div2_style_value);
+    			}
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div2);
@@ -30097,7 +30109,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$1.name,
     		type: "each",
-    		source: "(89:2) {#each encodingAttr as e}",
+    		source: "(98:2) {#each encodingAttr as e}",
     		ctx
     	});
 
@@ -30197,29 +30209,29 @@ ${constraint.asp}`;
     				each_blocks[i].c();
     			}
 
-    			add_location(b0, file$2, 62, 5, 2096);
-    			add_location(p0, file$2, 62, 2, 2093);
+    			add_location(b0, file$2, 71, 5, 2333);
+    			add_location(p0, file$2, 71, 2, 2330);
     			attr_dev(i, "class", "material-icons md-24 svelte-bojl");
     			attr_dev(i, "id", "listIcon");
-    			add_location(i, file$2, 64, 3, 2140);
-    			add_location(p1, file$2, 65, 3, 2203);
+    			add_location(i, file$2, 73, 3, 2377);
+    			add_location(p1, file$2, 74, 3, 2440);
     			attr_dev(div0, "id", "datasetName");
     			attr_dev(div0, "class", "svelte-bojl");
-    			add_location(div0, file$2, 63, 2, 2114);
-    			add_location(p2, file$2, 67, 2, 2236);
+    			add_location(div0, file$2, 72, 2, 2351);
+    			add_location(p2, file$2, 76, 2, 2473);
     			attr_dev(div1, "id", "attributesList");
     			attr_dev(div1, "class", "svelte-bojl");
-    			add_location(div1, file$2, 61, 1, 2065);
-    			add_location(b1, file$2, 79, 5, 2594);
-    			add_location(p3, file$2, 79, 2, 2591);
-    			add_location(p4, file$2, 80, 2, 2619);
-    			add_location(p5, file$2, 87, 2, 2808);
+    			add_location(div1, file$2, 70, 1, 2302);
+    			add_location(b1, file$2, 88, 5, 2831);
+    			add_location(p3, file$2, 88, 2, 2828);
+    			add_location(p4, file$2, 89, 2, 2856);
+    			add_location(p5, file$2, 96, 2, 3071);
     			attr_dev(div2, "id", "attributesWeights");
     			attr_dev(div2, "class", "svelte-bojl");
-    			add_location(div2, file$2, 78, 1, 2560);
+    			add_location(div2, file$2, 87, 1, 2797);
     			attr_dev(div3, "id", "attributesInfo");
     			attr_dev(div3, "class", "svelte-bojl");
-    			add_location(div3, file$2, 60, 0, 2038);
+    			add_location(div3, file$2, 69, 0, 2275);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -30418,6 +30430,7 @@ ${constraint.asp}`;
 
     	$$self.$capture_state = () => ({
     		Vectorspace,
+    		d3,
     		attributes,
     		allPoints,
     		shownPoints,
@@ -30446,7 +30459,8 @@ ${constraint.asp}`;
     	$$self.$$.update = () => {
     		if ($$self.$$.dirty & /*attributes*/ 16) {
     			 {
-
+    				// console.log(attributes)
+    				let opacityScale = linear$2().domain(extent(attributes.map(a => a[1]))).range([0.25, 1]);
     				let newMarkAttr = [];
     				let newEncodingAttr = [];
 
@@ -30456,16 +30470,18 @@ ${constraint.asp}`;
     					if (feature.indexOf("mark") > -1) {
     						let name = "mark";
     						let value = feature.slice(feature.indexOf("_") + 1);
-    						newMarkAttr.push([name, value]);
+    						let opacity = opacityScale(a[1]);
+    						newMarkAttr.push([name, value, opacity]);
     					} else {
     						let name = feature.slice(0, feature.indexOf("."));
     						let value = feature.slice(feature.indexOf("_") + 1);
+    						let opacity = opacityScale(a[1]);
 
     						if (value === "nominal") {
     							value = "categorical";
     						}
 
-    						newEncodingAttr.push([name, value]);
+    						newEncodingAttr.push([name, value, opacity]);
     					}
     				}
 
@@ -30538,19 +30554,19 @@ ${constraint.asp}`;
 
     function get_each_context$2(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[35] = list[i];
-    	child_ctx[37] = i;
+    	child_ctx[36] = list[i];
+    	child_ctx[38] = i;
     	return child_ctx;
     }
 
     function get_each_context_1$1(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[38] = list[i];
-    	child_ctx[37] = i;
+    	child_ctx[39] = list[i];
+    	child_ctx[38] = i;
     	return child_ctx;
     }
 
-    // (419:3) {#each recommendations as c, i}
+    // (426:3) {#each recommendations as c, i}
     function create_each_block_1$1(ctx) {
     	let div4;
     	let div1;
@@ -30572,15 +30588,15 @@ ${constraint.asp}`;
     	let dispose;
 
     	function click_handler(...args) {
-    		return /*click_handler*/ ctx[32](/*i*/ ctx[37], ...args);
+    		return /*click_handler*/ ctx[33](/*i*/ ctx[38], ...args);
     	}
 
     	function click_handler_1(...args) {
-    		return /*click_handler_1*/ ctx[33](/*i*/ ctx[37], ...args);
+    		return /*click_handler_1*/ ctx[34](/*i*/ ctx[38], ...args);
     	}
 
     	function click_handler_2(...args) {
-    		return /*click_handler_2*/ ctx[34](/*i*/ ctx[37], ...args);
+    		return /*click_handler_2*/ ctx[35](/*i*/ ctx[38], ...args);
     	}
 
     	const block = {
@@ -30601,31 +30617,31 @@ ${constraint.asp}`;
     			div2 = element("div");
     			t6 = space();
 
-    			attr_dev(button0, "class", button0_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[2][/*i*/ ctx[37]] === "more"
+    			attr_dev(button0, "class", button0_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[2][/*i*/ ctx[38]] === "more"
     			? "more"
     			: "default") + " svelte-177db2a"));
 
-    			add_location(button0, file$3, 421, 6, 10747);
+    			add_location(button0, file$3, 428, 6, 10985);
 
-    			attr_dev(button1, "class", button1_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[2][/*i*/ ctx[37]] === "less"
+    			attr_dev(button1, "class", button1_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[2][/*i*/ ctx[38]] === "less"
     			? "less"
     			: "default") + " svelte-177db2a"));
 
-    			add_location(button1, file$3, 425, 6, 10905);
+    			add_location(button1, file$3, 432, 6, 11143);
     			attr_dev(i_1, "class", "material-icons-outlined md-24");
-    			add_location(i_1, file$3, 432, 7, 11226);
+    			add_location(i_1, file$3, 439, 7, 11464);
     			attr_dev(div0, "class", "pinButton svelte-177db2a");
-    			toggle_class(div0, "isPinned", /*recommendations*/ ctx[1][/*i*/ ctx[37]] && /*currentPinned*/ ctx[4].indexOf(/*recommendations*/ ctx[1][/*i*/ ctx[37]].uid) > -1);
-    			add_location(div0, file$3, 429, 6, 11063);
+    			toggle_class(div0, "isPinned", /*recommendations*/ ctx[1][/*i*/ ctx[38]] && /*currentPinned*/ ctx[4].indexOf(/*recommendations*/ ctx[1][/*i*/ ctx[38]].uid) > -1);
+    			add_location(div0, file$3, 436, 6, 11301);
     			attr_dev(div1, "class", "buttons svelte-177db2a");
-    			add_location(div1, file$3, 420, 5, 10719);
-    			attr_dev(div2, "id", div2_id_value = "vis" + /*i*/ ctx[37]);
+    			add_location(div1, file$3, 427, 5, 10957);
+    			attr_dev(div2, "id", div2_id_value = "vis" + /*i*/ ctx[38]);
     			attr_dev(div2, "class", "svelte-177db2a");
-    			add_location(div2, file$3, 436, 6, 11344);
+    			add_location(div2, file$3, 443, 6, 11582);
     			attr_dev(div3, "class", "vegaContainer svelte-177db2a");
-    			add_location(div3, file$3, 435, 5, 11310);
+    			add_location(div3, file$3, 442, 5, 11548);
     			attr_dev(div4, "class", "vis svelte-177db2a");
-    			add_location(div4, file$3, 419, 4, 10696);
+    			add_location(div4, file$3, 426, 4, 10934);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div4, anchor);
@@ -30653,20 +30669,20 @@ ${constraint.asp}`;
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
 
-    			if (dirty[0] & /*recommendationsClass*/ 4 && button0_class_value !== (button0_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[2][/*i*/ ctx[37]] === "more"
+    			if (dirty[0] & /*recommendationsClass*/ 4 && button0_class_value !== (button0_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[2][/*i*/ ctx[38]] === "more"
     			? "more"
     			: "default") + " svelte-177db2a"))) {
     				attr_dev(button0, "class", button0_class_value);
     			}
 
-    			if (dirty[0] & /*recommendationsClass*/ 4 && button1_class_value !== (button1_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[2][/*i*/ ctx[37]] === "less"
+    			if (dirty[0] & /*recommendationsClass*/ 4 && button1_class_value !== (button1_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[2][/*i*/ ctx[38]] === "less"
     			? "less"
     			: "default") + " svelte-177db2a"))) {
     				attr_dev(button1, "class", button1_class_value);
     			}
 
     			if (dirty[0] & /*recommendations, currentPinned*/ 18) {
-    				toggle_class(div0, "isPinned", /*recommendations*/ ctx[1][/*i*/ ctx[37]] && /*currentPinned*/ ctx[4].indexOf(/*recommendations*/ ctx[1][/*i*/ ctx[37]].uid) > -1);
+    				toggle_class(div0, "isPinned", /*recommendations*/ ctx[1][/*i*/ ctx[38]] && /*currentPinned*/ ctx[4].indexOf(/*recommendations*/ ctx[1][/*i*/ ctx[38]].uid) > -1);
     			}
     		},
     		d: function destroy(detaching) {
@@ -30679,14 +30695,14 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_1$1.name,
     		type: "each",
-    		source: "(419:3) {#each recommendations as c, i}",
+    		source: "(426:3) {#each recommendations as c, i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (447:3) {#each pinned as p, i}
+    // (454:3) {#each pinned as p, i}
     function create_each_block$2(ctx) {
     	let div;
     	let div_id_value;
@@ -30694,9 +30710,9 @@ ${constraint.asp}`;
     	const block = {
     		c: function create() {
     			div = element("div");
-    			attr_dev(div, "id", div_id_value = "pin" + /*i*/ ctx[37]);
+    			attr_dev(div, "id", div_id_value = "pin" + /*i*/ ctx[38]);
     			attr_dev(div, "class", "svelte-177db2a");
-    			add_location(div, file$3, 447, 4, 11594);
+    			add_location(div, file$3, 454, 4, 11832);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -30710,7 +30726,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$2.name,
     		type: "each",
-    		source: "(447:3) {#each pinned as p, i}",
+    		source: "(454:3) {#each pinned as p, i}",
     		ctx
     	});
 
@@ -30816,43 +30832,43 @@ ${constraint.asp}`;
     			}
 
     			attr_dev(div0, "class", "spinner svelte-177db2a");
-    			add_location(div0, file$3, 405, 2, 10186);
+    			add_location(div0, file$3, 412, 2, 10424);
     			attr_dev(div1, "class", "loader svelte-177db2a");
     			toggle_class(div1, "showLoader", /*loading*/ ctx[0]);
     			toggle_class(div1, "hideLoader", !/*loading*/ ctx[0]);
-    			add_location(div1, file$3, 402, 1, 10100);
-    			add_location(b0, file$3, 412, 21, 10400);
+    			add_location(div1, file$3, 409, 1, 10338);
+    			add_location(b0, file$3, 419, 21, 10638);
     			attr_dev(p0, "class", "title1");
-    			add_location(p0, file$3, 412, 3, 10382);
-    			add_location(button0, file$3, 413, 3, 10430);
-    			add_location(button1, file$3, 414, 3, 10491);
+    			add_location(p0, file$3, 419, 3, 10620);
+    			add_location(button0, file$3, 420, 3, 10668);
+    			add_location(button1, file$3, 421, 3, 10729);
     			attr_dev(button2, "id", "exportJSON");
     			attr_dev(button2, "class", "btn");
-    			add_location(button2, file$3, 415, 3, 10537);
+    			add_location(button2, file$3, 422, 3, 10775);
     			attr_dev(div2, "id", "menu");
-    			add_location(div2, file$3, 411, 2, 10363);
+    			add_location(div2, file$3, 418, 2, 10601);
     			attr_dev(div3, "id", "recommendationDisplay");
     			attr_dev(div3, "class", "svelte-177db2a");
-    			add_location(div3, file$3, 417, 2, 10624);
+    			add_location(div3, file$3, 424, 2, 10862);
     			attr_dev(div4, "id", "recommendations");
     			attr_dev(div4, "class", "svelte-177db2a");
-    			add_location(div4, file$3, 410, 1, 10334);
-    			add_location(b1, file$3, 443, 21, 11465);
+    			add_location(div4, file$3, 417, 1, 10572);
+    			add_location(b1, file$3, 450, 21, 11703);
     			attr_dev(p1, "id", "pinnedText");
     			attr_dev(p1, "class", "svelte-177db2a");
-    			add_location(p1, file$3, 443, 2, 11446);
+    			add_location(p1, file$3, 450, 2, 11684);
     			attr_dev(a, "id", "closeButton");
     			attr_dev(a, "class", "svelte-177db2a");
-    			add_location(a, file$3, 444, 2, 11485);
+    			add_location(a, file$3, 451, 2, 11723);
     			attr_dev(div5, "id", "pinnedDisplay");
     			attr_dev(div5, "class", "svelte-177db2a");
-    			add_location(div5, file$3, 445, 2, 11539);
+    			add_location(div5, file$3, 452, 2, 11777);
     			attr_dev(div6, "id", "pinnedDrawer");
     			attr_dev(div6, "class", "svelte-177db2a");
-    			add_location(div6, file$3, 442, 1, 11420);
+    			add_location(div6, file$3, 449, 1, 11658);
     			attr_dev(div7, "id", "overall");
     			attr_dev(div7, "class", "svelte-177db2a");
-    			add_location(div7, file$3, 401, 0, 10080);
+    			add_location(div7, file$3, 408, 0, 10318);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -31021,10 +31037,11 @@ ${constraint.asp}`;
     function instance$3($$self, $$props, $$invalidate) {
     	let { participant = -1 } = $$props;
     	let { allParticipantInfo = {} } = $$props;
-    	let { vegaSpecs = [] } = $$props;
+    	let { vegaSpecsOriginal = [] } = $$props;
     	let { dataset = [] } = $$props;
     	let { selectedAttributes = [] } = $$props;
     	let { recommendationCount = 4 } = $$props;
+    	let vegaSpecs;
 
     	// true if updating recommendations from server
     	let loading = false;
@@ -31194,10 +31211,13 @@ ${constraint.asp}`;
     				newVectors.push({ "spec": s });
     			}
 
-    			// We keep only the most recent 200 visualizations
-    			if (newVectors.length > 200) {
-    				let difference = newVectors.length - 200;
-    				newVectors = newVectors.slice(difference, newVectors.length);
+    			// We keep only the most recent 200 ranked visualizations
+    			// In addition to the original 50
+    			if (newVectors.length > 250) {
+    				let difference = newVectors.length - 250;
+    				let originals = newVectors.slice(0, 50);
+    				let added = newVectors.slice(51);
+    				newVectors = originals.concat(added.slice(difference, added.length));
     			}
 
     			visVectors = newVectors;
@@ -31301,7 +31321,7 @@ ${constraint.asp}`;
     	}
 
     	function update() {
-    		$$invalidate(21, updateCount++, updateCount);
+    		$$invalidate(22, updateCount++, updateCount);
     	}
 
     	function reset() {
@@ -31396,7 +31416,7 @@ ${constraint.asp}`;
     	const writable_props = [
     		"participant",
     		"allParticipantInfo",
-    		"vegaSpecs",
+    		"vegaSpecsOriginal",
     		"dataset",
     		"selectedAttributes",
     		"recommendationCount"
@@ -31415,7 +31435,7 @@ ${constraint.asp}`;
     	$$self.$set = $$props => {
     		if ("participant" in $$props) $$invalidate(15, participant = $$props.participant);
     		if ("allParticipantInfo" in $$props) $$invalidate(16, allParticipantInfo = $$props.allParticipantInfo);
-    		if ("vegaSpecs" in $$props) $$invalidate(17, vegaSpecs = $$props.vegaSpecs);
+    		if ("vegaSpecsOriginal" in $$props) $$invalidate(17, vegaSpecsOriginal = $$props.vegaSpecsOriginal);
     		if ("dataset" in $$props) $$invalidate(18, dataset = $$props.dataset);
     		if ("selectedAttributes" in $$props) $$invalidate(19, selectedAttributes = $$props.selectedAttributes);
     		if ("recommendationCount" in $$props) $$invalidate(20, recommendationCount = $$props.recommendationCount);
@@ -31430,10 +31450,11 @@ ${constraint.asp}`;
     		AttributesWeight,
     		participant,
     		allParticipantInfo,
-    		vegaSpecs,
+    		vegaSpecsOriginal,
     		dataset,
     		selectedAttributes,
     		recommendationCount,
+    		vegaSpecs,
     		loading,
     		updateCount,
     		moreLikeThis,
@@ -31466,12 +31487,13 @@ ${constraint.asp}`;
     	$$self.$inject_state = $$props => {
     		if ("participant" in $$props) $$invalidate(15, participant = $$props.participant);
     		if ("allParticipantInfo" in $$props) $$invalidate(16, allParticipantInfo = $$props.allParticipantInfo);
-    		if ("vegaSpecs" in $$props) $$invalidate(17, vegaSpecs = $$props.vegaSpecs);
+    		if ("vegaSpecsOriginal" in $$props) $$invalidate(17, vegaSpecsOriginal = $$props.vegaSpecsOriginal);
     		if ("dataset" in $$props) $$invalidate(18, dataset = $$props.dataset);
     		if ("selectedAttributes" in $$props) $$invalidate(19, selectedAttributes = $$props.selectedAttributes);
     		if ("recommendationCount" in $$props) $$invalidate(20, recommendationCount = $$props.recommendationCount);
+    		if ("vegaSpecs" in $$props) $$invalidate(21, vegaSpecs = $$props.vegaSpecs);
     		if ("loading" in $$props) $$invalidate(0, loading = $$props.loading);
-    		if ("updateCount" in $$props) $$invalidate(21, updateCount = $$props.updateCount);
+    		if ("updateCount" in $$props) $$invalidate(22, updateCount = $$props.updateCount);
     		if ("moreLikeThis" in $$props) moreLikeThis = $$props.moreLikeThis;
     		if ("lessLikeThis" in $$props) lessLikeThis = $$props.lessLikeThis;
     		if ("maybeLikeThis" in $$props) maybeLikeThis = $$props.maybeLikeThis;
@@ -31493,11 +31515,15 @@ ${constraint.asp}`;
     	}
 
     	$$self.$$.update = () => {
-    		if ($$self.$$.dirty[0] & /*vegaSpecs*/ 131072) {
+    		if ($$self.$$.dirty[0] & /*vegaSpecsOriginal*/ 131072) {
+    			 $$invalidate(21, vegaSpecs = JSON.parse(JSON.stringify(vegaSpecsOriginal)));
+    		}
+
+    		if ($$self.$$.dirty[0] & /*vegaSpecs*/ 2097152) {
     			 visVectors = vegaSpecs;
     		}
 
-    		if ($$self.$$.dirty[0] & /*updateCount, vegaSpecs, dataset*/ 2490368) {
+    		if ($$self.$$.dirty[0] & /*updateCount, vegaSpecs, dataset*/ 6553600) {
     			 {
     				console.log("update count", updateCount);
 
@@ -31551,10 +31577,11 @@ ${constraint.asp}`;
     		exportJSON,
     		participant,
     		allParticipantInfo,
-    		vegaSpecs,
+    		vegaSpecsOriginal,
     		dataset,
     		selectedAttributes,
     		recommendationCount,
+    		vegaSpecs,
     		updateCount,
     		moreLikeThis,
     		lessLikeThis,
@@ -31585,7 +31612,7 @@ ${constraint.asp}`;
     			{
     				participant: 15,
     				allParticipantInfo: 16,
-    				vegaSpecs: 17,
+    				vegaSpecsOriginal: 17,
     				dataset: 18,
     				selectedAttributes: 19,
     				recommendationCount: 20
@@ -31617,11 +31644,11 @@ ${constraint.asp}`;
     		throw new Error("<Recommendations>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
 
-    	get vegaSpecs() {
+    	get vegaSpecsOriginal() {
     		throw new Error("<Recommendations>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
 
-    	set vegaSpecs(value) {
+    	set vegaSpecsOriginal(value) {
     		throw new Error("<Recommendations>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
 
@@ -31653,7 +31680,7 @@ ${constraint.asp}`;
     /* src/VersionRecommendations.svelte generated by Svelte v3.20.1 */
     const file$4 = "src/VersionRecommendations.svelte";
 
-    // (58:1) {:catch error}
+    // (60:1) {:catch error}
     function create_catch_block(ctx) {
     	let p;
     	let t_value = /*error*/ ctx[8].message + "";
@@ -31664,7 +31691,7 @@ ${constraint.asp}`;
     			p = element("p");
     			t = text(t_value);
     			set_style(p, "color", "red");
-    			add_location(p, file$4, 58, 2, 1107);
+    			add_location(p, file$4, 60, 2, 1191);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -31682,14 +31709,14 @@ ${constraint.asp}`;
     		block,
     		id: create_catch_block.name,
     		type: "catch",
-    		source: "(58:1) {:catch error}",
+    		source: "(60:1) {:catch error}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (50:1) {:then vegaSpecs}
+    // (52:1) {:then vegaSpecsOriginal}
     function create_then_block(ctx) {
     	let current;
 
@@ -31698,7 +31725,7 @@ ${constraint.asp}`;
     				participant: /*participant*/ ctx[0],
     				allParticipantInfo: /*allParticipantInfo*/ ctx[1],
     				dataset: /*dataset*/ ctx[2],
-    				vegaSpecs: /*vegaSpecs*/ ctx[7],
+    				vegaSpecsOriginal: /*vegaSpecsOriginal*/ ctx[7],
     				selectedAttributes: /*selectedAttributes*/ ctx[3],
     				updateCount: /*updateCount*/ ctx[5]
     			},
@@ -31739,14 +31766,14 @@ ${constraint.asp}`;
     		block,
     		id: create_then_block.name,
     		type: "then",
-    		source: "(50:1) {:then vegaSpecs}",
+    		source: "(52:1) {:then vegaSpecsOriginal}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (48:17)    <p>...loading</p>  {:then vegaSpecs}
+    // (50:17)    <p>...loading</p>  {:then vegaSpecsOriginal}
     function create_pending_block(ctx) {
     	let p;
 
@@ -31754,7 +31781,7 @@ ${constraint.asp}`;
     		c: function create() {
     			p = element("p");
     			p.textContent = "...loading";
-    			add_location(p, file$4, 48, 2, 921);
+    			add_location(p, file$4, 50, 2, 989);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -31771,7 +31798,7 @@ ${constraint.asp}`;
     		block,
     		id: create_pending_block.name,
     		type: "pending",
-    		source: "(48:17)    <p>...loading</p>  {:then vegaSpecs}",
+    		source: "(50:17)    <p>...loading</p>  {:then vegaSpecsOriginal}",
     		ctx
     	});
 
@@ -31803,7 +31830,7 @@ ${constraint.asp}`;
     			info.block.c();
     			attr_dev(div, "id", "recommendationsMain");
     			attr_dev(div, "class", "svelte-1f32qq");
-    			add_location(div, file$4, 46, 0, 870);
+    			add_location(div, file$4, 48, 0, 938);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -31872,7 +31899,7 @@ ${constraint.asp}`;
 
     async function loadSpecs() {
     	const specs = await csv$1(`/manual_specs_one_hot_encoding_4.csv`, dataPreprocessor);
-    	const vegaSpecs = [];
+    	const vegaSpecsOriginal = [];
 
     	for (let i in specs) {
     		if (i === "columns") {
@@ -31881,10 +31908,11 @@ ${constraint.asp}`;
 
     		let s = specs[i];
     		delete s.index;
-    		vegaSpecs.push({ "spec": s });
+    		vegaSpecsOriginal.push({ "spec": s });
     	}
 
-    	return vegaSpecs;
+    	// console.log(vegaSpecsOriginal.length)
+    	return vegaSpecsOriginal;
     }
 
     function instance$4($$self, $$props, $$invalidate) {

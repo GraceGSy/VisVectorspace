@@ -27,7 +27,7 @@
 	async function loadSpecs() {
 		const specs = await d3.csv(`/manual_specs_one_hot_encoding_4.csv`, dataPreprocessor)
 
-		const vegaSpecs = []
+		const vegaSpecsOriginal = []
 
 		for (let i in specs) {
 			if (i === 'columns') { continue; }
@@ -35,10 +35,12 @@
 
 			delete s.index
 
-			vegaSpecs.push({ 'spec':s })
+			vegaSpecsOriginal.push({ 'spec':s })
 		}
 
-		return vegaSpecs
+		// console.log(vegaSpecsOriginal.length)
+
+		return vegaSpecsOriginal
 	}
 
 	
@@ -47,12 +49,12 @@
 <div id="recommendationsMain">
 	{#await promise}
 		<p>...loading</p>
-	{:then vegaSpecs}
+	{:then vegaSpecsOriginal}
 		<Recommendations
 			{participant}
 			{allParticipantInfo}
 			{dataset}
-			{vegaSpecs}
+			{vegaSpecsOriginal}
 			{selectedAttributes}
 			{updateCount}/>
 	{:catch error}
