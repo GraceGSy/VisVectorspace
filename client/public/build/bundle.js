@@ -29915,7 +29915,7 @@ ${constraint.asp}`;
     	return child_ctx;
     }
 
-    // (78:2) {#each attributesList as l}
+    // (90:2) {#each attributesList as l}
     function create_each_block_2(ctx) {
     	let div2;
     	let div0;
@@ -29945,16 +29945,16 @@ ${constraint.asp}`;
     			t4 = text(t4_value);
     			t5 = space();
     			attr_dev(div0, "class", "field svelte-bojl");
-    			add_location(div0, file$2, 79, 4, 2556);
+    			add_location(div0, file$2, 91, 4, 2777);
     			attr_dev(i, "class", "material-icons md-24 dataInfo svelte-bojl");
-    			add_location(i, file$2, 81, 5, 2617);
+    			add_location(i, file$2, 93, 5, 2838);
     			attr_dev(span, "class", "tooltiptext svelte-bojl");
-    			add_location(span, file$2, 82, 5, 2672);
+    			add_location(span, file$2, 94, 5, 2893);
     			attr_dev(div1, "class", "tooltip svelte-bojl");
-    			add_location(div1, file$2, 80, 5, 2590);
+    			add_location(div1, file$2, 92, 5, 2811);
     			attr_dev(div2, "key", div2_key_value = /*l*/ ctx[14]);
     			attr_dev(div2, "class", "dataField svelte-bojl");
-    			add_location(div2, file$2, 78, 3, 2520);
+    			add_location(div2, file$2, 90, 3, 2741);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div2, anchor);
@@ -29978,14 +29978,14 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_2.name,
     		type: "each",
-    		source: "(78:2) {#each attributesList as l}",
+    		source: "(90:2) {#each attributesList as l}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (91:2) {#each markAttr as a}
+    // (103:2) {#each markAttr as a}
     function create_each_block_1(ctx) {
     	let div2;
     	let div0;
@@ -30007,13 +30007,13 @@ ${constraint.asp}`;
     			div1 = element("div");
     			t2 = text(t2_value);
     			attr_dev(div0, "class", "attributeLeft svelte-bojl");
-    			add_location(div0, file$2, 92, 4, 2964);
+    			add_location(div0, file$2, 104, 4, 3185);
     			attr_dev(div1, "class", "attributeRight svelte-bojl");
-    			add_location(div1, file$2, 93, 4, 3008);
+    			add_location(div1, file$2, 105, 4, 3229);
     			attr_dev(div2, "key", div2_key_value = /*a*/ ctx[11].join());
     			attr_dev(div2, "class", "attribute svelte-bojl");
     			attr_dev(div2, "style", div2_style_value = `opacity:${/*a*/ ctx[11][2]}`);
-    			add_location(div2, file$2, 91, 3, 2895);
+    			add_location(div2, file$2, 103, 3, 3116);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div2, anchor);
@@ -30044,14 +30044,14 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_1.name,
     		type: "each",
-    		source: "(91:2) {#each markAttr as a}",
+    		source: "(103:2) {#each markAttr as a}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (98:2) {#each encodingAttr as e}
+    // (110:2) {#each encodingAttr as e}
     function create_each_block$1(ctx) {
     	let div2;
     	let div0;
@@ -30075,13 +30075,13 @@ ${constraint.asp}`;
     			t2 = text(t2_value);
     			t3 = space();
     			attr_dev(div0, "class", "attributeLeft svelte-bojl");
-    			add_location(div0, file$2, 99, 4, 3187);
+    			add_location(div0, file$2, 111, 4, 3408);
     			attr_dev(div1, "class", "attributeRight svelte-bojl");
-    			add_location(div1, file$2, 100, 4, 3231);
+    			add_location(div1, file$2, 112, 4, 3452);
     			attr_dev(div2, "key", div2_key_value = /*e*/ ctx[8].join());
     			attr_dev(div2, "class", "attribute svelte-bojl");
     			attr_dev(div2, "style", div2_style_value = `opacity:${/*e*/ ctx[8][2]}`);
-    			add_location(div2, file$2, 98, 3, 3118);
+    			add_location(div2, file$2, 110, 3, 3339);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div2, anchor);
@@ -30113,7 +30113,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$1.name,
     		type: "each",
-    		source: "(98:2) {#each encodingAttr as e}",
+    		source: "(110:2) {#each encodingAttr as e}",
     		ctx
     	});
 
@@ -30213,29 +30213,29 @@ ${constraint.asp}`;
     				each_blocks[i].c();
     			}
 
-    			add_location(b0, file$2, 71, 5, 2333);
-    			add_location(p0, file$2, 71, 2, 2330);
+    			add_location(b0, file$2, 83, 5, 2554);
+    			add_location(p0, file$2, 83, 2, 2551);
     			attr_dev(i, "class", "material-icons md-24 svelte-bojl");
     			attr_dev(i, "id", "listIcon");
-    			add_location(i, file$2, 73, 3, 2377);
-    			add_location(p1, file$2, 74, 3, 2440);
+    			add_location(i, file$2, 85, 3, 2598);
+    			add_location(p1, file$2, 86, 3, 2661);
     			attr_dev(div0, "id", "datasetName");
     			attr_dev(div0, "class", "svelte-bojl");
-    			add_location(div0, file$2, 72, 2, 2351);
-    			add_location(p2, file$2, 76, 2, 2473);
+    			add_location(div0, file$2, 84, 2, 2572);
+    			add_location(p2, file$2, 88, 2, 2694);
     			attr_dev(div1, "id", "attributesList");
     			attr_dev(div1, "class", "svelte-bojl");
-    			add_location(div1, file$2, 70, 1, 2302);
-    			add_location(b1, file$2, 88, 5, 2831);
-    			add_location(p3, file$2, 88, 2, 2828);
-    			add_location(p4, file$2, 89, 2, 2856);
-    			add_location(p5, file$2, 96, 2, 3071);
+    			add_location(div1, file$2, 82, 1, 2523);
+    			add_location(b1, file$2, 100, 5, 3052);
+    			add_location(p3, file$2, 100, 2, 3049);
+    			add_location(p4, file$2, 101, 2, 3077);
+    			add_location(p5, file$2, 108, 2, 3292);
     			attr_dev(div2, "id", "attributesWeights");
     			attr_dev(div2, "class", "svelte-bojl");
-    			add_location(div2, file$2, 87, 1, 2797);
+    			add_location(div2, file$2, 99, 1, 3018);
     			attr_dev(div3, "id", "attributesInfo");
     			attr_dev(div3, "class", "svelte-bojl");
-    			add_location(div3, file$2, 69, 0, 2275);
+    			add_location(div3, file$2, 81, 0, 2496);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -30477,9 +30477,21 @@ ${constraint.asp}`;
     						let opacity = opacityScale(a[1]);
     						newMarkAttr.push([name, value, opacity]);
     					} else {
-    						let name = feature.slice(0, feature.indexOf("."));
-    						let value = feature.slice(feature.indexOf("_") + 1);
-    						let opacity = opacityScale(a[1]);
+    						let name;
+    						let value;
+    						let opacity;
+
+    						if (feature.indexOf("bin") > -1) {
+    							name = feature.slice(0, feature.indexOf("."));
+    							value = "bin";
+    							opacity = opacityScale(a[1]);
+    						} else {
+    							// console.log(a)
+    							name = feature.slice(0, feature.indexOf("."));
+
+    							value = feature.slice(feature.indexOf("_") + 1);
+    							opacity = opacityScale(a[1]);
+    						}
 
     						if (value === "nominal") {
     							value = "categorical";

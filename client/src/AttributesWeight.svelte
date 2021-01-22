@@ -45,9 +45,21 @@
 
 				newMarkAttr.push([name, value, opacity])
 			} else {
-				let name = feature.slice(0, feature.indexOf("."))
-				let value = feature.slice(feature.indexOf("_") + 1)
-				let opacity = opacityScale(a[1])
+
+				let name
+				let value
+				let opacity
+
+				if (feature.indexOf("bin") > -1) {
+					name = feature.slice(0, feature.indexOf("."))
+					value = "bin"
+					opacity = opacityScale(a[1])
+				} else {
+					// console.log(a)
+					name = feature.slice(0, feature.indexOf("."))
+					value = feature.slice(feature.indexOf("_") + 1)
+					opacity = opacityScale(a[1])
+				}
 
 				if (value === "nominal") {
 					value = "categorical"
