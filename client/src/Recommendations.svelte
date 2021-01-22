@@ -372,19 +372,23 @@
 		}
 	}
 
-	function showPin() {
+	function togglePin() {
 		// Showing pins is disabled if new recommendations are loading
 		if (loading) { return }
 
-		document.getElementById("pinnedDrawer").style.width = "450px"
+		if (document.getElementById("pinnedDrawer").style.width === "450px") {
+			document.getElementById("pinnedDrawer").style.width = "0px"
+		} else {
+			document.getElementById("pinnedDrawer").style.width = "450px"
+		}
 	}
 
-	function closePin() {
-		// Hiding pins is disabled if new recommendations are loading
-		if (loading) { return }
+	// function closePin() {
+	// 	// Hiding pins is disabled if new recommendations are loading
+	// 	if (loading) { return }
 
-		document.getElementById("pinnedDrawer").style.width = "0px"
-	}
+	// 	document.getElementById("pinnedDrawer").style.width = "0px"
+	// }
 
 	function exportJSON() {
 		// Downloading is disabled if new recommendations are loading
@@ -422,7 +426,7 @@
 			<p class="title1"><b>RECOMMENDATIONS</b></p>
 			<div id="menuOptions">
 				<button on:click={update}>UPDATE RECOMMENDATIONS</button>
-				<button id="pinnedButton" on:click={showPin}>PINNED</button>
+				<button id="pinnedButton" on:click={togglePin}>PINNED</button>
 				<button on:click={reset}>RESET</button>
 				<button id="exportJSON" on:click={exportJSON} class="btn">DOWNLOAD</button>
 			</div>
@@ -454,10 +458,10 @@
 	</div>
 	<div id="pinnedDrawer">
 		<p id="pinnedText"><b>PINNED</b></p>
-		<a id="closeButton" on:click={closePin}>&times;</a>
+		<!-- <a id="closeButton" on:click={closePin}>&times;</a> -->
 		<div id="pinnedDisplay">
 			{#each pinned as p, i}
-				<div id="pin{i}"></div>
+				<div id="pin{i}" class="pinned"></div>
 			{/each}
 		</div>
 	</div>
@@ -549,7 +553,7 @@
 		right: 0;
 		overflow: scroll;
 		transition: 0.5s;
-		padding-top: 30px;
+		padding-top: 20px;
 		background: white;
 		box-shadow: 195px 8px 10px -5px rgba(0,0,0,0.2), 0px 16px 24px 2px rgba(0,0,0,0.14), 0px 6px 30px 5px rgba(0,0,0,0.12);
 	}
@@ -563,7 +567,13 @@
 		flex-direction: column;
 		gap: 30px;
 		margin-left: 30px;
-		max-width: 480px
+		max-width: 500px;
+		padding-bottom: 30px;
+	}
+
+	.pinned {
+		height: 400px;
+		overflow: scroll;
 	}
 
 	#closeButton {

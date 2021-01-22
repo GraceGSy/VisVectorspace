@@ -194,13 +194,21 @@
 		console.log(currentPinned)
 	}
 
-	function showPin() {
-		document.getElementById("pinnedDrawer").style.width = "450px"
+	function togglePin() {
+		if (document.getElementById("pinnedDrawer").style.width === "450px") {
+			document.getElementById("pinnedDrawer").style.width = "0px"
+		} else {
+			document.getElementById("pinnedDrawer").style.width = "450px"
+		}
 	}
 
-	function closePin() {
-		document.getElementById("pinnedDrawer").style.width = "0px"
-	}
+	// function showPin() {
+	// 	document.getElementById("pinnedDrawer").style.width = "450px"
+	// }
+
+	// function closePin() {
+	// 	document.getElementById("pinnedDrawer").style.width = "0px"
+	// }
 
 	function exportJSON() {
 		var filename = "sessionData.json"
@@ -225,9 +233,11 @@
 		<div id="menu">
 			<p><b>RECOMMENDATIONS</b></p>
 			<!-- <button>UPDATE RECOMMENDATIONS</button> -->
-			<button on:click={reset}>RESET</button>
-			<button on:click={showPin}>PINNED</button>
-			<button id="exportJSON" on:click={exportJSON} class="btn">DOWNLOAD</button>
+			<div id="menuOptions">
+				<button id="pinnedButton" on:click={togglePin}>PINNED</button>
+				<button on:click={reset}>RESET</button>
+				<button id="exportJSON" on:click={exportJSON} class="btn">DOWNLOAD</button>
+			</div>
 		</div>
 		<div id="recommendationDisplay">
 			{#each recommendations as c, i}
@@ -246,10 +256,10 @@
 	</div>
 	<div id="pinnedDrawer">
 		<p id="pinnedText"><b>PINNED</b></p>
-		<a id="closeButton" on:click={closePin}>&times;</a>
+		<!-- <a id="closeButton" on:click={closePin}>&times;</a> -->
 		<div id="pinnedDisplay">
 			{#each pinned as p, i}
-				<div id="pin{i}"></div>
+				<div id="pin{i}" class="pinned"></div>
 			{/each}
 		</div>
 	</div>
@@ -260,6 +270,19 @@
 		display: flex;
 		background: #f3f3f3;
 		width: 100%;
+	}
+
+	#menuOptions {
+		display: flex;
+		width: 100%;
+	}
+
+	#pinnedButton {
+		margin-right: auto;
+	}
+
+	#exportJSON {
+		margin-left: 5px;
 	}
 
 	#recommendations {
@@ -284,7 +307,7 @@
 		right: 0;
 		overflow: scroll;
 		transition: 0.5s;
-		padding-top: 30px;
+		padding-top: 20px;
 		background: white;
 		box-shadow: 195px 8px 10px -5px rgba(0,0,0,0.2), 0px 16px 24px 2px rgba(0,0,0,0.14), 0px 6px 30px 5px rgba(0,0,0,0.12);
 	}
@@ -298,7 +321,13 @@
 		flex-direction: column;
 		gap: 30px;
 		margin-left: 30px;
-		max-width: 420px
+		max-width: 500px;
+		padding-bottom: 30px;
+	}
+
+	.pinned {
+		height: 400px;
+		overflow: scroll;
 	}
 
 	#closeButton {
@@ -313,7 +342,6 @@
 	.vis {
 		overflow: scroll;
 	    background: white;
-	    justify-content: center;
 	    display: flex;
 	    flex-direction: column;
 	    padding: 15px;
@@ -322,6 +350,7 @@
 	.buttons {
 		display: flex;
 		flex-direction: row;
+		margin-bottom: 20px;
 	}
 
 	.pinButton {
