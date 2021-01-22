@@ -330,6 +330,8 @@
 		moreLikeThis = []
 		lessLikeThis = []
 		maybeLikeThis = []
+		attributesWeight = []
+		vegaSpecs = JSON.parse(JSON.stringify(vegaSpecsOriginal))
 	}
 
 	$: for (let p = 0; p < pinned.length; p++) {
@@ -418,9 +420,12 @@
 	<div id="recommendations">
 		<div id="menu">
 			<p class="title1"><b>RECOMMENDATIONS</b></p>
-			<button on:click={update}>UPDATE RECOMMENDATIONS</button>
-			<button on:click={showPin}>PINNED</button>
-			<button id="exportJSON" on:click={exportJSON} class="btn">DOWNLOAD</button>
+			<div id="menuOptions">
+				<button on:click={update}>UPDATE RECOMMENDATIONS</button>
+				<button id="pinnedButton" on:click={showPin}>PINNED</button>
+				<button on:click={reset}>RESET</button>
+				<button id="exportJSON" on:click={exportJSON} class="btn">DOWNLOAD</button>
+			</div>
 		</div>
 		<div id="recommendationDisplay">
 			{#each recommendations as c, i}
@@ -464,6 +469,20 @@
 		background: #f3f3f3;
 		width: 100%;
 		overflow: scroll;
+	}
+
+	#menuOptions {
+		display: flex;
+		width: 100%;
+	}
+
+	#pinnedButton {
+		margin-right: auto;
+		margin-left: 5px;
+	}
+
+	#exportJSON {
+		margin-left: 5px;
 	}
 
 	.showLoader {

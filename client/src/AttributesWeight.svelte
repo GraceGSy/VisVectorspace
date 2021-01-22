@@ -35,31 +35,28 @@
 		let newAttributes = []
 		let newMarkAttr = []
 		let newEncodingAttr = []
+
 		for (let a of attributes) {
 			let feature = a[0]
 
+			let name
+			let value
+			let opacity
+
 			if (feature.indexOf("mark") > -1) {
-				let name = "mark"
-				let value = feature.slice(feature.indexOf("_") + 1)
-				let opacity = opacityScale(a[1])
+				name = "mark"
+				value = feature.slice(feature.indexOf("_") + 1)
+				opacity = opacityScale(a[1])
 
 				newMarkAttr.push([name, value, opacity])
+			} else if (feature.indexOf("bin") > -1) {
+				name = feature.slice(0, feature.indexOf("."))
+				value = "bin"
+				opacity = opacityScale(a[1])
 			} else {
-
-				let name
-				let value
-				let opacity
-
-				if (feature.indexOf("bin") > -1) {
-					name = feature.slice(0, feature.indexOf("."))
-					value = "bin"
-					opacity = opacityScale(a[1])
-				} else {
-					// console.log(a)
-					name = feature.slice(0, feature.indexOf("."))
-					value = feature.slice(feature.indexOf("_") + 1)
-					opacity = opacityScale(a[1])
-				}
+				name = feature.slice(0, feature.indexOf("."))
+				value = feature.slice(feature.indexOf("_") + 1)
+				opacity = opacityScale(a[1])
 
 				if (value === "nominal") {
 					value = "categorical"
