@@ -88,6 +88,7 @@
 		let markConstraints = selectedMark === '' ? '' : `mark(${selectedMark}).`
 
 		let visConstraints = []
+		// console.log(channelSelections)
 
 		let encodingCount = 0
 		for (let c of Object.keys(channelSelections)) {
@@ -97,7 +98,7 @@
 
 			if (channelValue === "categorical") { channelValue = "nominal" }
 
-			console.log(c, channelValue)
+			// console.log(c, channelValue)
 
 			if (channelValue && channelValue != '') {
 				let newConstraint = `encoding(e${encodingCount}).:- not channel(e${encodingCount}, ${c}).`
@@ -109,6 +110,14 @@
 				} else {
 					// Get field
 					newConstraint = newConstraint + `:- not field(e${encodingCount}, ${channelValue}).`
+
+					let agg = channelSelections[c][0].aggregate
+
+					if (agg === "bin") {
+						newConstraint = newConstraint + `:- not bin(e${encodingCount}, 10).`
+					} else if (agg != "-") {
+						newConstraint = newConstraint + `:- not aggregate(e${encodingCount}, ${agg}).`
+					}
 				}
 
 				visConstraints.push(newConstraint)

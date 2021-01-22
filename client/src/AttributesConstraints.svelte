@@ -24,12 +24,12 @@
 
 	// let variable_types = {'title': 'string', 'startYear': 'number', 'runtimeMinutes': 'number', 'averageRating': 'number', 'numVotes': 'number'}
 
-	let dataOptions = [{id:"type", name:"type"},
-				  {id:"minutes", name:"minutes"},
-				  {id:"rating", name:"rating"},
-				  {id:"votes", name:"votes"},
-				  {id:"principals", name:"principals"},
-				  {id:"genre", name:"genre"}]
+	let dataOptions = [{id:"type", name:"type", aggregate:"-"},
+				  {id:"minutes", name:"minutes", aggregate:"-"},
+				  {id:"rating", name:"rating", aggregate:"-"},
+				  {id:"votes", name:"votes", aggregate:"-"},
+				  {id:"principals", name:"principals", aggregate:"-"},
+				  {id:"genre", name:"genre", aggregate:"-"}]
 
 	// let variables = [''].concat(accepted_types).concat(Object.keys(variable_types).map(v => 'field_' + v))
 
@@ -94,7 +94,7 @@
 		{#each channels as c}
 			<Constraint attributeType={c} bind:items={channelSelections[c]} bind:updateCount={updateCount} />
 		{/each}
-	</div>	
+	</div>
 </div>
 
 <style>
