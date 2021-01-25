@@ -5,6 +5,9 @@
 	import AttributesConstraints from './AttributesConstraints.svelte'
 	import dracoDataConstraints from './dracoDataConstraints.js'
 
+	export let participant = -1
+	export let allParticipantInfo = {}
+
 	export let dataset = []
 	export let types = {}
 	export let selectedAttributes = []
@@ -191,7 +194,44 @@
 			sessionData = sessionData.concat({"pinned": recommendations[i], "label": "unpinned", "date": date})
 		}
 
-		console.log(currentPinned)
+		// console.log(currentPinned)
+	}
+
+	// This is for unpinning from the pin drawer
+	function unpin(p) {
+		let selectedUid = p.uid
+		// console.log(p)
+
+		let newPinned = []
+
+		// remove deleted from all pins
+		for (let i of pinned) {
+			if (i.uid === selectedUid) {
+				continue
+			} else {
+				newPinned.push(i)
+			}
+		}
+
+		// update all pins
+		pinned = newPinned
+
+		let newCurrentPinned = []
+
+		// remove deleted from current pins
+		for (let j of currentPinned) {
+			if (j === selectedUid) {
+				continue
+			} else {
+				newCurrentPinned.push(j)
+			}
+		}
+
+		// update all pins
+		currentPinned = newCurrentPinned
+
+		let date = new Date()
+		sessionData = sessionData.concat({"chart": p, "label": "unpinned", "date": date})
 	}
 
 	function togglePin() {
@@ -211,9 +251,12 @@
 	// }
 
 	function exportJSON() {
-		var filename = "sessionData.json"
+		let allData = {"participant": allParticipantInfo,
+						"session": sessionData}
+
+		var filename = `sessionData_${participant}.json`
 		var element = document.createElement('a');
-		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(sessionData)))
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(allData)))
 		element.setAttribute('download', filename)
 
 		element.style.display = 'none'
@@ -222,6 +265,13 @@
 		element.click()
 
 		document.body.removeChild(element)
+
+		let downloadData = {
+			'filename': filename,
+			'data': allData
+		}
+
+		fetch(`./download`, {method:"POST", body:JSON.stringify(downloadData)})
 	}
 </script>
 
@@ -259,6 +309,7 @@
 		<!-- <a id="closeButton" on:click={closePin}>&times;</a> -->
 		<div id="pinnedDisplay">
 			{#each pinned as p, i}
+				<button class="deletePin" on:click={() => unpin(p)}>DELETE PIN</button>
 				<div id="pin{i}" class="pinned"></div>
 			{/each}
 		</div>
@@ -283,6 +334,7 @@
 
 	#exportJSON {
 		margin-left: 5px;
+		margin-right: 10px;
 	}
 
 	#recommendations {
@@ -323,6 +375,11 @@
 		margin-left: 30px;
 		max-width: 500px;
 		padding-bottom: 30px;
+	}
+
+	.deletePin {
+		width: 350px;
+		margin: 25px 0px 0px 0px;
 	}
 
 	.pinned {

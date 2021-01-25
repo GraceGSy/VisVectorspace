@@ -48,6 +48,12 @@
     	updateCount++
     }
 
+    function removeItem() {
+    	if (items.length != 0) {
+    		items = []
+    		updateCount++
+    	}
+    }
 
 </script>
 
@@ -61,7 +67,7 @@
 			<div>{item.name ? item.name : ''}</div>
 			{#if descriptions[item.name] == "quantitative"}
 				<div class="tooltip">
-					<i class="material-icons md-24 dataInfo" >expand_more</i>
+					<i class="material-icons md-24">expand_more</i>
 					<div class="tooltipcontent">
 						{#each aggregates as a}
 							<label class="aggOption">
@@ -77,6 +83,8 @@
 			{/if}
 		{/each}
 	</div>
+	<i class="material-icons md-24 dataInfo"
+		on:click={removeItem}>delete</i>
 </div>
 
 <style>
@@ -108,6 +116,13 @@
 	.aggOption {
 		display: flex;
 		align-items: center;
+	}
+
+	.dataInfo {
+		opacity: 25%;
+    	cursor: default;
+    	margin-left: 10px;
+    	cursor: pointer;
 	}
 
 	/* Hard coded alignment values */

@@ -134,8 +134,8 @@
 	#attributesWeights {
 		display: flex;
 		flex-direction: column;
-		width: 175px;
-		padding: 20px 50px 0px 15px;
+		width: 200px;
+		padding: 20px 20px 0px 0px;
 	    margin-right: 25px;
 		background: #f3f3f3;
 		border-right: 2px solid white;

@@ -120,6 +120,7 @@
 					dataset = {dataset["dataset"]}
 					types = {dataset["types"]}
 					{selectedAttributes}
+					{participant}
 					{allParticipantInfo}/>
 			{:else if start && participantOrder[participant - 1] === "constraintLearner"}
 				<!-- <AttributesBar

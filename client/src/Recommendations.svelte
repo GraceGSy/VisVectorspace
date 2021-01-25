@@ -350,7 +350,7 @@
 			pinned = pinned.concat([recommendations[i]])
 
 			let date = new Date()
-			sessionData = sessionData.concat({"pinned": recommendations[i], "label": "pinned", "date": date})
+			sessionData = sessionData.concat({"vega": recommendations[i], "label": "pinned", "date": date})
 		} else {
 			currentPinned.splice(pinnedIndex, 1)
 			currentPinned = currentPinned
@@ -368,8 +368,45 @@
 			pinned = newPinned
 
 			let date = new Date()
-			sessionData = sessionData.concat({"pinned": recommendations[i], "label": "unpinned", "date": date})
+			sessionData = sessionData.concat({"chart": recommendations[i], "label": "unpinned", "date": date})
 		}
+	}
+
+	// This is for unpinning from the pin drawer
+	function unpin(p) {
+		let selectedUid = p.uid
+		// console.log(p)
+
+		let newPinned = []
+
+		// remove deleted from all pins
+		for (let i of pinned) {
+			if (i.uid === selectedUid) {
+				continue
+			} else {
+				newPinned.push(i)
+			}
+		}
+
+		// update all pins
+		pinned = newPinned
+
+		let newCurrentPinned = []
+
+		// remove deleted from current pins
+		for (let j of currentPinned) {
+			if (j === selectedUid) {
+				continue
+			} else {
+				newCurrentPinned.push(j)
+			}
+		}
+
+		// update all pins
+		currentPinned = newCurrentPinned
+
+		let date = new Date()
+		sessionData = sessionData.concat({"chart": p, "label": "unpinned", "date": date})
 	}
 
 	function togglePin() {
@@ -408,6 +445,13 @@
 		element.click()
 
 		document.body.removeChild(element)
+
+		let downloadData = {
+			'filename': filename,
+			'data': allData
+		}
+
+		fetch(`./download`, {method:"POST", body:JSON.stringify(downloadData)})
 	}
 
 </script>
@@ -461,7 +505,10 @@
 		<!-- <a id="closeButton" on:click={closePin}>&times;</a> -->
 		<div id="pinnedDisplay">
 			{#each pinned as p, i}
+				<button class="deletePin" on:click={() => unpin(p)}>DELETE PIN</button>
 				<div id="pin{i}" class="pinned"></div>
+				<!-- <i class="material-icons md-24"
+					on:click={() => unpin(p)}>delete</i> -->
 			{/each}
 		</div>
 	</div>
@@ -487,6 +534,7 @@
 
 	#exportJSON {
 		margin-left: 5px;
+		margin-right: 10px
 	}
 
 	.showLoader {
@@ -571,8 +619,13 @@
 		padding-bottom: 30px;
 	}
 
+	.deletePin {
+		width: 350px;
+		margin: 25px 0px 0px 0px;
+	}
+
 	.pinned {
-		height: 400px;
+		height: 350px;
 		overflow: scroll;
 	}
 

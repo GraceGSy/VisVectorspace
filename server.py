@@ -257,6 +257,20 @@ def kneighbors():
 
 	return result
 
+@app.route("/download", methods=["POST"])
+def download():
+	dataset = json.loads(request.data)
+
+	filename = dataset['filename']
+	data = dataset['data']
+
+	# print(data)
+
+	with open(filename, 'w') as file:
+		json.dump(data, file)
+		# file.write(json.dumps(data))
+
+	return "done"
 
 if __name__ == "__main__":
 	app.run(debug=True, host='0.0.0.0')
