@@ -81,13 +81,15 @@
 			sessionData.push({"markConstraints":selectedMark,
 							  "visConstraints":channelSelections,
 							  "recommendations": recs,
-							  "date": new Date()})
+							  "date": new Date(),
+							  "label": "recommendations"})
 
 			// console.log(recommendations)
 		})
 	}
 
 	function getRecommendations() {
+		// sessionData.push({"specs": channelSelections, "mark": selectedMark, "label": "constraints"})
 		let markConstraints = selectedMark === '' ? '' : `mark(${selectedMark}).`
 
 		let visConstraints = []

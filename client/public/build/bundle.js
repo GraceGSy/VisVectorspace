@@ -25606,7 +25606,7 @@ ${constraint.asp}`;
         Object.defineProperty(exports, '__esModule', { value: true });
 
     })));
-    //# sourceMappingURL=draco.js.map
+
     });
 
     var Draco = unwrapExports(draco);
@@ -29295,8 +29295,6 @@ ${constraint.asp}`;
     };
     });
 
-    //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi9zcmMvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsY0FBYyxTQUFTLENBQUM7QUFDeEIsY0FBYyxRQUFRLENBQUM7QUFDdkIsY0FBYyxZQUFZLENBQUM7QUFDM0IsT0FBTyxLQUFLLE1BQU0sU0FBUyxDQUFDO0FBQzVCLGVBQWUsS0FBSyxDQUFDIn0=
-
     /*!
      * Determine if an object is a Buffer
      *
@@ -30577,7 +30575,7 @@ ${constraint.asp}`;
     	return child_ctx;
     }
 
-    // (479:3) {#each recommendations as c, i}
+    // (485:3) {#each recommendations as c, i}
     function create_each_block_1$1(ctx) {
     	let div4;
     	let div1;
@@ -30632,27 +30630,27 @@ ${constraint.asp}`;
     			? "more"
     			: "default") + " svelte-ognzdh"));
 
-    			add_location(button0, file$3, 481, 6, 12174);
+    			add_location(button0, file$3, 487, 6, 12413);
 
     			attr_dev(button1, "class", button1_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[2][/*i*/ ctx[39]] === "less"
     			? "less"
     			: "default") + " svelte-ognzdh"));
 
-    			add_location(button1, file$3, 485, 6, 12332);
+    			add_location(button1, file$3, 491, 6, 12571);
     			attr_dev(i_1, "class", "material-icons-outlined md-24");
-    			add_location(i_1, file$3, 492, 7, 12653);
+    			add_location(i_1, file$3, 498, 7, 12892);
     			attr_dev(div0, "class", "pinButton svelte-ognzdh");
     			toggle_class(div0, "isPinned", /*recommendations*/ ctx[1][/*i*/ ctx[39]] && /*currentPinned*/ ctx[4].indexOf(/*recommendations*/ ctx[1][/*i*/ ctx[39]].uid) > -1);
-    			add_location(div0, file$3, 489, 6, 12490);
+    			add_location(div0, file$3, 495, 6, 12729);
     			attr_dev(div1, "class", "buttons svelte-ognzdh");
-    			add_location(div1, file$3, 480, 5, 12146);
+    			add_location(div1, file$3, 486, 5, 12385);
     			attr_dev(div2, "id", div2_id_value = "vis" + /*i*/ ctx[39]);
     			attr_dev(div2, "class", "svelte-ognzdh");
-    			add_location(div2, file$3, 496, 6, 12771);
+    			add_location(div2, file$3, 502, 6, 13010);
     			attr_dev(div3, "class", "vegaContainer svelte-ognzdh");
-    			add_location(div3, file$3, 495, 5, 12737);
+    			add_location(div3, file$3, 501, 5, 12976);
     			attr_dev(div4, "class", "vis svelte-ognzdh");
-    			add_location(div4, file$3, 479, 4, 12123);
+    			add_location(div4, file$3, 485, 4, 12362);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div4, anchor);
@@ -30706,14 +30704,14 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_1$1.name,
     		type: "each",
-    		source: "(479:3) {#each recommendations as c, i}",
+    		source: "(485:3) {#each recommendations as c, i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (507:3) {#each pinned as p, i}
+    // (513:3) {#each pinned as p, i}
     function create_each_block$2(ctx) {
     	let button;
     	let t1;
@@ -30734,10 +30732,10 @@ ${constraint.asp}`;
     			div = element("div");
     			t2 = space();
     			attr_dev(button, "class", "deletePin svelte-ognzdh");
-    			add_location(button, file$3, 507, 4, 13030);
+    			add_location(button, file$3, 513, 4, 13269);
     			attr_dev(div, "id", div_id_value = "pin" + /*i*/ ctx[39]);
     			attr_dev(div, "class", "pinned svelte-ognzdh");
-    			add_location(div, file$3, 508, 4, 13106);
+    			add_location(div, file$3, 514, 4, 13345);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, button, anchor);
@@ -30763,7 +30761,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$2.name,
     		type: "each",
-    		source: "(507:3) {#each pinned as p, i}",
+    		source: "(513:3) {#each pinned as p, i}",
     		ctx
     	});
 
@@ -30871,46 +30869,46 @@ ${constraint.asp}`;
     			}
 
     			attr_dev(div0, "class", "spinner svelte-ognzdh");
-    			add_location(div0, file$3, 462, 2, 11510);
+    			add_location(div0, file$3, 468, 2, 11749);
     			attr_dev(div1, "class", "loader svelte-ognzdh");
     			toggle_class(div1, "showLoader", /*loading*/ ctx[0]);
     			toggle_class(div1, "hideLoader", !/*loading*/ ctx[0]);
-    			add_location(div1, file$3, 459, 1, 11424);
-    			add_location(b0, file$3, 469, 21, 11724);
+    			add_location(div1, file$3, 465, 1, 11663);
+    			add_location(b0, file$3, 475, 21, 11963);
     			attr_dev(p0, "class", "title1");
-    			add_location(p0, file$3, 469, 3, 11706);
-    			add_location(button0, file$3, 471, 4, 11781);
+    			add_location(p0, file$3, 475, 3, 11945);
+    			add_location(button0, file$3, 477, 4, 12020);
     			attr_dev(button1, "id", "pinnedButton");
     			attr_dev(button1, "class", "svelte-ognzdh");
-    			add_location(button1, file$3, 472, 4, 11843);
-    			add_location(button2, file$3, 473, 4, 11910);
+    			add_location(button1, file$3, 478, 4, 12082);
+    			add_location(button2, file$3, 479, 4, 12149);
     			attr_dev(button3, "id", "exportJSON");
     			attr_dev(button3, "class", "btn svelte-ognzdh");
-    			add_location(button3, file$3, 474, 4, 11954);
+    			add_location(button3, file$3, 480, 4, 12193);
     			attr_dev(div2, "id", "menuOptions");
     			attr_dev(div2, "class", "svelte-ognzdh");
-    			add_location(div2, file$3, 470, 3, 11754);
+    			add_location(div2, file$3, 476, 3, 11993);
     			attr_dev(div3, "id", "menu");
-    			add_location(div3, file$3, 468, 2, 11687);
+    			add_location(div3, file$3, 474, 2, 11926);
     			attr_dev(div4, "id", "recommendationDisplay");
     			attr_dev(div4, "class", "svelte-ognzdh");
-    			add_location(div4, file$3, 477, 2, 12051);
+    			add_location(div4, file$3, 483, 2, 12290);
     			attr_dev(div5, "id", "recommendations");
     			attr_dev(div5, "class", "svelte-ognzdh");
-    			add_location(div5, file$3, 467, 1, 11658);
-    			add_location(b1, file$3, 503, 21, 12892);
+    			add_location(div5, file$3, 473, 1, 11897);
+    			add_location(b1, file$3, 509, 21, 13131);
     			attr_dev(p1, "id", "pinnedText");
     			attr_dev(p1, "class", "svelte-ognzdh");
-    			add_location(p1, file$3, 503, 2, 12873);
+    			add_location(p1, file$3, 509, 2, 13112);
     			attr_dev(div6, "id", "pinnedDisplay");
     			attr_dev(div6, "class", "svelte-ognzdh");
-    			add_location(div6, file$3, 505, 2, 12975);
+    			add_location(div6, file$3, 511, 2, 13214);
     			attr_dev(div7, "id", "pinnedDrawer");
     			attr_dev(div7, "class", "svelte-ognzdh");
-    			add_location(div7, file$3, 502, 1, 12847);
+    			add_location(div7, file$3, 508, 1, 13086);
     			attr_dev(div8, "id", "overall");
     			attr_dev(div8, "class", "svelte-ognzdh");
-    			add_location(div8, file$3, 458, 0, 11404);
+    			add_location(div8, file$3, 464, 0, 11643);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -31146,6 +31144,14 @@ ${constraint.asp}`;
 
     		$$invalidate(2, recommendationsClass = recommendationsClass.map(r => "default"));
     		$$invalidate(1, recommendations = result);
+
+    		sessionData.push({
+    			"constraints": attributesWeight,
+    			recommendations,
+    			"date": new Date(),
+    			"label": "recommendations"
+    		});
+
     		$$invalidate(0, loading = false);
     	}
 
@@ -31324,6 +31330,7 @@ ${constraint.asp}`;
 
     			$$invalidate(5, attributesWeight = attributeMeans.filter(d => d[1] > 0));
 
+    			// sessionData.push({"specs": attributesWeight, "label": "constraints"})
     			Promise.all(getRecombinations(updatedPreferrences, dataset)).then(result => {
     				selectRecommendations(result);
     			});
@@ -35422,7 +35429,7 @@ ${constraint.asp}`;
     	return child_ctx;
     }
 
-    // (293:3) {#each recommendations as c, i}
+    // (295:3) {#each recommendations as c, i}
     function create_each_block_1$4(ctx) {
     	let div3;
     	let div0;
@@ -35449,17 +35456,17 @@ ${constraint.asp}`;
     			div1 = element("div");
     			t2 = space();
     			attr_dev(i_1, "class", "material-icons-outlined md-24");
-    			add_location(i_1, file$8, 297, 6, 7529);
+    			add_location(i_1, file$8, 299, 6, 7664);
     			attr_dev(div0, "class", "pinButton svelte-1mbid8a");
     			toggle_class(div0, "isPinned", /*recommendations*/ ctx[3][/*i*/ ctx[27]] && /*currentPinned*/ ctx[2].indexOf(/*recommendations*/ ctx[3][/*i*/ ctx[27]].uid) > -1);
-    			add_location(div0, file$8, 294, 5, 7371);
+    			add_location(div0, file$8, 296, 5, 7506);
     			attr_dev(div1, "id", div1_id_value = "vis" + /*i*/ ctx[27]);
     			attr_dev(div1, "class", "svelte-1mbid8a");
-    			add_location(div1, file$8, 300, 6, 7635);
+    			add_location(div1, file$8, 302, 6, 7770);
     			attr_dev(div2, "class", "vegaContainer svelte-1mbid8a");
-    			add_location(div2, file$8, 299, 5, 7601);
+    			add_location(div2, file$8, 301, 5, 7736);
     			attr_dev(div3, "class", "vis svelte-1mbid8a");
-    			add_location(div3, file$8, 293, 4, 7348);
+    			add_location(div3, file$8, 295, 4, 7483);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div3, anchor);
@@ -35489,14 +35496,14 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_1$4.name,
     		type: "each",
-    		source: "(293:3) {#each recommendations as c, i}",
+    		source: "(295:3) {#each recommendations as c, i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (311:3) {#each pinned as p, i}
+    // (313:3) {#each pinned as p, i}
     function create_each_block$6(ctx) {
     	let button;
     	let t1;
@@ -35515,10 +35522,10 @@ ${constraint.asp}`;
     			t1 = space();
     			div = element("div");
     			attr_dev(button, "class", "deletePin svelte-1mbid8a");
-    			add_location(button, file$8, 311, 4, 7894);
+    			add_location(button, file$8, 313, 4, 8029);
     			attr_dev(div, "id", div_id_value = "pin" + /*i*/ ctx[27]);
     			attr_dev(div, "class", "pinned svelte-1mbid8a");
-    			add_location(div, file$8, 312, 4, 7970);
+    			add_location(div, file$8, 314, 4, 8105);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, button, anchor);
@@ -35542,7 +35549,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$6.name,
     		type: "each",
-    		source: "(311:3) {#each pinned as p, i}",
+    		source: "(313:3) {#each pinned as p, i}",
     		ctx
     	});
 
@@ -35666,39 +35673,39 @@ ${constraint.asp}`;
     				each_blocks[i].c();
     			}
 
-    			add_location(b0, file$8, 283, 6, 6959);
-    			add_location(p0, file$8, 283, 3, 6956);
+    			add_location(b0, file$8, 285, 6, 7094);
+    			add_location(p0, file$8, 285, 3, 7091);
     			attr_dev(button0, "id", "pinnedButton");
     			attr_dev(button0, "class", "svelte-1mbid8a");
-    			add_location(button0, file$8, 286, 4, 7068);
-    			add_location(button1, file$8, 287, 4, 7135);
+    			add_location(button0, file$8, 288, 4, 7203);
+    			add_location(button1, file$8, 289, 4, 7270);
     			attr_dev(button2, "id", "exportJSON");
     			attr_dev(button2, "class", "btn svelte-1mbid8a");
-    			add_location(button2, file$8, 288, 4, 7179);
+    			add_location(button2, file$8, 290, 4, 7314);
     			attr_dev(div0, "id", "menuOptions");
     			attr_dev(div0, "class", "svelte-1mbid8a");
-    			add_location(div0, file$8, 285, 3, 7041);
+    			add_location(div0, file$8, 287, 3, 7176);
     			attr_dev(div1, "id", "menu");
-    			add_location(div1, file$8, 282, 2, 6937);
+    			add_location(div1, file$8, 284, 2, 7072);
     			attr_dev(div2, "id", "recommendationDisplay");
     			attr_dev(div2, "class", "svelte-1mbid8a");
-    			add_location(div2, file$8, 291, 2, 7276);
+    			add_location(div2, file$8, 293, 2, 7411);
     			attr_dev(div3, "id", "recommendations");
     			attr_dev(div3, "class", "svelte-1mbid8a");
-    			add_location(div3, file$8, 281, 1, 6908);
-    			add_location(b1, file$8, 307, 21, 7756);
+    			add_location(div3, file$8, 283, 1, 7043);
+    			add_location(b1, file$8, 309, 21, 7891);
     			attr_dev(p1, "id", "pinnedText");
     			attr_dev(p1, "class", "svelte-1mbid8a");
-    			add_location(p1, file$8, 307, 2, 7737);
+    			add_location(p1, file$8, 309, 2, 7872);
     			attr_dev(div4, "id", "pinnedDisplay");
     			attr_dev(div4, "class", "svelte-1mbid8a");
-    			add_location(div4, file$8, 309, 2, 7839);
+    			add_location(div4, file$8, 311, 2, 7974);
     			attr_dev(div5, "id", "pinnedDrawer");
     			attr_dev(div5, "class", "svelte-1mbid8a");
-    			add_location(div5, file$8, 306, 1, 7711);
+    			add_location(div5, file$8, 308, 1, 7846);
     			attr_dev(div6, "id", "overall");
     			attr_dev(div6, "class", "svelte-1mbid8a");
-    			add_location(div6, file$8, 277, 0, 6740);
+    			add_location(div6, file$8, 279, 0, 6875);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -35934,13 +35941,16 @@ ${constraint.asp}`;
     				"markConstraints": selectedMark,
     				"visConstraints": channelSelections,
     				"recommendations": recs,
-    				"date": new Date()
+    				"date": new Date(),
+    				"label": "recommendations"
     			});
     		}); // console.log(recommendations)
     	}
 
     	function getRecommendations() {
+    		// sessionData.push({"specs": channelSelections, "mark": selectedMark, "label": "constraints"})
     		let markConstraints = selectedMark === "" ? "" : `mark(${selectedMark}).`;
+
     		let visConstraints = [];
 
     		// console.log(channelSelections)
@@ -36314,7 +36324,7 @@ ${constraint.asp}`;
     const { Object: Object_1$3 } = globals;
     const file$9 = "src/App.svelte";
 
-    // (227:2) {:catch error}
+    // (228:2) {:catch error}
     function create_catch_block$1(ctx) {
     	let p;
     	let t_value = /*error*/ ctx[34].message + "";
@@ -36325,7 +36335,7 @@ ${constraint.asp}`;
     			p = element("p");
     			t = text(t_value);
     			set_style(p, "color", "red");
-    			add_location(p, file$9, 227, 3, 6594);
+    			add_location(p, file$9, 228, 3, 6613);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -36343,14 +36353,14 @@ ${constraint.asp}`;
     		block,
     		id: create_catch_block$1.name,
     		type: "catch",
-    		source: "(227:2) {:catch error}",
+    		source: "(228:2) {:catch error}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (117:2) {:then dataset}
+    // (118:2) {:then dataset}
     function create_then_block$1(ctx) {
     	let current_block_type_index;
     	let if_block;
@@ -36360,8 +36370,8 @@ ${constraint.asp}`;
     	const if_blocks = [];
 
     	function select_block_type(ctx, dirty) {
-    		if (/*start*/ ctx[5] && /*participantOrder*/ ctx[7][/*participant*/ ctx[0] - 1] === "constraintSolver") return 0;
-    		if (/*start*/ ctx[5] && /*participantOrder*/ ctx[7][/*participant*/ ctx[0] - 1] === "constraintLearner") return 1;
+    		if (/*start*/ ctx[6] && /*participantOrder*/ ctx[8][/*participant*/ ctx[0] - 1] === "constraintSolver") return 0;
+    		if (/*start*/ ctx[6] && /*participantOrder*/ ctx[8][/*participant*/ ctx[0] - 1] === "constraintLearner") return 1;
     		return 2;
     	}
 
@@ -36422,14 +36432,14 @@ ${constraint.asp}`;
     		block,
     		id: create_then_block$1.name,
     		type: "then",
-    		source: "(117:2) {:then dataset}",
+    		source: "(118:2) {:then dataset}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (135:3) {:else}
+    // (136:3) {:else}
     function create_else_block(ctx) {
     	let div6;
     	let div5;
@@ -36618,142 +36628,142 @@ ${constraint.asp}`;
     			button = element("button");
     			button.textContent = "BEGIN";
     			attr_dev(input0, "class", "inputBox svelte-1dzpmaa");
-    			add_location(input0, file$9, 139, 7, 3484);
+    			add_location(input0, file$9, 140, 7, 3503);
     			attr_dev(div0, "id", "participantID");
-    			add_location(div0, file$9, 137, 6, 3429);
+    			add_location(div0, file$9, 138, 6, 3448);
     			attr_dev(p0, "class", "inputContent svelte-1dzpmaa");
-    			add_location(p0, file$9, 142, 7, 3589);
+    			add_location(p0, file$9, 143, 7, 3608);
     			attr_dev(input1, "type", "radio");
     			input1.__value = input1_value_value = "F";
     			input1.value = input1.__value;
     			/*$$binding_groups*/ ctx[17][2].push(input1);
-    			add_location(input1, file$9, 144, 8, 3684);
+    			add_location(input1, file$9, 145, 8, 3703);
     			attr_dev(label0, "class", "inputBox svelte-1dzpmaa");
-    			add_location(label0, file$9, 143, 7, 3651);
+    			add_location(label0, file$9, 144, 7, 3670);
     			attr_dev(input2, "type", "radio");
     			input2.__value = input2_value_value = "M";
     			input2.value = input2.__value;
     			/*$$binding_groups*/ ctx[17][2].push(input2);
-    			add_location(input2, file$9, 148, 8, 3806);
+    			add_location(input2, file$9, 149, 8, 3825);
     			attr_dev(label1, "class", "inputBox svelte-1dzpmaa");
-    			add_location(label1, file$9, 147, 7, 3773);
+    			add_location(label1, file$9, 148, 7, 3792);
     			attr_dev(input3, "type", "radio");
     			input3.__value = input3_value_value = "other";
     			input3.value = input3.__value;
     			/*$$binding_groups*/ ctx[17][2].push(input3);
-    			add_location(input3, file$9, 152, 8, 3926);
+    			add_location(input3, file$9, 153, 8, 3945);
     			attr_dev(label2, "class", "inputBox svelte-1dzpmaa");
-    			add_location(label2, file$9, 151, 7, 3893);
+    			add_location(label2, file$9, 152, 7, 3912);
     			attr_dev(input4, "type", "radio");
     			input4.__value = input4_value_value = "none";
     			input4.value = input4.__value;
     			/*$$binding_groups*/ ctx[17][2].push(input4);
-    			add_location(input4, file$9, 156, 8, 4051);
+    			add_location(input4, file$9, 157, 8, 4070);
     			attr_dev(label3, "class", "inputBox svelte-1dzpmaa");
-    			add_location(label3, file$9, 155, 7, 4018);
+    			add_location(label3, file$9, 156, 7, 4037);
     			attr_dev(div1, "id", "participantGender");
-    			add_location(div1, file$9, 141, 6, 3553);
+    			add_location(div1, file$9, 142, 6, 3572);
     			attr_dev(p1, "class", "inputContent svelte-1dzpmaa");
-    			add_location(p1, file$9, 161, 7, 4199);
+    			add_location(p1, file$9, 162, 7, 4218);
     			attr_dev(input5, "type", "radio");
     			input5.__value = input5_value_value = "18-19";
     			input5.value = input5.__value;
     			/*$$binding_groups*/ ctx[17][1].push(input5);
-    			add_location(input5, file$9, 163, 8, 4297);
+    			add_location(input5, file$9, 164, 8, 4316);
     			attr_dev(label4, "class", "inputBox svelte-1dzpmaa");
-    			add_location(label4, file$9, 162, 7, 4264);
+    			add_location(label4, file$9, 163, 7, 4283);
     			attr_dev(input6, "type", "radio");
     			input6.__value = input6_value_value = "20-24";
     			input6.value = input6.__value;
     			/*$$binding_groups*/ ctx[17][1].push(input6);
-    			add_location(input6, file$9, 167, 8, 4439);
+    			add_location(input6, file$9, 168, 8, 4458);
     			attr_dev(label5, "class", "inputBox svelte-1dzpmaa");
-    			add_location(label5, file$9, 166, 7, 4406);
+    			add_location(label5, file$9, 167, 7, 4425);
     			attr_dev(input7, "type", "radio");
     			input7.__value = input7_value_value = "25-29";
     			input7.value = input7.__value;
     			/*$$binding_groups*/ ctx[17][1].push(input7);
-    			add_location(input7, file$9, 171, 8, 4581);
+    			add_location(input7, file$9, 172, 8, 4600);
     			attr_dev(label6, "class", "inputBox svelte-1dzpmaa");
-    			add_location(label6, file$9, 170, 7, 4548);
+    			add_location(label6, file$9, 171, 7, 4567);
     			attr_dev(input8, "type", "radio");
     			input8.__value = input8_value_value = "30-34";
     			input8.value = input8.__value;
     			/*$$binding_groups*/ ctx[17][1].push(input8);
-    			add_location(input8, file$9, 175, 8, 4723);
+    			add_location(input8, file$9, 176, 8, 4742);
     			attr_dev(label7, "class", "inputBox svelte-1dzpmaa");
-    			add_location(label7, file$9, 174, 7, 4690);
+    			add_location(label7, file$9, 175, 7, 4709);
     			attr_dev(input9, "type", "radio");
     			input9.__value = input9_value_value = ">=35";
     			input9.value = input9.__value;
     			/*$$binding_groups*/ ctx[17][1].push(input9);
-    			add_location(input9, file$9, 179, 8, 4865);
+    			add_location(input9, file$9, 180, 8, 4884);
     			attr_dev(label8, "class", "inputBox svelte-1dzpmaa");
-    			add_location(label8, file$9, 178, 7, 4832);
+    			add_location(label8, file$9, 179, 7, 4851);
     			attr_dev(input10, "type", "radio");
     			input10.__value = input10_value_value = "none";
     			input10.value = input10.__value;
     			/*$$binding_groups*/ ctx[17][1].push(input10);
-    			add_location(input10, file$9, 183, 8, 4999);
+    			add_location(input10, file$9, 184, 8, 5018);
     			attr_dev(label9, "class", "inputBox svelte-1dzpmaa");
-    			add_location(label9, file$9, 182, 7, 4966);
+    			add_location(label9, file$9, 183, 7, 4985);
     			attr_dev(div2, "id", "participantAge");
-    			add_location(div2, file$9, 160, 6, 4166);
+    			add_location(div2, file$9, 161, 6, 4185);
     			attr_dev(p2, "class", "inputContent svelte-1dzpmaa");
-    			add_location(p2, file$9, 188, 7, 5151);
+    			add_location(p2, file$9, 189, 7, 5170);
     			attr_dev(input11, "id", "toolsInput");
     			attr_dev(input11, "class", "inputBox svelte-1dzpmaa");
-    			add_location(input11, file$9, 189, 7, 5275);
+    			add_location(input11, file$9, 190, 7, 5294);
     			attr_dev(div3, "id", "participantTools");
-    			add_location(div3, file$9, 187, 6, 5116);
+    			add_location(div3, file$9, 188, 6, 5135);
     			attr_dev(p3, "class", "inputContent svelte-1dzpmaa");
-    			add_location(p3, file$9, 192, 7, 5394);
+    			add_location(p3, file$9, 193, 7, 5413);
     			attr_dev(input12, "type", "radio");
     			input12.__value = input12_value_value = "0";
     			input12.value = input12.__value;
     			/*$$binding_groups*/ ctx[17][0].push(input12);
-    			add_location(input12, file$9, 194, 8, 5536);
+    			add_location(input12, file$9, 195, 8, 5555);
     			attr_dev(label10, "class", "inputBox svelte-1dzpmaa");
-    			add_location(label10, file$9, 193, 7, 5503);
+    			add_location(label10, file$9, 194, 7, 5522);
     			attr_dev(input13, "type", "radio");
     			input13.__value = input13_value_value = "1-2";
     			input13.value = input13.__value;
     			/*$$binding_groups*/ ctx[17][0].push(input13);
-    			add_location(input13, file$9, 198, 8, 5661);
+    			add_location(input13, file$9, 199, 8, 5680);
     			attr_dev(label11, "class", "inputBox svelte-1dzpmaa");
-    			add_location(label11, file$9, 197, 7, 5628);
+    			add_location(label11, file$9, 198, 7, 5647);
     			attr_dev(input14, "type", "radio");
     			input14.__value = input14_value_value = "3-5";
     			input14.value = input14.__value;
     			/*$$binding_groups*/ ctx[17][0].push(input14);
-    			add_location(input14, file$9, 202, 8, 5792);
+    			add_location(input14, file$9, 203, 8, 5811);
     			attr_dev(label12, "class", "inputBox svelte-1dzpmaa");
-    			add_location(label12, file$9, 201, 7, 5759);
+    			add_location(label12, file$9, 202, 7, 5778);
     			attr_dev(input15, "type", "radio");
     			input15.__value = input15_value_value = "5-10";
     			input15.value = input15.__value;
     			/*$$binding_groups*/ ctx[17][0].push(input15);
-    			add_location(input15, file$9, 206, 8, 5923);
+    			add_location(input15, file$9, 207, 8, 5942);
     			attr_dev(label13, "class", "inputBox svelte-1dzpmaa");
-    			add_location(label13, file$9, 205, 7, 5890);
+    			add_location(label13, file$9, 206, 7, 5909);
     			attr_dev(input16, "type", "radio");
     			input16.__value = input16_value_value = ">10";
     			input16.value = input16.__value;
     			/*$$binding_groups*/ ctx[17][0].push(input16);
-    			add_location(input16, file$9, 210, 8, 6056);
+    			add_location(input16, file$9, 211, 8, 6075);
     			attr_dev(label14, "class", "inputBox svelte-1dzpmaa");
-    			add_location(label14, file$9, 209, 7, 6023);
+    			add_location(label14, file$9, 210, 7, 6042);
     			attr_dev(div4, "id", "participantExperience");
-    			add_location(div4, file$9, 191, 6, 5354);
+    			add_location(div4, file$9, 192, 6, 5373);
     			attr_dev(button, "id", "beginButton");
     			attr_dev(button, "class", "svelte-1dzpmaa");
-    			add_location(button, file$9, 222, 6, 6486);
+    			add_location(button, file$9, 223, 6, 6505);
     			attr_dev(div5, "id", "demographics");
     			attr_dev(div5, "class", "svelte-1dzpmaa");
-    			add_location(div5, file$9, 136, 5, 3399);
+    			add_location(div5, file$9, 137, 5, 3418);
     			attr_dev(div6, "id", "chooseVersion");
     			attr_dev(div6, "class", "svelte-1dzpmaa");
-    			add_location(div6, file$9, 135, 4, 3369);
+    			add_location(div6, file$9, 136, 4, 3388);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div6, anchor);
@@ -36973,14 +36983,14 @@ ${constraint.asp}`;
     		block,
     		id: create_else_block.name,
     		type: "else",
-    		source: "(135:3) {:else}",
+    		source: "(136:3) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (125:80) 
+    // (126:80) 
     function create_if_block_1(ctx) {
     	let current;
 
@@ -36988,9 +36998,9 @@ ${constraint.asp}`;
     			props: {
     				dataset: /*dataset*/ ctx[33]["dataset"],
     				types: /*dataset*/ ctx[33]["types"],
-    				selectedAttributes: /*selectedAttributes*/ ctx[6],
+    				selectedAttributes: /*selectedAttributes*/ ctx[7],
     				participant: /*participant*/ ctx[0],
-    				allParticipantInfo: /*allParticipantInfo*/ ctx[8]
+    				allParticipantInfo: /*allParticipantInfo*/ ctx[5]
     			},
     			$$inline: true
     		});
@@ -37005,8 +37015,9 @@ ${constraint.asp}`;
     		},
     		p: function update(ctx, dirty) {
     			const versionrecommendations_changes = {};
-    			if (dirty[0] & /*selectedAttributes*/ 64) versionrecommendations_changes.selectedAttributes = /*selectedAttributes*/ ctx[6];
+    			if (dirty[0] & /*selectedAttributes*/ 128) versionrecommendations_changes.selectedAttributes = /*selectedAttributes*/ ctx[7];
     			if (dirty[0] & /*participant*/ 1) versionrecommendations_changes.participant = /*participant*/ ctx[0];
+    			if (dirty[0] & /*allParticipantInfo*/ 32) versionrecommendations_changes.allParticipantInfo = /*allParticipantInfo*/ ctx[5];
     			versionrecommendations.$set(versionrecommendations_changes);
     		},
     		i: function intro(local) {
@@ -37027,14 +37038,14 @@ ${constraint.asp}`;
     		block,
     		id: create_if_block_1.name,
     		type: "if",
-    		source: "(125:80) ",
+    		source: "(126:80) ",
     		ctx
     	});
 
     	return block;
     }
 
-    // (118:3) {#if start && participantOrder[participant - 1] === "constraintSolver"}
+    // (119:3) {#if start && participantOrder[participant - 1] === "constraintSolver"}
     function create_if_block$1(ctx) {
     	let current;
 
@@ -37042,9 +37053,9 @@ ${constraint.asp}`;
     			props: {
     				dataset: /*dataset*/ ctx[33]["dataset"],
     				types: /*dataset*/ ctx[33]["types"],
-    				selectedAttributes: /*selectedAttributes*/ ctx[6],
+    				selectedAttributes: /*selectedAttributes*/ ctx[7],
     				participant: /*participant*/ ctx[0],
-    				allParticipantInfo: /*allParticipantInfo*/ ctx[8]
+    				allParticipantInfo: /*allParticipantInfo*/ ctx[5]
     			},
     			$$inline: true
     		});
@@ -37059,8 +37070,9 @@ ${constraint.asp}`;
     		},
     		p: function update(ctx, dirty) {
     			const versionconstraintsolver_changes = {};
-    			if (dirty[0] & /*selectedAttributes*/ 64) versionconstraintsolver_changes.selectedAttributes = /*selectedAttributes*/ ctx[6];
+    			if (dirty[0] & /*selectedAttributes*/ 128) versionconstraintsolver_changes.selectedAttributes = /*selectedAttributes*/ ctx[7];
     			if (dirty[0] & /*participant*/ 1) versionconstraintsolver_changes.participant = /*participant*/ ctx[0];
+    			if (dirty[0] & /*allParticipantInfo*/ 32) versionconstraintsolver_changes.allParticipantInfo = /*allParticipantInfo*/ ctx[5];
     			versionconstraintsolver.$set(versionconstraintsolver_changes);
     		},
     		i: function intro(local) {
@@ -37081,14 +37093,14 @@ ${constraint.asp}`;
     		block,
     		id: create_if_block$1.name,
     		type: "if",
-    		source: "(118:3) {#if start && participantOrder[participant - 1] === \\\"constraintSolver\\\"}",
+    		source: "(119:3) {#if start && participantOrder[participant - 1] === \\\"constraintSolver\\\"}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (115:18)     <p>...loading</p>   {:then dataset}
+    // (116:18)     <p>...loading</p>   {:then dataset}
     function create_pending_block$1(ctx) {
     	let p;
 
@@ -37096,7 +37108,7 @@ ${constraint.asp}`;
     		c: function create() {
     			p = element("p");
     			p.textContent = "...loading";
-    			add_location(p, file$9, 115, 3, 2715);
+    			add_location(p, file$9, 116, 3, 2734);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -37113,7 +37125,7 @@ ${constraint.asp}`;
     		block,
     		id: create_pending_block$1.name,
     		type: "pending",
-    		source: "(115:18)     <p>...loading</p>   {:then dataset}",
+    		source: "(116:18)     <p>...loading</p>   {:then dataset}",
     		ctx
     	});
 
@@ -37147,9 +37159,9 @@ ${constraint.asp}`;
     			info.block.c();
     			attr_dev(div0, "id", "main");
     			attr_dev(div0, "class", "svelte-1dzpmaa");
-    			add_location(div0, file$9, 113, 1, 2677);
+    			add_location(div0, file$9, 114, 1, 2696);
     			set_style(div1, "padding", "'20px'");
-    			add_location(div1, file$9, 101, 0, 2336);
+    			add_location(div1, file$9, 102, 0, 2355);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -37284,16 +37296,26 @@ ${constraint.asp}`;
 
     		if (selectedAttributes.includes(attribute)) ; else {
     			selectedAttributes.push(attribute);
-    			$$invalidate(6, selectedAttributes);
+    			$$invalidate(7, selectedAttributes);
     		}
     	}
 
     	function load() {
-    		if (participant) {
-    			$$invalidate(5, start = true);
+    		// if (participant) {
+    		// 	start = true
+    		// }
+    		// Uncomment for study
+    		if (participant && gender && ageRange && ageRange != "<18" && experience) {
+    			$$invalidate(5, allParticipantInfo = {
+    				"age": ageRange,
+    				gender,
+    				tools,
+    				experience
+    			});
+
+    			$$invalidate(6, start = true);
     		}
-    	} // Uncomment for study
-    	// if (participant && gender && ageRange && ageRange != "<18" && experience) {
+    	}
 
     	const writable_props = [];
 
@@ -37420,15 +37442,15 @@ ${constraint.asp}`;
     		if ("versionChoice" in $$props) versionChoice = $$props.versionChoice;
     		if ("version" in $$props) version = $$props.version;
     		if ("participant" in $$props) $$invalidate(0, participant = $$props.participant);
-    		if ("participantOrder" in $$props) $$invalidate(7, participantOrder = $$props.participantOrder);
+    		if ("participantOrder" in $$props) $$invalidate(8, participantOrder = $$props.participantOrder);
     		if ("gender" in $$props) $$invalidate(1, gender = $$props.gender);
     		if ("ageRange" in $$props) $$invalidate(2, ageRange = $$props.ageRange);
     		if ("tools" in $$props) $$invalidate(3, tools = $$props.tools);
     		if ("experience" in $$props) $$invalidate(4, experience = $$props.experience);
-    		if ("allParticipantInfo" in $$props) $$invalidate(8, allParticipantInfo = $$props.allParticipantInfo);
-    		if ("start" in $$props) $$invalidate(5, start = $$props.start);
+    		if ("allParticipantInfo" in $$props) $$invalidate(5, allParticipantInfo = $$props.allParticipantInfo);
+    		if ("start" in $$props) $$invalidate(6, start = $$props.start);
     		if ("rand" in $$props) rand = $$props.rand;
-    		if ("selectedAttributes" in $$props) $$invalidate(6, selectedAttributes = $$props.selectedAttributes);
+    		if ("selectedAttributes" in $$props) $$invalidate(7, selectedAttributes = $$props.selectedAttributes);
     		if ("promise" in $$props) $$invalidate(9, promise = $$props.promise);
     	};
 
@@ -37442,10 +37464,10 @@ ${constraint.asp}`;
     		ageRange,
     		tools,
     		experience,
+    		allParticipantInfo,
     		start,
     		selectedAttributes,
     		participantOrder,
-    		allParticipantInfo,
     		promise,
     		load,
     		versionChoice,

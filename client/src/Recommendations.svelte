@@ -111,6 +111,11 @@
 		recommendationsClass = recommendationsClass.map(r => 'default')
 		recommendations = result
 
+		sessionData.push({"constraints":attributesWeight,
+						  "recommendations": recommendations,
+						  "date": new Date(),
+						  "label": "recommendations"})
+
 		loading = false
 	}
 
@@ -270,6 +275,7 @@
 				}
 
 				attributesWeight = attributeMeans.filter(d => d[1] > 0)
+				// sessionData.push({"specs": attributesWeight, "label": "constraints"})
 
 				Promise.all(getRecombinations(updatedPreferrences, dataset)).then((result) => {
 					selectRecommendations(result)

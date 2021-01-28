@@ -85,17 +85,18 @@
 	}
 
 	function load() {
-		if (participant) {
-			start = true
-		}
-
-		// Uncomment for study
-		// if (participant && gender && ageRange && ageRange != "<18" && experience) {
-		// 	allParticipantInfo = {"age": ageRange,
-		// 						  "tools": tools,
-		// 						  "experience": experience}
+		// if (participant) {
 		// 	start = true
 		// }
+
+		// Uncomment for study
+		if (participant && gender && ageRange && ageRange != "<18" && experience) {
+			allParticipantInfo = {"age": ageRange,
+								  "gender": gender,
+								  "tools": tools,
+								  "experience": experience}
+			start = true
+		}
 	}
 </script>
 
