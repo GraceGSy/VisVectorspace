@@ -34,9 +34,9 @@ function solveDraco(newConstraints, dataset) {
 			${visConstraints}
 		`;
 
-		// console.log(inputConstraints)
+		console.log(inputConstraints)
 
-		const solution = draco.solve(inputConstraints, { models: 5 });
+		const solution = draco.solve(inputConstraints, { models: 4 });
 
 		// console.log(solution)
 		if (!solution) {

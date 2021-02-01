@@ -8,10 +8,9 @@ accepted_marks = ['mark_area','mark_bar',
 
 accepted_channels = ['x','y','color','size','shape']
 
-accepted_aggregates = ['aggregate_average','aggregate_count',
-					   'aggregate_distinct','aggregate_max',
+accepted_aggregates = ['aggregate_min','aggregate_max',
 					   'aggregate_mean','aggregate_median',
-					   'aggregate_none','aggregate_sum']
+					   'aggregate_sum','aggregate_none']
 
 accepted_types = ['type_quantitative', 'type_nominal']
 

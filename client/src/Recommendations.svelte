@@ -108,6 +108,8 @@
 
 		}
 
+		// console.log(resultUid)
+
 		recommendationsClass = recommendationsClass.map(r => 'default')
 		recommendations = result
 
@@ -117,6 +119,42 @@
 						  "label": "recommendations"})
 
 		loading = false
+	}
+
+	function selectFromWeighted(newVectors) {
+		// let preferred = result["pred"]
+		let updatedLikes = []
+		let updatedMaybe = []
+		let updatedNo = []
+
+		for (let i = 0; i < newVectors.length; i++) {
+			let current = newVectors[i].spec
+			if (current.label > 0) {
+				updatedLikes.push(newVectors[i])
+			} else if (current.label === 0) {
+				updatedMaybe.push(newVectors[i])
+			} else {
+				updatedNo.push(newVectors[i])
+			}
+		}
+
+		let updatedPreferrences
+
+		if (updatedLikes.length == 0) {
+			if (updatedMaybe.length < recommendationCount) {
+				updatedPreferrences = getRandom(4, updatedNo)
+			} else {
+				updatedPreferrences = getRandom(4, updatedMaybe)
+			}
+		} else {
+			// Introduce some randomness by including parts of the vectorspace
+			// Not yet explored
+			let randomMaybe = getRandom(2, updatedMaybe)
+			let randomYes = getRandom(2, updatedLikes)
+			updatedPreferrences = randomYes.concat(randomMaybe)
+		}
+
+		return updatedPreferrences
 	}
 
 	function runClassifier() {
@@ -148,7 +186,9 @@
 
 		// If no user feedback provided
 		if (moreLikeThis.length === 0 && lessLikeThis.length  === 0) {
-			Promise.all(getRecombinations(vegaSpecs, dataset)).then((result) => {
+			let updatedPreferrences = selectFromWeighted(visVectors)
+
+			Promise.all(getRecombinations(updatedPreferrences, dataset)).then((result) => {
 				selectRecommendations(result)
 			})
 			return
@@ -221,39 +261,11 @@
       				newVectors = originals.concat(added.slice(difference, added.length))
       			}
 
+      			console.log(vegaSpecs.length, visVectors.length)
+
       			visVectors = newVectors
 
-      			// let preferred = result["pred"]
-      			let updatedLikes = []
-      			let updatedMaybe = []
-      			let updatedNo = []
-
-				for (let i = 0; i < newDataset.length; i++) {
-					let current = newDataset[i]
-					if (current.label > 0) {
-						updatedLikes.push(newVectors[i])
-					} else if (current.label === 0) {
-						updatedMaybe.push(newVectors[i])
-					} else {
-						updatedNo.push(newVectors[i])
-					}
-				}
-
-				let updatedPreferrences
-
-				if (updatedLikes.length == 0) {
-					if (updatedMaybe.length < recommendationCount) {
-						updatedPreferrences = getRandom(4, updatedNo)
-					} else {
-						updatedPreferrences = getRandom(4, updatedMaybe)
-					}
-				} else {
-					// Introduce some randomness by including parts of the vectorspace
-					// Not yet explored
-					let randomMaybe = getRandom(2, updatedMaybe)
-					let randomYes = getRandom(2, updatedLikes)
-					updatedPreferrences = randomYes.concat(randomMaybe)
-				}
+      			let updatedPreferrences = selectFromWeighted(newVectors)
 
 				allPoints = newDataset
 				shownPoints = updatedPreferrences
@@ -276,6 +288,8 @@
 
 				attributesWeight = attributeMeans.filter(d => d[1] > 0)
 				// sessionData.push({"specs": attributesWeight, "label": "constraints"})
+
+				console.log(updatedPreferrences)
 
 				Promise.all(getRecombinations(updatedPreferrences, dataset)).then((result) => {
 					selectRecommendations(result)
@@ -337,7 +351,7 @@
 		lessLikeThis = []
 		maybeLikeThis = []
 		attributesWeight = []
-		vegaSpecs = JSON.parse(JSON.stringify(vegaSpecsOriginal))
+		visVectors = JSON.parse(JSON.stringify(vegaSpecsOriginal))
 	}
 
 	$: for (let p = 0; p < pinned.length; p++) {
