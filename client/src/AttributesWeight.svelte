@@ -11,20 +11,15 @@
 	let markAttr = []
 	let encodingAttr = []
 
-	// The following descriptions are provided by IMDB
-	// https://www.imdb.com/interfaces/
-	// principals and genre have been modified from the original dataset
-	// Their descriptions reflect the modifications
-	let descriptions = {"type":{type: "categorical", des:"the type/format of the title (e.g. movie, short, tvseries, tvepisode, video, etc)"},
-						"minutes":{type: "quantitative", des:"primary runtime of the title, in minutes"},
-						"rating":{type: "quantitative", des:"weighted average of all the individual user ratings"},
-						"votes":{type: "quantitative", des:"number of votes the title has received"},
-						"principals":{type: "quantitative", des:"total principal cast/crew for titles"},
-						"genre":{type: "categorical", des:"first genre associated with the title"},
+	let descriptions = {"type":{type: "categorical", des:"whether the cereal is hot or cold"},
+						"calories":{type: "quantitative", des:"amount of calories in the cereal"},
+						"fat":{type: "quantitative", des:"amount of fat in the cereal"},
+						"mfr":{type: "categorical", des:"manufacturer of the cereal, represented by a single letter"},
+						"protein":{type: "quantitative", des:"amount of protein in the cereal"},
 						"categorical":{type: "any", des:"type, genre"},
 						"quantitative":{type: "any", des:"minutes, rating, votes, principals"}}
 
-	let attributesList = ["type","minutes","rating","votes","principals","genre"]
+	let attributesList = ["type","calories","fat","mfr","protein"]
 
 	$: {
 		// console.log(attributes)

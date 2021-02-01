@@ -47,12 +47,14 @@
 		return result
 	}
 
+	// name,mfr,type,calories,protein,fat,sodium,fiber,carbo,sugars,potass,vitamins,shelf,weight,cups,rating
+
 	function dataPreprocessor(d) {
 		let result = {}
 		for (let i = 0; i < d3.keys(d).length; i++) {
 			let variableName = d3.keys(d)[i]
-			if (variableName === 'tconst' || variableName === "title" || variableName === 'year') {}
-			else if (variableName === 'type' || variableName === "genre") {
+			if (["name","sodium","fiber","carbo","sugars","potass","vitamins","shelf","weight","cups","rating"].indexOf(variableName) > -1) {}
+			else if (variableName === 'mfr' || variableName === "type") {
 				result[variableName] = d3.values(d)[i]
 			}
 			else {
@@ -63,13 +65,15 @@
 	}
 
 	async function loadData() {
-		const dataset = await d3.csv(`movies.csv`, dataPreprocessor)
+		const dataset = await d3.csv(`cereal.csv`, dataPreprocessor)
 
 		// console.log(dataset)
 
 		const firstRow = dataset[0]
 
 		const types = getType(firstRow)
+
+		console.log(dataset, types)
 
 		return {"dataset":dataset, "types":types}
 	}

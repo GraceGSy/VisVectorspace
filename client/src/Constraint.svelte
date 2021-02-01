@@ -13,12 +13,11 @@
 	let aggregates = ["-", "bin", "min", "max", "mean", "median", "sum"]
 	let selected = ""
 
-	let descriptions = {"type":"categorical",
-						"minutes":"quantitative",
-						"rating":"quantitative",
-						"votes":"quantitative",
-						"principals":"quantitative",
-						"genre":"categorical"}
+	let descriptions = {"type": "categorical",
+						"calories": "quantitative",
+						"fat": "quantitative",
+						"mfr": "categorical",
+						"protein": "quantitative"}
 
 	const flipDurationMs = 200
 

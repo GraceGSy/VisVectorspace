@@ -25,11 +25,10 @@
 	// let variable_types = {'title': 'string', 'startYear': 'number', 'runtimeMinutes': 'number', 'averageRating': 'number', 'numVotes': 'number'}
 
 	let dataOptions = [{id:"type", name:"type", aggregate:"-"},
-				  {id:"minutes", name:"minutes", aggregate:"-"},
-				  {id:"rating", name:"rating", aggregate:"-"},
-				  {id:"votes", name:"votes", aggregate:"-"},
-				  {id:"principals", name:"principals", aggregate:"-"},
-				  {id:"genre", name:"genre", aggregate:"-"}]
+					  {id:"calories", name:"calories", aggregate:"-"},
+					  {id:"fat", name:"fat", aggregate:"-"},
+					  {id:"mfr", name:"mfr", aggregate:"-"},
+					  {id:"protein", name:"protein", aggregate:"-"}]
 
 	// let variables = [''].concat(accepted_types).concat(Object.keys(variable_types).map(v => 'field_' + v))
 
