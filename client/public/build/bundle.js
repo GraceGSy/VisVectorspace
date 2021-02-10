@@ -25606,7 +25606,7 @@ ${constraint.asp}`;
         Object.defineProperty(exports, '__esModule', { value: true });
 
     })));
-    //# sourceMappingURL=draco.js.map
+
     });
 
     var Draco = unwrapExports(draco);
@@ -29295,8 +29295,6 @@ ${constraint.asp}`;
     };
     });
 
-    //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi9zcmMvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsY0FBYyxTQUFTLENBQUM7QUFDeEIsY0FBYyxRQUFRLENBQUM7QUFDdkIsY0FBYyxZQUFZLENBQUM7QUFDM0IsT0FBTyxLQUFLLE1BQU0sU0FBUyxDQUFDO0FBQzVCLGVBQWUsS0FBSyxDQUFDIn0=
-
     /*!
      * Determine if an object is a Buffer
      *
@@ -30577,7 +30575,7 @@ ${constraint.asp}`;
     	return child_ctx;
     }
 
-    // (499:3) {#each recommendations as c, i}
+    // (513:3) {#each recommendations as c, i}
     function create_each_block_1$1(ctx) {
     	let div4;
     	let div1;
@@ -30632,27 +30630,27 @@ ${constraint.asp}`;
     			? "more"
     			: "default") + " svelte-ognzdh"));
 
-    			add_location(button0, file$3, 501, 6, 12683);
+    			add_location(button0, file$3, 515, 6, 13197);
 
     			attr_dev(button1, "class", button1_class_value = "" + (null_to_empty(/*recommendationsClass*/ ctx[2][/*i*/ ctx[40]] === "less"
     			? "less"
     			: "default") + " svelte-ognzdh"));
 
-    			add_location(button1, file$3, 505, 6, 12841);
+    			add_location(button1, file$3, 519, 6, 13355);
     			attr_dev(i_1, "class", "material-icons-outlined md-24");
-    			add_location(i_1, file$3, 512, 7, 13162);
+    			add_location(i_1, file$3, 526, 7, 13676);
     			attr_dev(div0, "class", "pinButton svelte-ognzdh");
     			toggle_class(div0, "isPinned", /*recommendations*/ ctx[1][/*i*/ ctx[40]] && /*currentPinned*/ ctx[4].indexOf(/*recommendations*/ ctx[1][/*i*/ ctx[40]].uid) > -1);
-    			add_location(div0, file$3, 509, 6, 12999);
+    			add_location(div0, file$3, 523, 6, 13513);
     			attr_dev(div1, "class", "buttons svelte-ognzdh");
-    			add_location(div1, file$3, 500, 5, 12655);
+    			add_location(div1, file$3, 514, 5, 13169);
     			attr_dev(div2, "id", div2_id_value = "vis" + /*i*/ ctx[40]);
     			attr_dev(div2, "class", "svelte-ognzdh");
-    			add_location(div2, file$3, 516, 6, 13280);
+    			add_location(div2, file$3, 530, 6, 13794);
     			attr_dev(div3, "class", "vegaContainer svelte-ognzdh");
-    			add_location(div3, file$3, 515, 5, 13246);
+    			add_location(div3, file$3, 529, 5, 13760);
     			attr_dev(div4, "class", "vis svelte-ognzdh");
-    			add_location(div4, file$3, 499, 4, 12632);
+    			add_location(div4, file$3, 513, 4, 13146);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, div4, anchor);
@@ -30706,14 +30704,14 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block_1$1.name,
     		type: "each",
-    		source: "(499:3) {#each recommendations as c, i}",
+    		source: "(513:3) {#each recommendations as c, i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (527:3) {#each pinned as p, i}
+    // (541:3) {#each pinned as p, i}
     function create_each_block$2(ctx) {
     	let button;
     	let t1;
@@ -30734,10 +30732,10 @@ ${constraint.asp}`;
     			div = element("div");
     			t2 = space();
     			attr_dev(button, "class", "deletePin svelte-ognzdh");
-    			add_location(button, file$3, 527, 4, 13539);
+    			add_location(button, file$3, 541, 4, 14053);
     			attr_dev(div, "id", div_id_value = "pin" + /*i*/ ctx[40]);
     			attr_dev(div, "class", "pinned svelte-ognzdh");
-    			add_location(div, file$3, 528, 4, 13615);
+    			add_location(div, file$3, 542, 4, 14129);
     		},
     		m: function mount(target, anchor, remount) {
     			insert_dev(target, button, anchor);
@@ -30763,7 +30761,7 @@ ${constraint.asp}`;
     		block,
     		id: create_each_block$2.name,
     		type: "each",
-    		source: "(527:3) {#each pinned as p, i}",
+    		source: "(541:3) {#each pinned as p, i}",
     		ctx
     	});
 
@@ -30871,46 +30869,46 @@ ${constraint.asp}`;
     			}
 
     			attr_dev(div0, "class", "spinner svelte-ognzdh");
-    			add_location(div0, file$3, 482, 2, 12019);
+    			add_location(div0, file$3, 496, 2, 12533);
     			attr_dev(div1, "class", "loader svelte-ognzdh");
     			toggle_class(div1, "showLoader", /*loading*/ ctx[0]);
     			toggle_class(div1, "hideLoader", !/*loading*/ ctx[0]);
-    			add_location(div1, file$3, 479, 1, 11933);
-    			add_location(b0, file$3, 489, 21, 12233);
+    			add_location(div1, file$3, 493, 1, 12447);
+    			add_location(b0, file$3, 503, 21, 12747);
     			attr_dev(p0, "class", "title1");
-    			add_location(p0, file$3, 489, 3, 12215);
-    			add_location(button0, file$3, 491, 4, 12290);
+    			add_location(p0, file$3, 503, 3, 12729);
+    			add_location(button0, file$3, 505, 4, 12804);
     			attr_dev(button1, "id", "pinnedButton");
     			attr_dev(button1, "class", "svelte-ognzdh");
-    			add_location(button1, file$3, 492, 4, 12352);
-    			add_location(button2, file$3, 493, 4, 12419);
+    			add_location(button1, file$3, 506, 4, 12866);
+    			add_location(button2, file$3, 507, 4, 12933);
     			attr_dev(button3, "id", "exportJSON");
     			attr_dev(button3, "class", "btn svelte-ognzdh");
-    			add_location(button3, file$3, 494, 4, 12463);
+    			add_location(button3, file$3, 508, 4, 12977);
     			attr_dev(div2, "id", "menuOptions");
     			attr_dev(div2, "class", "svelte-ognzdh");
-    			add_location(div2, file$3, 490, 3, 12263);
+    			add_location(div2, file$3, 504, 3, 12777);
     			attr_dev(div3, "id", "menu");
-    			add_location(div3, file$3, 488, 2, 12196);
+    			add_location(div3, file$3, 502, 2, 12710);
     			attr_dev(div4, "id", "recommendationDisplay");
     			attr_dev(div4, "class", "svelte-ognzdh");
-    			add_location(div4, file$3, 497, 2, 12560);
+    			add_location(div4, file$3, 511, 2, 13074);
     			attr_dev(div5, "id", "recommendations");
     			attr_dev(div5, "class", "svelte-ognzdh");
-    			add_location(div5, file$3, 487, 1, 12167);
-    			add_location(b1, file$3, 523, 21, 13401);
+    			add_location(div5, file$3, 501, 1, 12681);
+    			add_location(b1, file$3, 537, 21, 13915);
     			attr_dev(p1, "id", "pinnedText");
     			attr_dev(p1, "class", "svelte-ognzdh");
-    			add_location(p1, file$3, 523, 2, 13382);
+    			add_location(p1, file$3, 537, 2, 13896);
     			attr_dev(div6, "id", "pinnedDisplay");
     			attr_dev(div6, "class", "svelte-ognzdh");
-    			add_location(div6, file$3, 525, 2, 13484);
+    			add_location(div6, file$3, 539, 2, 13998);
     			attr_dev(div7, "id", "pinnedDrawer");
     			attr_dev(div7, "class", "svelte-ognzdh");
-    			add_location(div7, file$3, 522, 1, 13356);
+    			add_location(div7, file$3, 536, 1, 13870);
     			attr_dev(div8, "id", "overall");
     			attr_dev(div8, "class", "svelte-ognzdh");
-    			add_location(div8, file$3, 478, 0, 11913);
+    			add_location(div8, file$3, 492, 0, 12427);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -31178,23 +31176,34 @@ ${constraint.asp}`;
     			}
     		}
 
+    		// console.log(updatedLikes.length, updatedMaybe.length, updatedNo.length)
     		let updatedPreferrences;
 
-    		if (updatedLikes.length == 0) {
+    		// If no likes, select 4 from either the maybes or nos
+    		if (updatedLikes.length < 2) {
     			if (updatedMaybe.length < recommendationCount) {
     				updatedPreferrences = getRandom$1(4, updatedNo);
     			} else {
     				updatedPreferrences = getRandom$1(4, updatedMaybe);
     			}
+    		} else if (updatedMaybe.length < 2 && updatedNo.length < 2) {
+    			updatedPreferrences = getRandom$1(4, updatedLikes); // If maybes and nos are less than 2 each, select all 4 from likes
     		} else {
     			// Introduce some randomness by including parts of the vectorspace
     			// Not yet explored
-    			let randomMaybe = getRandom$1(2, updatedMaybe);
+    			let random; // If at least 2 likes, 2 maybes, and 2 nos, select 2 likes and either maybes or nos
+
+    			if (updatedMaybe.length < 2) {
+    				random = getRandom$1(2, updatedNo);
+    			} else {
+    				random = getRandom$1(2, updatedMaybe);
+    			}
 
     			let randomYes = getRandom$1(2, updatedLikes);
-    			updatedPreferrences = randomYes.concat(randomMaybe);
+    			updatedPreferrences = randomYes.concat(random);
     		}
 
+    		// exportJSON()
     		return updatedPreferrences;
     	}
 

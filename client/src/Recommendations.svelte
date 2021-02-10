@@ -138,21 +138,35 @@
 			}
 		}
 
+		// console.log(updatedLikes.length, updatedMaybe.length, updatedNo.length)
+
 		let updatedPreferrences
 
-		if (updatedLikes.length == 0) {
+		// If no likes, select 4 from either the maybes or nos
+		if (updatedLikes.length < 2) {
 			if (updatedMaybe.length < recommendationCount) {
 				updatedPreferrences = getRandom(4, updatedNo)
 			} else {
 				updatedPreferrences = getRandom(4, updatedMaybe)
 			}
+		// If maybes and nos are less than 2 each, select all 4 from likes
+		} else if (updatedMaybe.length < 2 && updatedNo.length < 2) {
+			updatedPreferrences = getRandom(4, updatedLikes)
+		// If at least 2 likes, 2 maybes, and 2 nos, select 2 likes and either maybes or nos
 		} else {
 			// Introduce some randomness by including parts of the vectorspace
 			// Not yet explored
-			let randomMaybe = getRandom(2, updatedMaybe)
+			let random
+			if (updatedMaybe.length < 2) {
+				random = getRandom(2, updatedNo)
+			} else {
+				random = getRandom(2, updatedMaybe)
+			}
 			let randomYes = getRandom(2, updatedLikes)
-			updatedPreferrences = randomYes.concat(randomMaybe)
+			updatedPreferrences = randomYes.concat(random)
 		}
+
+		// exportJSON()
 
 		return updatedPreferrences
 	}
