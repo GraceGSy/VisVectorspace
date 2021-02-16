@@ -3,6 +3,7 @@
 	import AttributesBar from './AttributesBar.svelte'
 	import VersionRecommendations from './VersionRecommendations.svelte'
 	import VersionConstraintSolver from './VersionConstraintSolver.svelte'
+	import Results from './Results.svelte'
 
 	let versionChoice = null
 
@@ -112,6 +113,9 @@
 			Constraint Learner
 		</label>
 	</div>-->
+{#if versionChoice === "results"}
+	<Results />
+{:else}
 	<div id="main">
 		{#await promise}
 			<p>...loading</p>
@@ -229,6 +233,7 @@
 			<p style="color: red">{error.message}</p>
 		{/await}
 	</div>
+{/if}
 </div>
 
 <style>
